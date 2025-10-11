@@ -1,7 +1,8 @@
-// server.js
 import express from "express";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
+import cors from "cors";
+
 dotenv.config();
 
 const app = express();
@@ -12,6 +13,21 @@ const { CARTPANDA_SHOP_SLUG, CARTPANDA_TOKEN, PORT } = process.env;
 const API_BASE = `https://accounts.cartpanda.com/api/${CARTPANDA_SHOP_SLUG}`;
 const AUTH = { Authorization: `Bearer ${CARTPANDA_TOKEN}` };
 const SERVER_PORT = Number(PORT || 3000);
+
+// === CORS CONFIG ===
+const ALLOWED_ORIGINS = [
+  "https://nervlief6.com",
+  "https://www.nervlief6.com",
+];
+
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
+    return cb(new Error("Not allowed by CORS"), false);
+  },
+  methods: ["GET"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
 
 // === Utils ===
 const norm = (s) => String(s || "").trim().toLowerCase();
@@ -24,9 +40,7 @@ function extractEmails(order) {
     order?.client_details?.email,
     order?.shipping_address?.email,
     order?.billing_address?.email,
-  ]
-    .filter(Boolean)
-    .map(norm);
+  ].filter(Boolean).map(norm);
 }
 
 function buildTracking(order) {
@@ -43,15 +57,13 @@ function buildTracking(order) {
 }
 
 function unwrapOrder(obj) {
-  // alguns endpoints retornam { order: {...} }
   if (obj && obj.order && typeof obj.order === "object") return obj.order;
   return obj;
 }
 
 function unwrapOrdersList(obj) {
-  // formatos possíveis: [], {orders:{data:[]}}, {orders:[]}, {data:[]}
   if (Array.isArray(obj)) return obj;
-  if (obj?.orders?.data && Array.isArray(obj.orders.data)) return obj.orders.data; // << principal no seu tenant
+  if (obj?.orders?.data && Array.isArray(obj.orders.data)) return obj.orders.data;
   if (obj?.orders && Array.isArray(obj.orders)) return obj.orders;
   if (obj?.data && Array.isArray(obj.data)) return obj.data;
   return [];
@@ -63,20 +75,15 @@ async function httpJson(url) {
   return r.json();
 }
 
-/** Busca um pedido por ID e tenta alguns fallbacks por número */
 async function fetchOrderByAnyId(idOrNumber) {
-  // 1) por ID direto
   try {
     const data = await httpJson(`${API_BASE}/orders/${encodeURIComponent(idOrNumber)}`);
     return unwrapOrder(data);
-  } catch (_) {
-    // segue pros fallbacks
-  }
+  } catch (_) {}
 
-  // 2) por number/search (se a API suportar)
   for (const alt of [
     `${API_BASE}/orders?number=${encodeURIComponent(idOrNumber)}`,
-    `${API_BASE}/orders?search=${encodeURIComponent(idOrNumber)}`,
+    `${API_BASE}/orders?search=${encodeURIComponent(idOrNumber)}`
   ]) {
     try {
       const data = await httpJson(alt);
@@ -88,11 +95,9 @@ async function fetchOrderByAnyId(idOrNumber) {
   throw new Error(`Pedido não encontrado: ${idOrNumber}`);
 }
 
-/** Lista pedidos tentando filtros no servidor e, se vazio, paginação completa (orders.current_page → orders.last_page) */
 async function listOrdersRobust(email) {
   const results = [];
 
-  // 1) filtros no servidor (se disponíveis)
   for (const q of [
     `${API_BASE}/orders?search=${encodeURIComponent(email)}`,
     `${API_BASE}/orders?email=${encodeURIComponent(email)}`
@@ -104,7 +109,6 @@ async function listOrdersRobust(email) {
     } catch (_) {}
   }
 
-  // 2) paginação completa quando filtros não retornarem nada
   if (results.length === 0) {
     const first = await httpJson(`${API_BASE}/orders?page=1`);
     const firstPageItems = unwrapOrdersList(first);
@@ -132,36 +136,7 @@ async function listOrdersRobust(email) {
 
 // === Rotas ===
 
-// A) Status por order_id + e-mail (mantemos)
-app.get("/api/order-status", async (req, res) => {
-  try {
-    const { order_id, email, debug, bypass_email } = req.query;
-    if (!order_id || !email) return res.status(400).json({ error: "Informe order_id e email." });
-
-    const order = await fetchOrderByAnyId(order_id);
-    const emails = extractEmails(order);
-    const input = norm(email);
-    const matches = emails.includes(input);
-
-    if (!matches && bypass_email !== "1") {
-      const payload = { error: "E-mail não confere com o pedido." };
-      if (debug === "1") Object.assign(payload, { debug_emails_found: emails, debug_input_email: input, debug_order_keys: Object.keys(order || {}) });
-      return res.status(403).json(payload);
-    }
-
-    return res.json({
-      order_id: order.id ?? order.number ?? order_id,
-      financial_status: order.financial_status || null,
-      fulfillment_status: order.fulfillment_status || null,
-      tracking: buildTracking(order),
-      ...(debug === "1" ? { debug_emails_found: emails, debug_input_email: input } : {})
-    });
-  } catch (e) {
-    return res.status(500).json({ error: "Falha interna.", detail: String(e?.message || e) });
-  }
-});
-
-// B) Somente por e-mail — pega o pedido mais recente desse e-mail
+// A) Busca por e-mail (último pedido)
 app.get("/api/order-by-email", async (req, res) => {
   try {
     const { email, debug } = req.query;
@@ -177,9 +152,7 @@ app.get("/api/order-by-email", async (req, res) => {
       return res.status(404).json(payload);
     }
 
-    // considera o mais recente (a API costuma vir ordenada do mais novo p/ mais antigo)
     const lastOrder = unwrapOrder(matches[0]);
-
     const resp = {
       email: wanted,
       total_pedidos: matches.length,
@@ -202,7 +175,7 @@ app.get("/api/order-by-email", async (req, res) => {
   }
 });
 
-// C) Diagnóstico bruto (pra ver o retorno da API por página)
+// B) Diagnóstico bruto (ver retorno da API)
 app.get("/api/_diag/orders_raw", async (req, res) => {
   try {
     const page = req.query.page || "1";
@@ -212,18 +185,18 @@ app.get("/api/_diag/orders_raw", async (req, res) => {
       ok: r.ok,
       status: r.status,
       contentType: r.headers.get("content-type"),
-      sample: text.slice(0, 2000), // primeiros 2000 chars
+      sample: text.slice(0, 2000),
     });
   } catch (e) {
     res.status(500).json({ error: "diag_failed", detail: String(e) });
   }
 });
 
-// D) Diagnóstico de formato (chaves)
+// C) Diagnóstico de formato
 app.get("/api/_diag/orders_shape", async (req, res) => {
   try {
     const r = await fetch(`${API_BASE}/orders?page=1`, { headers: AUTH });
-    if (!r.ok) return res.status(r.status).json({ ok: false, status: r.status, hint: "Falha ao acessar /orders" });
+    if (!r.ok) return res.status(r.status).json({ ok: false, status: r.status });
     const data = await r.json();
     const orders = unwrapOrdersList(data);
     const first = orders[0] || null;
@@ -245,5 +218,5 @@ app.get("/api/_diag/orders_shape", async (req, res) => {
 
 // === Start ===
 app.listen(SERVER_PORT, () => {
-  console.log(`API ativa na porta ${SERVER_PORT}`);
+  console.log(`✅ API ativa na porta ${SERVER_PORT}`);
 });
