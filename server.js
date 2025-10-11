@@ -8,7 +8,7 @@ app.use(express.json());
 
 const { CARTPANDA_SHOP_SLUG, CARTPANDA_TOKEN } = process.env;
 const API_BASE = `https://accounts.cartpanda.com/api/${CARTPANDA_SHOP_SLUG}`;
-const auth = { Authorization: `Bearer ${CARTPANDA_TOKEN}` };
+const AUTH = { Authorization: `Bearer ${CARTPANDA_TOKEN}` };
 
 const norm = (s) => String(s || "").trim().toLowerCase();
 
@@ -21,6 +21,20 @@ function extractEmails(order) {
     order?.shipping_address?.email,
     order?.billing_address?.email,
   ].filter(Boolean).map(norm);
+}
+
+function unwrapOrder(obj) {
+  // Alguns endpoints retornam { order: {...} }
+  if (obj && obj.order && typeof obj.order === "object") return obj.order;
+  return obj;
+}
+
+function unwrapOrdersList(obj) {
+  // Tenta diferentes formatos: {orders: []}, {data: []}, [] direto
+  if (Array.isArray(obj)) return obj;
+  if (obj?.orders && Array.isArray(obj.orders)) return obj.orders;
+  if (obj?.data && Array.isArray(obj.data)) return obj.data;
+  return [];
 }
 
 function buildTracking(order) {
@@ -36,32 +50,69 @@ function buildTracking(order) {
     : null;
 }
 
-// 🔹 Endpoint principal: buscar por e-mail
+async function httpJson(url) {
+  const r = await fetch(url, { headers: AUTH });
+  if (!r.ok) throw new Error(`${r.status} ${await r.text().catch(()=>'')}`);
+  return r.json();
+}
+
+// Lista pedidos tentando: filtro por search/email e depois paginação
+async function listOrdersRobust(email) {
+  const results = [];
+
+  // 1) Tenta server-side filtering (se a API suportar)
+  for (const q of [
+    `${API_BASE}/orders?search=${encodeURIComponent(email)}`,
+    `${API_BASE}/orders?email=${encodeURIComponent(email)}`,
+  ]) {
+    try {
+      const data = await httpJson(q);
+      const arr = unwrapOrdersList(data);
+      if (arr.length) results.push(...arr);
+    } catch {}
+  }
+
+  // 2) Se ainda vazio, paginação básica (varre 1..5)
+  if (results.length === 0) {
+    for (let page = 1; page <= 5; page++) {
+      try {
+        const data = await httpJson(`${API_BASE}/orders?page=${page}`);
+        const arr = unwrapOrdersList(data);
+        if (!arr.length) break; // sem mais páginas úteis
+        results.push(...arr);
+      } catch {
+        break;
+      }
+    }
+  }
+
+  return results;
+}
+
+// 🔹 Endpoint principal: buscar por e-mail (último pedido + tracking)
 app.get("/api/order-by-email", async (req, res) => {
   try {
     const { email, debug } = req.query;
     if (!email) return res.status(400).json({ error: "Informe o e-mail." });
-
     const wanted = norm(email);
-    const r = await fetch(`${API_BASE}/orders`, { headers: auth });
-    if (!r.ok) return res.status(r.status).json({ error: "Erro ao buscar pedidos." });
 
-    const data = await r.json();
-    const orders = Array.isArray(data) ? data : data?.data || [];
-
-    // filtra pedidos pelo e-mail
+    const orders = await listOrdersRobust(email);
+    // filtra no backend garantindo normalização
     const matches = orders.filter((o) => extractEmails(o).includes(wanted));
-    if (matches.length === 0) {
-      return res.status(404).json({ error: "Nenhum pedido encontrado para este e-mail." });
+
+    if (!matches.length) {
+      const payload = { error: "Nenhum pedido encontrado para este e-mail." };
+      if (debug === "1") Object.assign(payload, { debug_scanned: orders.length });
+      return res.status(404).json(payload);
     }
 
-    // pega o pedido mais recente
-    const lastOrder = matches[0];
+    // Considera o mais recente (assumindo que a API já devolve ordenado desc)
+    const lastOrder = unwrapOrder(matches[0]);
 
-    const response = {
+    const resp = {
       email: wanted,
       total_pedidos: matches.length,
-      order_id: lastOrder.id ?? lastOrder.number,
+      order_id: lastOrder.id ?? lastOrder.number ?? null,
       number: lastOrder.number ?? null,
       financial_status: lastOrder.financial_status || null,
       fulfillment_status: lastOrder.fulfillment_status || null,
@@ -69,13 +120,16 @@ app.get("/api/order-by-email", async (req, res) => {
     };
 
     if (debug === "1") {
-      response.emails_encontrados = extractEmails(lastOrder);
+      resp.debug_scanned = orders.length;
+      resp.debug_emails_encontrados = extractEmails(lastOrder);
+      resp.debug_keys = Object.keys(lastOrder || {});
     }
 
-    return res.json(response);
+    return res.json(resp);
   } catch (e) {
-    return res.status(500).json({ error: "Falha interna.", detail: String(e) });
+    return res.status(500).json({ error: "Falha interna.", detail: String(e?.message || e) });
   }
 });
 
+// (mantém a app viva)
 app.listen(3000, () => console.log("API de rastreio por e-mail ativa na porta 3000"));
