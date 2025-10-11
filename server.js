@@ -1,3 +1,4 @@
+// server.js
 import express from "express";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
@@ -42,12 +43,15 @@ function buildTracking(order) {
 }
 
 function unwrapOrder(obj) {
+  // alguns endpoints retornam { order: {...} }
   if (obj && obj.order && typeof obj.order === "object") return obj.order;
   return obj;
 }
 
 function unwrapOrdersList(obj) {
+  // formatos possíveis: [], {orders:{data:[]}}, {orders:[]}, {data:[]}
   if (Array.isArray(obj)) return obj;
+  if (obj?.orders?.data && Array.isArray(obj.orders.data)) return obj.orders.data; // << principal no seu tenant
   if (obj?.orders && Array.isArray(obj.orders)) return obj.orders;
   if (obj?.data && Array.isArray(obj.data)) return obj.data;
   return [];
@@ -65,7 +69,7 @@ async function fetchOrderByAnyId(idOrNumber) {
   try {
     const data = await httpJson(`${API_BASE}/orders/${encodeURIComponent(idOrNumber)}`);
     return unwrapOrder(data);
-  } catch (e) {
+  } catch (_) {
     // segue pros fallbacks
   }
 
@@ -78,37 +82,46 @@ async function fetchOrderByAnyId(idOrNumber) {
       const data = await httpJson(alt);
       const arr = unwrapOrdersList(data);
       if (arr.length) return arr[0];
-    } catch (e) {}
+    } catch (_) {}
   }
 
   throw new Error(`Pedido não encontrado: ${idOrNumber}`);
 }
 
-/** Lista pedidos tentando search/email e depois paginação 1..5 */
+/** Lista pedidos tentando filtros no servidor e, se vazio, paginação completa (orders.current_page → orders.last_page) */
 async function listOrdersRobust(email) {
   const results = [];
 
   // 1) filtros no servidor (se disponíveis)
   for (const q of [
     `${API_BASE}/orders?search=${encodeURIComponent(email)}`,
-    `${API_BASE}/orders?email=${encodeURIComponent(email)}`,
+    `${API_BASE}/orders?email=${encodeURIComponent(email)}`
   ]) {
     try {
       const data = await httpJson(q);
       const arr = unwrapOrdersList(data);
       if (arr.length) results.push(...arr);
-    } catch (e) {}
+    } catch (_) {}
   }
 
-  // 2) paginação simples
+  // 2) paginação completa quando filtros não retornarem nada
   if (results.length === 0) {
-    for (let page = 1; page <= 5; page++) {
+    const first = await httpJson(`${API_BASE}/orders?page=1`);
+    const firstPageItems = unwrapOrdersList(first);
+    results.push(...firstPageItems);
+
+    const lastPage =
+      (first?.orders && typeof first.orders.last_page === "number")
+        ? first.orders.last_page
+        : 1;
+
+    for (let page = 2; page <= lastPage; page++) {
       try {
         const data = await httpJson(`${API_BASE}/orders?page=${page}`);
         const arr = unwrapOrdersList(data);
         if (!arr.length) break;
         results.push(...arr);
-      } catch (e) {
+      } catch (_) {
         break;
       }
     }
@@ -164,6 +177,7 @@ app.get("/api/order-by-email", async (req, res) => {
       return res.status(404).json(payload);
     }
 
+    // considera o mais recente (a API costuma vir ordenada do mais novo p/ mais antigo)
     const lastOrder = unwrapOrder(matches[0]);
 
     const resp = {
@@ -188,7 +202,7 @@ app.get("/api/order-by-email", async (req, res) => {
   }
 });
 
-// C) Diagnóstico bruto (pra ver a resposta da API)
+// C) Diagnóstico bruto (pra ver o retorno da API por página)
 app.get("/api/_diag/orders_raw", async (req, res) => {
   try {
     const page = req.query.page || "1";
@@ -198,7 +212,7 @@ app.get("/api/_diag/orders_raw", async (req, res) => {
       ok: r.ok,
       status: r.status,
       contentType: r.headers.get("content-type"),
-      sample: text.slice(0, 2000),
+      sample: text.slice(0, 2000), // primeiros 2000 chars
     });
   } catch (e) {
     res.status(500).json({ error: "diag_failed", detail: String(e) });
