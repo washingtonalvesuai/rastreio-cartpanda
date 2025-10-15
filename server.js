@@ -362,3 +362,65 @@ async function auditOrder(order) {
   return { rows, issues: [...new Set(issues)] };
 }
 
+import { Readable } from "stream";
+
+// Gera CSV simples
+function rowsToCsv(rows) {
+  const headers = [
+    "order_id","number","created_at","customer_email",
+    "fulfillment_status_raw","fulfillment_status_friendly",
+    "tracking_number","carrier_detected","carrier_claimed","carrier_mismatch",
+    "tracking_url","tracking_url_ok","tracking_url_status","delivered_like"
+  ];
+  const esc = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const lines = [headers.join(",")];
+  for (const r of rows) {
+    lines.push(headers.map(h => esc(r[h])).join(","));
+  }
+  return lines.join("\n");
+}
+
+app.get("/api/audit-shipments", async (req, res) => {
+  try {
+    const limit = Number(req.query.limit || 0); // 0 = sem limite
+    const download = String(req.query.download || "").toLowerCase() === "csv";
+
+    const orders = await listAllOrdersPaged();
+    const scoped = limit > 0 ? orders.slice(0, limit) : orders;
+
+    const rows = [];
+    const summary = {
+      total_orders_scanned: scoped.length,
+      with_issues: 0,
+      issue_counts: {}
+    };
+
+    for (const o of scoped) {
+      const audit = await auditOrder(o);
+      rows.push(...audit.rows);
+      if (audit.issues.length) {
+        summary.with_issues++;
+        for (const k of audit.issues) {
+          summary.issue_counts[k] = (summary.issue_counts[k] || 0) + 1;
+        }
+      }
+    }
+
+    if (download) {
+      const csv = rowsToCsv(rows);
+      res.setHeader("Content-Type", "text/csv; charset=utf-8");
+      res.setHeader("Content-Disposition", `attachment; filename="shipment_audit.csv"`);
+      // stream para não estourar memória em listas grandes
+      Readable.from([csv]).pipe(res);
+      return;
+    }
+
+    return res.json({
+      summary,
+      sample: rows.slice(0, 20), // mostra 20 linhas de exemplo
+      note: "Use ?download=csv para baixar o relatório completo."
+    });
+  } catch (e) {
+    return res.status(500).json({ error: "audit_failed", detail: String(e?.message || e) });
+  }
+});
