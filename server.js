@@ -220,3 +220,145 @@ app.get("/api/_diag/orders_shape", async (req, res) => {
 app.listen(SERVER_PORT, () => {
   console.log(`✅ API ativa na porta ${SERVER_PORT}`);
 });
+
+// === Tracking validators ===
+function detectCarrierByNumber(n) {
+  const s = String(n || "").trim();
+  const sUp = s.toUpperCase();
+
+  // UPS: 1Z + 16 alfanum.
+  if (/^1Z[0-9A-Z]{16}$/.test(sUp)) return "UPS";
+
+  // USPS: 20–22 dígitos (muito comum 920..., 940..., 937..., 9400..., etc.)
+  if (/^[0-9]{20,22}$/.test(s)) return "USPS";
+
+  // FedEx: 12, 15, 20 dígitos (heurística simples)
+  if (/^(\d{12}|\d{15}|\d{20})$/.test(s)) return "FedEx";
+
+  // Correios (BR): duas letras + 9 dígitos + BR
+  if (/^[A-Z]{2}\d{9}BR$/.test(sUp)) return "Correios";
+
+  return null;
+}
+
+function normalizeCarrier(c) {
+  if (!c) return null;
+  const x = String(c).trim().toLowerCase();
+  if (x.includes("usps")) return "USPS";
+  if (x.includes("ups")) return "UPS";
+  if (x.includes("fedex")) return "FedEx";
+  if (x.includes("correios") || x.includes("brazil post")) return "Correios";
+  return c; // devolve cru se não reconhecer
+}
+
+// Checa URL de rastreio (HEAD/GET com timeout)
+async function checkTrackingUrl(url) {
+  if (!url) return { ok: false, status: 0, note: "missing_url" };
+  const controller = new AbortController();
+  const t = setTimeout(() => controller.abort(), 8000);
+  try {
+    let r = await fetch(url, { method: "HEAD", signal: controller.signal });
+    // alguns sites bloqueiam HEAD, tenta GET leve
+    if (!r.ok || (r.status === 405 || r.status === 403)) {
+      r = await fetch(url, { method: "GET", signal: controller.signal });
+    }
+    clearTimeout(t);
+    return { ok: r.ok, status: r.status || 0 };
+  } catch (e) {
+    clearTimeout(t);
+    return { ok: false, status: 0, note: "fetch_error" };
+  }
+}
+
+function isDeliveredLike(status) {
+  if (!status) return false;
+  const s = String(status).toLowerCase();
+  return s.includes("delivered") || s.includes("delivered scan") || s === "fully fulfilled";
+}
+
+// Friendly label (mesma lógica da sua página)
+function friendlyStatus(raw) {
+  if (!raw) return "Preparing for shipment";
+  const m = {
+    "unfulfilled": "Preparing for shipment",
+    "fulfilled": "Shipped",
+    "fully fulfilled": "Delivered",
+    "partially fulfilled": "Partially shipped",
+    "processing": "Processing",
+    "paid": "Payment confirmed",
+    "pending": "Pending confirmation",
+    "null": "Preparing for shipment",
+  };
+  const k = String(raw).toLowerCase();
+  return m[k] || raw;
+}
+
+async function listAllOrdersPaged() {
+  // usa os mesmos helpers httpJson/unwrapOrdersList já existentes
+  const all = [];
+  const first = await httpJson(`${API_BASE}/orders?page=1`);
+  const firstItems = unwrapOrdersList(first);
+  all.push(...firstItems);
+  const lastPage = (first?.orders && typeof first.orders.last_page === "number") ? first.orders.last_page : 1;
+  for (let p = 2; p <= lastPage; p++) {
+    try {
+      const data = await httpJson(`${API_BASE}/orders?page=${p}`);
+      const arr = unwrapOrdersList(data);
+      if (!arr.length) break;
+      all.push(...arr);
+    } catch {
+      break;
+    }
+  }
+  return all;
+}
+
+async function auditOrder(order) {
+  const issues = [];
+  const fulfillments = Array.isArray(order?.fulfillments) ? order.fulfillments : [];
+
+  if (!fulfillments.length) {
+    issues.push("missing_fulfillment");
+  }
+
+  const rows = [];
+  for (const f of fulfillments.length ? fulfillments : [null]) {
+    const tracking_number = f?.tracking_number || f?.tracking_no || null;
+    const tracking_company = normalizeCarrier(f?.tracking_company || order?.tracking_company || null);
+    const tracking_url = f?.tracking_url || null;
+    const detected = detectCarrierByNumber(tracking_number);
+    const carrier_mismatch = detected && tracking_company && detected !== tracking_company;
+
+    if (!tracking_number) issues.push("missing_tracking_number");
+    if (tracking_number && !detected && !tracking_company) issues.push("unknown_carrier_pattern");
+
+    // check url
+    let urlCheck = { ok: false, status: 0 };
+    if (tracking_url) {
+      urlCheck = await checkTrackingUrl(tracking_url);
+      if (!urlCheck.ok) issues.push("tracking_url_not_ok");
+    } else {
+      issues.push("missing_tracking_url");
+    }
+
+    rows.push({
+      order_id: order.id ?? null,
+      number: order.number ?? null,
+      created_at: order.created_at ?? null,
+      customer_email: (order.customer?.email || order.email || order.contact_email || "").toLowerCase(),
+      fulfillment_status_raw: order.fulfillment_status || f?.status || null,
+      fulfillment_status_friendly: friendlyStatus(order.fulfillment_status || f?.status || null),
+      tracking_number: tracking_number || "",
+      carrier_detected: detected || "",
+      carrier_claimed: tracking_company || "",
+      carrier_mismatch: !!carrier_mismatch,
+      tracking_url: tracking_url || "",
+      tracking_url_ok: urlCheck.ok,
+      tracking_url_status: urlCheck.status,
+      delivered_like: isDeliveredLike(order.fulfillment_status || f?.status),
+    });
+  }
+
+  return { rows, issues: [...new Set(issues)] };
+}
+
