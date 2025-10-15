@@ -554,6 +554,75 @@ app.get("/api/audit-shipments", async (req, res) => {
   }
 });
 
+// ==== ROTA STREAMING: CSV linha a linha (evita timeout 502) ====
+app.get("/api/audit-shipments-stream", async (req, res) => {
+  try {
+    const limit = Number(req.query.limit || 0);                 // 0 = tudo
+    const lang = String(req.query.lang || "en").toLowerCase();  // en | ptbr
+    const deep = String(req.query.deep || "0") === "1";         // deep check
+    const isPt = lang === "ptbr";
+
+    const headersEn = [
+      "order_id","number","created_at","customer_email",
+      "fulfillment_status_raw","fulfillment_status_friendly",
+      "tracking_number","carrier_detected","carrier_claimed","carrier_mismatch",
+      "tracking_url","tracking_url_ok","tracking_url_status",
+      "tracking_page_valid","tracking_detected_status","status_conflict",
+      "delivered_like"
+    ];
+    const headersPt = [
+      "ID do pedido","Número","Criado em","E-mail do cliente",
+      "Status (original)","Status (amigável)",
+      "Código de rastreio","Transportadora detectada","Transportadora informada","Transportadora não confere",
+      "URL de rastreio","URL OK","HTTP da URL",
+      "Página de rastreio válida","Status detectado na página","Conflito de status",
+      "Parece entregue"
+    ];
+    const keyOrder = [
+      "order_id","number","created_at","customer_email",
+      "fulfillment_status_raw","fulfillment_status_friendly",
+      "tracking_number","carrier_detected","carrier_claimed","carrier_mismatch",
+      "tracking_url","tracking_url_ok","tracking_url_status",
+      "tracking_page_valid","tracking_detected_status","status_conflict",
+      "delivered_like"
+    ];
+    const ynPtLoc = (v) => (v ? "Sim" : "Não");
+    const esc = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+
+    res.setHeader("Content-Type", "text/csv; charset=utf-8");
+    const fname = isPt ? "auditoria_envios_stream.csv" : "shipment_audit_stream.csv";
+    res.setHeader("Content-Disposition", `attachment; filename="${fname}"`);
+    res.setHeader("Transfer-Encoding", "chunked");
+
+    res.write((isPt ? headersPt : headersEn).join(",") + "\n");
+
+    const ordersAll = await listAllOrdersPaged();
+    const scoped = limit > 0 ? ordersAll.slice(0, limit) : ordersAll;
+
+    for (const o of scoped) {
+      const audit = await auditOrder(o, lang, deep);
+      for (const r of audit.rows) {
+        const out = keyOrder.map((k) => {
+          let v = r[k];
+          if (isPt && (k === "tracking_url_ok" || k === "carrier_mismatch" || k === "status_conflict" || k === "tracking_page_valid" || k === "delivered_like")) {
+            v = ynPtLoc(!!v);
+          }
+          return esc(v);
+        }).join(",");
+        res.write(out + "\n");
+      }
+      if (typeof res.flush === "function") { try { res.flush(); } catch(_){} }
+    }
+
+    res.end();
+  } catch (e) {
+    try {
+      res.write(`\n"ERRO","${String(e?.message || e).replace(/"/g,'""')}"\n`);
+    } catch(_) {}
+    res.end();
+  }
+});
+
 // ====== START ======
 app.listen(SERVER_PORT, () => {
   console.log(`✅ API ativa na porta ${SERVER_PORT}`);
