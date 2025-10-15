@@ -32,7 +32,7 @@ app.use(
   })
 );
 
-// (opcional) JSON “bonito” ao visualizar no navegador
+// JSON identado quando visto no navegador
 app.set("json spaces", 2);
 
 // ====== UTILS ======
@@ -71,7 +71,7 @@ function unwrapOrder(obj) {
 
 function unwrapOrdersList(obj) {
   if (Array.isArray(obj)) return obj;
-  if (obj?.orders?.data && Array.isArray(obj.orders.data)) return obj.orders.data; // formato da sua loja
+  if (obj?.orders?.data && Array.isArray(obj.orders.data)) return obj.orders.data; // formato comum da CartPanda
   if (obj?.orders && Array.isArray(obj.orders)) return obj.orders;
   if (obj?.data && Array.isArray(obj.data)) return obj.data;
   return [];
@@ -222,6 +222,79 @@ function isDeliveredLike(status) {
   return s.includes("delivered") || s.includes("delivered scan") || s === "fully fulfilled";
 }
 
+// ====== DEEP CHECK (baixa a página e procura mensagens/estados) ======
+async function fetchTextWithTimeout(url, timeoutMs = 12000) {
+  const controller = new AbortController();
+  const t = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const r = await fetch(url, { method: "GET", signal: controller.signal });
+    const text = await r.text();
+    clearTimeout(t);
+    return { ok: r.ok, status: r.status || 0, text };
+  } catch (e) {
+    clearTimeout(t);
+    return { ok: false, status: 0, text: "" };
+  }
+}
+const normTxt = (s) => String(s || "").toLowerCase().replace(/\s+/g, " ").trim();
+
+function parseCarrierText(carrier, htmlText) {
+  const t = normTxt(htmlText);
+  const res = { pageValid: true, detectedStatus: null };
+
+  if (!t) { res.pageValid = false; return res; }
+
+  switch (carrier) {
+    case "DHL": // DHL eCommerce / Globalmail
+      if (t.includes("no results found") || t.includes("no tracking results") || t.includes("not found")) {
+        res.pageValid = false; break;
+      }
+      if (t.includes("delivered")) res.detectedStatus = "Delivered";
+      else if (t.includes("in transit")) res.detectedStatus = "In Transit";
+      else if (t.includes("processed")) res.detectedStatus = "Processed";
+      else if (t.includes("pre-transit")) res.detectedStatus = "Pre-Transit";
+      break;
+
+    case "USPS":
+      if (t.includes("could not locate the tracking information") || t.includes("label created, not yet in system")) {
+        res.pageValid = false; break;
+      }
+      if (t.includes("delivered")) res.detectedStatus = "Delivered";
+      else if (t.includes("out for delivery")) res.detectedStatus = "Out for Delivery";
+      else if (t.includes("in transit")) res.detectedStatus = "In Transit";
+      else if (t.includes("pre-shipment")) res.detectedStatus = "Pre-Shipment";
+      break;
+
+    case "UPS":
+      if (t.includes("we could not locate the shipment details") || t.includes("unable to track the shipment")) {
+        res.pageValid = false; break;
+      }
+      if (t.includes("delivered")) res.detectedStatus = "Delivered";
+      else if (t.includes("in transit")) res.detectedStatus = "In Transit";
+      break;
+
+    case "FedEx":
+      if (t.includes("no information available") || t.includes("not found") || t.includes("unable to retrieve tracking information")) {
+        res.pageValid = false; break;
+      }
+      if (t.includes("delivered")) res.detectedStatus = "Delivered";
+      else if (t.includes("in transit")) res.detectedStatus = "In Transit";
+      break;
+
+    default:
+      if (t.includes("no results") || t.includes("not found")) res.pageValid = false;
+  }
+
+  return res;
+}
+
+async function deepTrackingCheck(carrier, url) {
+  const fetchRes = await fetchTextWithTimeout(url, 12000);
+  if (!fetchRes.ok) return { pageValid: false, detectedStatus: null, httpStatus: fetchRes.status };
+  const parsed = parseCarrierText(carrier, fetchRes.text);
+  return { ...parsed, httpStatus: fetchRes.status };
+}
+
 // ====== CSV (EN/PT) ======
 const ynPt = (v) => (v ? "Sim" : "Não");
 function rowsToCsvLocalized(rows, lang = "en") {
@@ -230,20 +303,26 @@ function rowsToCsvLocalized(rows, lang = "en") {
     "order_id","number","created_at","customer_email",
     "fulfillment_status_raw","fulfillment_status_friendly",
     "tracking_number","carrier_detected","carrier_claimed","carrier_mismatch",
-    "tracking_url","tracking_url_ok","tracking_url_status","delivered_like"
+    "tracking_url","tracking_url_ok","tracking_url_status",
+    "tracking_page_valid","tracking_detected_status","status_conflict",
+    "delivered_like"
   ];
   const headersPt = [
     "ID do pedido","Número","Criado em","E-mail do cliente",
     "Status (original)","Status (amigável)",
     "Código de rastreio","Transportadora detectada","Transportadora informada","Transportadora não confere",
-    "URL de rastreio","URL OK","HTTP da URL","Parece entregue"
+    "URL de rastreio","URL OK","HTTP da URL",
+    "Página de rastreio válida","Status detectado na página","Conflito de status",
+    "Parece entregue"
   ];
   const headers = isPt ? headersPt : headersEn;
   const keyOrder = [
     "order_id","number","created_at","customer_email",
     "fulfillment_status_raw","fulfillment_status_friendly",
     "tracking_number","carrier_detected","carrier_claimed","carrier_mismatch",
-    "tracking_url","tracking_url_ok","tracking_url_status","delivered_like"
+    "tracking_url","tracking_url_ok","tracking_url_status",
+    "tracking_page_valid","tracking_detected_status","status_conflict",
+    "delivered_like"
   ];
   const esc = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
 
@@ -251,7 +330,7 @@ function rowsToCsvLocalized(rows, lang = "en") {
   for (const r of rows) {
     const out = keyOrder.map((k) => {
       let v = r[k];
-      if (isPt && (k === "tracking_url_ok" || k === "delivered_like" || k === "carrier_mismatch")) {
+      if (isPt && (k === "tracking_url_ok" || k === "carrier_mismatch" || k === "status_conflict" || k === "tracking_page_valid" || k === "delivered_like")) {
         v = ynPt(!!v);
       }
       return esc(v);
@@ -281,7 +360,7 @@ async function listAllOrdersPaged() {
   return all;
 }
 
-async function auditOrder(order, lang = "en") {
+async function auditOrder(order, lang = "en", deep = false) {
   const issues = [];
   const fulfillments = Array.isArray(order?.fulfillments) ? order.fulfillments : [];
   if (!fulfillments.length) issues.push("missing_fulfillment");
@@ -297,6 +376,7 @@ async function auditOrder(order, lang = "en") {
     if (!tracking_number) issues.push("missing_tracking_number");
     if (tracking_number && !detected && !tracking_company) issues.push("unknown_carrier_pattern");
 
+    // check URL (HEAD/GET)
     let urlCheck = { ok: false, status: 0 };
     if (tracking_url) {
       urlCheck = await checkTrackingUrl(tracking_url);
@@ -305,8 +385,25 @@ async function auditOrder(order, lang = "en") {
       issues.push("missing_tracking_url");
     }
 
+    // deep check
+    let pageValid = null;
+    let detectedStatus = null;
+    if (deep && tracking_url) {
+      const deepRes = await deepTrackingCheck(tracking_company || detected || "", tracking_url);
+      pageValid = deepRes.pageValid;
+      detectedStatus = deepRes.detectedStatus;
+      if (pageValid === false) issues.push("tracking_page_invalid");
+    }
+
     const rawStatus = order.fulfillment_status || f?.status || null;
     const friendly = (lang === "ptbr") ? friendlyStatusPt(rawStatus) : friendlyStatus(rawStatus);
+
+    // conflito: loja diz entregue, página inválida / não entregue
+    let status_conflict = false;
+    const deliveredLike = isDeliveredLike(rawStatus);
+    if (deep && deliveredLike && pageValid === false) status_conflict = true;
+    if (deep && deliveredLike && detectedStatus && !/delivered/i.test(detectedStatus)) status_conflict = true;
+    if (status_conflict) issues.push("status_conflict");
 
     rows.push({
       order_id: order.id ?? null,
@@ -322,7 +419,10 @@ async function auditOrder(order, lang = "en") {
       tracking_url: tracking_url || "",
       tracking_url_ok: urlCheck.ok,
       tracking_url_status: urlCheck.status,
-      delivered_like: isDeliveredLike(rawStatus),
+      tracking_page_valid: pageValid,
+      tracking_detected_status: detectedStatus,
+      status_conflict,
+      delivered_like: deliveredLike,
     });
   }
 
@@ -407,9 +507,10 @@ app.get("/api/_diag/orders_shape", async (req, res) => {
 // ====== ROTA DE AUDITORIA EM MASSA ======
 app.get("/api/audit-shipments", async (req, res) => {
   try {
-    const limit = Number(req.query.limit || 0);              // 0 = tudo
+    const limit = Number(req.query.limit || 0);                 // 0 = tudo
     const download = String(req.query.download || "").toLowerCase() === "csv";
-    const lang = String(req.query.lang || "en").toLowerCase(); // en | ptbr
+    const lang = String(req.query.lang || "en").toLowerCase();  // en | ptbr
+    const deep = String(req.query.deep || "0") === "1";         // deep check
 
     const orders = await listAllOrdersPaged();
     const scoped = limit > 0 ? orders.slice(0, limit) : orders;
@@ -422,7 +523,7 @@ app.get("/api/audit-shipments", async (req, res) => {
     };
 
     for (const o of scoped) {
-      const audit = await auditOrder(o, lang);
+      const audit = await auditOrder(o, lang, deep);
       rows.push(...audit.rows);
       if (audit.issues.length) {
         summary.with_issues++;
@@ -445,8 +546,8 @@ app.get("/api/audit-shipments", async (req, res) => {
       sample: rows.slice(0, 20),
       note:
         lang === "ptbr"
-          ? "Use ?download=csv&lang=ptbr para baixar o relatório completo."
-          : "Use ?download=csv to download the full report."
+          ? "Use ?download=csv&lang=ptbr para baixar o relatório completo. Acrescente deep=1 para verificação profunda."
+          : "Use ?download=csv to download the full report. Add deep=1 for deep verification."
     });
   } catch (e) {
     return res.status(500).json({ error: "audit_failed", detail: String(e?.message || e) });
