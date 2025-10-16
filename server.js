@@ -16,11 +16,8 @@ const API_BASE = `https://accounts.cartpanda.com/api/${CARTPANDA_SHOP_SLUG}`;
 const AUTH = { Authorization: `Bearer ${CARTPANDA_TOKEN}` };
 const SERVER_PORT = Number(PORT || 3000);
 
-// CORS (autorize seu domínio)
-const ALLOWED_ORIGINS = [
-  "https://nervlief6.com",
-  "https://www.nervlief6.com",
-];
+// CORS (autorize seu domínio do site público)
+const ALLOWED_ORIGINS = ["https://nervlief6.com", "https://www.nervlief6.com"];
 app.use(
   cors({
     origin: (origin, cb) => {
@@ -32,7 +29,7 @@ app.use(
   })
 );
 
-// JSON identado quando visto no navegador
+// JSON identado quando visto no navegador (debug)
 app.set("json spaces", 2);
 
 // ====== UTILS ======
@@ -68,10 +65,9 @@ function unwrapOrder(obj) {
   if (obj && obj.order && typeof obj.order === "object") return obj.order;
   return obj;
 }
-
 function unwrapOrdersList(obj) {
   if (Array.isArray(obj)) return obj;
-  if (obj?.orders?.data && Array.isArray(obj.orders.data)) return obj.orders.data; // formato comum da CartPanda
+  if (obj?.orders?.data && Array.isArray(obj.orders.data)) return obj.orders.data;
   if (obj?.orders && Array.isArray(obj.orders)) return obj.orders;
   if (obj?.data && Array.isArray(obj.data)) return obj.data;
   return [];
@@ -92,7 +88,7 @@ async function fetchOrderByAnyId(idOrNumber) {
 
   for (const alt of [
     `${API_BASE}/orders?number=${encodeURIComponent(idOrNumber)}`,
-    `${API_BASE}/orders?search=${encodeURIComponent(idOrNumber)}`
+    `${API_BASE}/orders?search=${encodeURIComponent(idOrNumber)}`,
   ]) {
     try {
       const data = await httpJson(alt);
@@ -100,17 +96,15 @@ async function fetchOrderByAnyId(idOrNumber) {
       if (arr.length) return arr[0];
     } catch (_) {}
   }
-
   throw new Error(`Pedido não encontrado: ${idOrNumber}`);
 }
 
-/** Lista por e-mail, com filtros e paginação completa se necessário */
+/** Lista por e-mail (busca + fallback paginação total) */
 async function listOrdersRobust(email) {
   const results = [];
-
   for (const q of [
     `${API_BASE}/orders?search=${encodeURIComponent(email)}`,
-    `${API_BASE}/orders?email=${encodeURIComponent(email)}`
+    `${API_BASE}/orders?email=${encodeURIComponent(email)}`,
   ]) {
     try {
       const data = await httpJson(q);
@@ -121,26 +115,20 @@ async function listOrdersRobust(email) {
 
   if (results.length === 0) {
     const first = await httpJson(`${API_BASE}/orders?page=1`);
-    const firstPageItems = unwrapOrdersList(first);
-    results.push(...firstPageItems);
-
+    const firstItems = unwrapOrdersList(first);
+    results.push(...firstItems);
     const lastPage =
-      (first?.orders && typeof first.orders.last_page === "number")
-        ? first.orders.last_page
-        : 1;
+      (first?.orders && typeof first.orders.last_page === "number") ? first.orders.last_page : 1;
 
-    for (let page = 2; page <= lastPage; page++) {
+    for (let p = 2; p <= lastPage; p++) {
       try {
-        const data = await httpJson(`${API_BASE}/orders?page=${page}`);
+        const data = await httpJson(`${API_BASE}/orders?page=${p}`);
         const arr = unwrapOrdersList(data);
         if (!arr.length) break;
         results.push(...arr);
-      } catch (_) {
-        break;
-      }
+      } catch (_) { break; }
     }
   }
-
   return results;
 }
 
@@ -182,12 +170,10 @@ function friendlyStatusPt(raw) {
 function detectCarrierByNumber(n) {
   const s = String(n || "").trim();
   const sUp = s.toUpperCase();
-
-  if (/^1Z[0-9A-Z]{16}$/.test(sUp)) return "UPS";             // UPS
-  if (/^[0-9]{20,22}$/.test(s)) return "USPS";                // USPS (20–22 dígitos)
-  if (/^(\d{12}|\d{15}|\d{20})$/.test(s)) return "FedEx";     // FedEx (heurística)
-  if (/^[A-Z]{2}\d{9}BR$/.test(sUp)) return "Correios";       // Correios (BR)
-
+  if (/^1Z[0-9A-Z]{16}$/.test(sUp)) return "UPS";
+  if (/^[0-9]{20,22}$/.test(s)) return "USPS";
+  if (/^(\d{12}|\d{15}|\d{20})$/.test(s)) return "FedEx";      // heurística
+  if (/^[A-Z]{2}\d{9}BR$/.test(sUp)) return "Correios";
   return null;
 }
 function normalizeCarrier(c) {
@@ -222,18 +208,21 @@ function isDeliveredLike(status) {
   return s.includes("delivered") || s.includes("delivered scan") || s === "fully fulfilled";
 }
 
-// ====== DEEP CHECK (baixa a página e procura mensagens/estados) ======
-async function fetchTextWithTimeout(url, timeoutMs = 12000) {
-  const controller = new AbortController();
-  const t = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const r = await fetch(url, { method: "GET", signal: controller.signal });
-    const text = await r.text();
-    clearTimeout(t);
-    return { ok: r.ok, status: r.status || 0, text };
-  } catch (e) {
-    clearTimeout(t);
-    return { ok: false, status: 0, text: "" };
+// ====== DEEP CHECK (baixa a página e interpreta) ======
+async function fetchTextWithTimeout(url, timeoutMs = 7000, retries = 1) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const controller = new AbortController();
+    const t = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const r = await fetch(url, { method: "GET", signal: controller.signal });
+      const text = await r.text();
+      clearTimeout(t);
+      return { ok: r.ok, status: r.status || 0, text };
+    } catch (e) {
+      clearTimeout(t);
+      if (attempt === retries) return { ok: false, status: 0, text: "" };
+      await new Promise((res) => setTimeout(res, 300)); // backoff curto
+    }
   }
 }
 const normTxt = (s) => String(s || "").toLowerCase().replace(/\s+/g, " ").trim();
@@ -241,11 +230,10 @@ const normTxt = (s) => String(s || "").toLowerCase().replace(/\s+/g, " ").trim()
 function parseCarrierText(carrier, htmlText) {
   const t = normTxt(htmlText);
   const res = { pageValid: true, detectedStatus: null };
-
   if (!t) { res.pageValid = false; return res; }
 
   switch (carrier) {
-    case "DHL": // DHL eCommerce / Globalmail
+    case "DHL":
       if (t.includes("no results found") || t.includes("no tracking results") || t.includes("not found")) {
         res.pageValid = false; break;
       }
@@ -254,7 +242,6 @@ function parseCarrierText(carrier, htmlText) {
       else if (t.includes("processed")) res.detectedStatus = "Processed";
       else if (t.includes("pre-transit")) res.detectedStatus = "Pre-Transit";
       break;
-
     case "USPS":
       if (t.includes("could not locate the tracking information") || t.includes("label created, not yet in system")) {
         res.pageValid = false; break;
@@ -264,7 +251,6 @@ function parseCarrierText(carrier, htmlText) {
       else if (t.includes("in transit")) res.detectedStatus = "In Transit";
       else if (t.includes("pre-shipment")) res.detectedStatus = "Pre-Shipment";
       break;
-
     case "UPS":
       if (t.includes("we could not locate the shipment details") || t.includes("unable to track the shipment")) {
         res.pageValid = false; break;
@@ -272,7 +258,6 @@ function parseCarrierText(carrier, htmlText) {
       if (t.includes("delivered")) res.detectedStatus = "Delivered";
       else if (t.includes("in transit")) res.detectedStatus = "In Transit";
       break;
-
     case "FedEx":
       if (t.includes("no information available") || t.includes("not found") || t.includes("unable to retrieve tracking information")) {
         res.pageValid = false; break;
@@ -280,16 +265,13 @@ function parseCarrierText(carrier, htmlText) {
       if (t.includes("delivered")) res.detectedStatus = "Delivered";
       else if (t.includes("in transit")) res.detectedStatus = "In Transit";
       break;
-
     default:
       if (t.includes("no results") || t.includes("not found")) res.pageValid = false;
   }
-
   return res;
 }
-
 async function deepTrackingCheck(carrier, url) {
-  const fetchRes = await fetchTextWithTimeout(url, 12000);
+  const fetchRes = await fetchTextWithTimeout(url, 7000, 1);
   if (!fetchRes.ok) return { pageValid: false, detectedStatus: null, httpStatus: fetchRes.status };
   const parsed = parseCarrierText(carrier, fetchRes.text);
   return { ...parsed, httpStatus: fetchRes.status };
@@ -353,13 +335,36 @@ async function listAllOrdersPaged() {
       const arr = unwrapOrdersList(data);
       if (!arr.length) break;
       all.push(...arr);
-    } catch {
-      break;
-    }
+    } catch { break; }
   }
   return all;
 }
 
+// ====== Helpers de paginação por página ======
+async function fetchOrdersPage(page = 1) {
+  const data = await httpJson(`${API_BASE}/orders?page=${page}`);
+  return { items: unwrapOrdersList(data), raw: data };
+}
+async function fetchOrdersPageRange(start = 1, end = 1) {
+  const out = [];
+  for (let p = start; p <= end; p++) {
+    try {
+      const { items } = await fetchOrdersPage(p);
+      if (!items.length) break;
+      out.push(...items);
+    } catch { break; }
+  }
+  return out;
+}
+async function getLastPage() {
+  try {
+    const { raw } = await fetchOrdersPage(1);
+    const last = raw?.orders?.last_page;
+    return typeof last === "number" && last > 0 ? last : 1;
+  } catch { return 1; }
+}
+
+// ====== AUDIT de um pedido ======
 async function auditOrder(order, lang = "en", deep = false) {
   const issues = [];
   const fulfillments = Array.isArray(order?.fulfillments) ? order.fulfillments : [];
@@ -376,7 +381,6 @@ async function auditOrder(order, lang = "en", deep = false) {
     if (!tracking_number) issues.push("missing_tracking_number");
     if (tracking_number && !detected && !tracking_company) issues.push("unknown_carrier_pattern");
 
-    // check URL (HEAD/GET)
     let urlCheck = { ok: false, status: 0 };
     if (tracking_url) {
       urlCheck = await checkTrackingUrl(tracking_url);
@@ -398,7 +402,7 @@ async function auditOrder(order, lang = "en", deep = false) {
     const rawStatus = order.fulfillment_status || f?.status || null;
     const friendly = (lang === "ptbr") ? friendlyStatusPt(rawStatus) : friendlyStatus(rawStatus);
 
-    // conflito: loja diz entregue, página inválida / não entregue
+    // conflito: loja diz entregue, página inválida / não-entregue
     let status_conflict = false;
     const deliveredLike = isDeliveredLike(rawStatus);
     if (deep && deliveredLike && pageValid === false) status_conflict = true;
@@ -431,7 +435,7 @@ async function auditOrder(order, lang = "en", deep = false) {
 
 // ====== ROTAS PÚBLICAS ======
 
-// A) Página: buscar último pedido por e-mail
+// A) Rastrear último pedido pelo e-mail (para sua página pública)
 app.get("/api/order-by-email", async (req, res) => {
   try {
     const { email, debug } = req.query;
@@ -463,14 +467,13 @@ app.get("/api/order-by-email", async (req, res) => {
       resp.debug_emails_encontrados = extractEmails(lastOrder);
       resp.debug_keys = Object.keys(lastOrder || {});
     }
-
     return res.json(resp);
   } catch (e) {
     return res.status(500).json({ error: "Falha interna.", detail: String(e?.message || e) });
   }
 });
 
-// B) Diagnósticos
+// B) Diagnósticos (ajuda a entender formato da API)
 app.get("/api/_diag/orders_raw", async (req, res) => {
   try {
     const page = req.query.page || "1";
@@ -504,7 +507,7 @@ app.get("/api/_diag/orders_shape", async (req, res) => {
   }
 });
 
-// ====== ROTA DE AUDITORIA EM MASSA ======
+// ====== ROTA DE AUDITORIA (JSON + CSV de uma vez) ======
 app.get("/api/audit-shipments", async (req, res) => {
   try {
     const limit = Number(req.query.limit || 0);                 // 0 = tudo
@@ -516,20 +519,14 @@ app.get("/api/audit-shipments", async (req, res) => {
     const scoped = limit > 0 ? orders.slice(0, limit) : orders;
 
     const rows = [];
-    const summary = {
-      total_orders_scanned: scoped.length,
-      with_issues: 0,
-      issue_counts: {}
-    };
+    const summary = { total_orders_scanned: scoped.length, with_issues: 0, issue_counts: {} };
 
     for (const o of scoped) {
       const audit = await auditOrder(o, lang, deep);
       rows.push(...audit.rows);
       if (audit.issues.length) {
         summary.with_issues++;
-        for (const k of audit.issues) {
-          summary.issue_counts[k] = (summary.issue_counts[k] || 0) + 1;
-        }
+        for (const k of audit.issues) summary.issue_counts[k] = (summary.issue_counts[k] || 0) + 1;
       }
     }
 
@@ -547,20 +544,24 @@ app.get("/api/audit-shipments", async (req, res) => {
       note:
         lang === "ptbr"
           ? "Use ?download=csv&lang=ptbr para baixar o relatório completo. Acrescente deep=1 para verificação profunda."
-          : "Use ?download=csv to download the full report. Add deep=1 for deep verification."
+          : "Use ?download=csv to download the full report. Add deep=1 for deep verification.",
     });
   } catch (e) {
     return res.status(500).json({ error: "audit_failed", detail: String(e?.message || e) });
   }
 });
 
-// ==== ROTA STREAMING: CSV linha a linha (evita timeout 502) ====
+// ====== ROTA STREAMING V2 (páginas + heartbeat) ======
 app.get("/api/audit-shipments-stream", async (req, res) => {
   try {
-    const limit = Number(req.query.limit || 0);                 // 0 = tudo
     const lang = String(req.query.lang || "en").toLowerCase();  // en | ptbr
-    const deep = String(req.query.deep || "0") === "1";         // deep check
+    const deep = String(req.query.deep || "0") === "1";
     const isPt = lang === "ptbr";
+
+    // ?start_page=1&end_page=5  OU  ?limit=300
+    const startPage = Number(req.query.start_page || 0);
+    const endPage   = Number(req.query.end_page   || 0);
+    const limit     = Number(req.query.limit      || 0);
 
     const headersEn = [
       "order_id","number","created_at","customer_email",
@@ -596,29 +597,60 @@ app.get("/api/audit-shipments-stream", async (req, res) => {
 
     res.write((isPt ? headersPt : headersEn).join(",") + "\n");
 
-    const ordersAll = await listAllOrdersPaged();
-    const scoped = limit > 0 ? ordersAll.slice(0, limit) : ordersAll;
+    // heartbeat a cada 10s
+    const hb = setInterval(() => { try { res.write(`# heartbeat ${Date.now()}\n`); } catch {} }, 10000);
+    res.on("close", () => clearInterval(hb));
+    res.on("finish", () => clearInterval(hb));
 
-    for (const o of scoped) {
-      const audit = await auditOrder(o, lang, deep);
-      for (const r of audit.rows) {
-        const out = keyOrder.map((k) => {
-          let v = r[k];
-          if (isPt && (k === "tracking_url_ok" || k === "carrier_mismatch" || k === "status_conflict" || k === "tracking_page_valid" || k === "delivered_like")) {
-            v = ynPtLoc(!!v);
+    let processed = 0;
+
+    const writeOrders = async (orders) => {
+      for (const o of orders) {
+        try {
+          const audit = await auditOrder(o, lang, deep);
+          for (const r of audit.rows) {
+            const out = keyOrder.map((k) => {
+              let v = r[k];
+              if (isPt && (k === "tracking_url_ok" || k === "carrier_mismatch" || k === "status_conflict" || k === "tracking_page_valid" || k === "delivered_like")) {
+                v = ynPtLoc(!!v);
+              }
+              return esc(v);
+            }).join(",");
+            res.write(out + "\n");
+            processed++;
+            if (limit > 0 && processed >= limit) return true;
           }
-          return esc(v);
-        }).join(",");
-        res.write(out + "\n");
+        } catch (e) {
+          try { res.write(esc("ERRO POR PEDIDO") + "," + esc(String(e?.message || e)) + "\n"); } catch {}
+        }
       }
-      if (typeof res.flush === "function") { try { res.flush(); } catch(_){} }
+      return false;
+    };
+
+    if (startPage > 0 && endPage >= startPage) {
+      // modo por páginas explícitas
+      for (let p = startPage; p <= endPage; p++) {
+        const { items } = await fetchOrdersPage(p);
+        if (!items.length) break;
+        const stop = await writeOrders(items);
+        if (stop) break;
+        if (typeof res.flush === "function") { try { res.flush(); } catch {} }
+      }
+    } else {
+      // modo por limite (da página 1 até acabar/atingir limite)
+      const last = await getLastPage();
+      for (let p = 1; p <= last; p++) {
+        const { items } = await fetchOrdersPage(p);
+        if (!items.length) break;
+        const stop = await writeOrders(items);
+        if (stop) break;
+        if (typeof res.flush === "function") { try { res.flush(); } catch {} }
+      }
     }
 
     res.end();
   } catch (e) {
-    try {
-      res.write(`\n"ERRO","${String(e?.message || e).replace(/"/g,'""')}"\n`);
-    } catch(_) {}
+    try { res.write(`\n"ERRO_FINAL","${String(e?.message || e).replace(/"/g,'""')}"\n`); } catch {}
     res.end();
   }
 });
