@@ -1,7 +1,7 @@
 /* My Natural Care — Livro ilustrado: leitura linear e progressiva para todas as idades. */
 (function () {
   'use strict';
-  const DATA_URL='/assets/neuropathy-guide-v2.json';
+  const DATA_URL='/assets/neuropathy-guide-en-v3.json';
   const BATCH=4;
   const wellness=document.getElementById('habitsGuideLibrary');
   if(!wellness)return;
@@ -10,13 +10,13 @@
   const escapeHTML=x=>String(x==null?'':x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const illustrated=x=>/^\/assets\/care-icons\/[a-z-]+\.svg$/.test(String(x||''));
   const img=x=>illustrated(x.image)?x.image:'/assets/care-icons/hospital.svg';
-  const safeTitle=x=>escapeHTML(String(x||'').toLocaleLowerCase('pt-BR').replace(/^./,v=>v.toLocaleUpperCase('pt-BR')));
+  const safeTitle=x=>escapeHTML(String(x||'').toLocaleLowerCase('en-US').replace(/^./,v=>v.toLocaleUpperCase('en-US')));
   const groupsOf=(source)=>{
     const rows=String(source||'').replace(/\r/g,'').split('\n');
     const groups=[{title:'',lines:[]}];
     for(const line of rows){
       const t=line.trim();
-      if(t.length>=6&&t.length<=115&&t===t.toLocaleUpperCase('pt-BR')&&/[A-ZÁÉÍÓÚÂÊÔÃÕÇ]/.test(t)&&!/^(?:[-•]|\d)/.test(t)&&!t.endsWith('.')){
+      if(t.length>=6&&t.length<=115&&t===t.toLocaleUpperCase('en-US')&&/[A-ZÁÉÍÓÚÂÊÔÃÕÇ]/.test(t)&&!/^(?:[-•]|\d)/.test(t)&&!t.endsWith('.')){
         groups.push({title:t,lines:[]});
       }else groups[groups.length-1].lines.push(line);
     }
@@ -34,7 +34,7 @@
       if(m){appendList('ul',m[1]);continue}
       m=line.match(/^(\d{1,2})[.)]\s+(.+)$/);
       if(m){appendList('ol',m[2]);continue}
-      m=line.match(/^(Dia\s+\d{1,2}:|Segunda\s*[—–-]|Terça\s*[—–-]|Quarta\s*[—–-]|Quinta\s*[—–-]|Sexta\s*[—–-]|Sábado\s*[—–-]|Domingo\s*[—–-])\s*(.+)$/i);
+      m=line.match(/^(Day\s+\d{1,2}:|Monday\s*[—–-]|Tuesday\s*[—–-]|Wednesday\s*[—–-]|Thursday\s*[—–-]|Friday\s*[—–-]|Saturday\s*[—–-]|Sunday\s*[—–-])\s*(.+)$/i);
       if(m){appendList('ul',m[1]+' '+m[2]);continue}
       flushList();p.push(line);
     }
@@ -48,12 +48,12 @@
       return '<section class="book-section">'+(group.title?'<h4>'+safeTitle(group.title)+'</h4>':'')+body+'</section>';
     }).join('');
     return '<article class="book-chapter" id="mnc-chapter-'+escapeHTML(item.id)+'" aria-labelledby="book-title-'+escapeHTML(item.id)+'">'+
-      '<div class="book-ordinal"><span>CAPÍTULO '+number+' / '+guide.chapters.length+'</span><span>'+escapeHTML(item.category)+'</span></div>'+
+      '<div class="book-ordinal"><span>CHAPTER '+number+' / '+guide.chapters.length+'</span><span>'+escapeHTML(item.category)+'</span></div>'+
       '<header class="book-chapter-header"><div class="book-heading-text"><h3 id="book-title-'+escapeHTML(item.id)+'">'+escapeHTML(item.title)+'</h3>'+
       '<p class="book-summary">'+escapeHTML(item.summary)+'</p></div><figure class="book-illustration">'+
-      '<img src="'+escapeHTML(img(item))+'" alt="Ilustração sobre '+escapeHTML(item.title)+'" width="120" height="120" loading="lazy" decoding="async"><figcaption>Vamos aprender juntos</figcaption></figure></header>'+
-      (item.action?'<aside class="book-today"><strong>✓ Seu pequeno passo de hoje</strong><p>'+escapeHTML(item.action)+'</p></aside>':'')+
-      '<div class="book-chapter-text">'+sections+'</div><div class="book-chapter-foot">Cada cuidado conta. Continue no seu ritmo.</div></article>';
+      '<img src="'+escapeHTML(img(item))+'" alt="Illustration: '+escapeHTML(item.title)+'" width="120" height="120" loading="lazy" decoding="async"><figcaption>Learn together</figcaption></figure></header>'+
+      (item.action?'<aside class="book-today"><strong>✓ Your small step today</strong><p>'+escapeHTML(item.action)+'</p></aside>':'')+
+      '<div class="book-chapter-text">'+sections+'</div><div class="book-chapter-foot">Every small step counts. Continue at your own pace.</div></article>';
   }
   function renderMore(){
     if(!guide||!content)return;
@@ -62,7 +62,7 @@
     content.insertAdjacentHTML('beforeend',guide.chapters.slice(next,stop).map((item,i)=>chapter(item,next+i)).join(''));
     next=stop;
     const label=root.querySelector('#mncBookLoadedCount');
-    if(label)label.textContent=next+' de '+guide.chapters.length+' capítulos prontos para leitura';
+    if(label)label.textContent=next+' of '+guide.chapters.length+' chapters ready to read';
     if(next>=guide.chapters.length){
       if(observer){observer.disconnect();observer=null}
       if(sentinel)sentinel.hidden=true;
@@ -73,15 +73,15 @@
     root.id='mncReadingBook';
     root.className='mnc-book';
     root.innerHTML='<header class="book-cover">'+
-      '<div class="book-cover-top"><span class="book-edition">MY NATURAL CARE · LIVRO DE CUIDADOS</span><span class="book-total">'+guide.chapters.length+' capítulos</span></div>'+
-      '<div class="book-cover-layout"><div><h2>Um cuidado de cada vez.<br><em>Um dia melhor de cada vez.</em></h2>'+
-      '<p>Um guia ilustrado para consultar com calma, aprender atitudes práticas e cuidar de você todos os dias.</p>'+
-      '<div class="book-cover-tip">Role a página para ler o livro. Os capítulos aparecem em sequência, sem precisar abrir cartões.</div></div>'+
-      '<div class="book-cover-art"><img src="/assets/care-icons/foot.svg" width="122" height="122" alt="Ilustração sobre cuidados e proteção dos pés" decoding="async"></div></div>'+
+      '<div class="book-cover-top"><span class="book-edition">MY NATURAL CARE · WELLNESS GUIDE</span><span class="book-total">'+guide.chapters.length+' chapters</span></div>'+
+      '<div class="book-cover-layout"><div><h2>One small step at a time.<br><em>A healthier routine, every day.</em></h2>'+
+      '<p>An illustrated guide to easy daily routines and practical self-care at home.</p>'+
+      '<div class="book-cover-tip">Scroll to explore the guide. All chapters appear in order on one easy-to-read page.</div></div>'+
+      '<div class="book-cover-art"><img src="/assets/care-icons/foot.svg" width="122" height="122" alt="Illustration: cuidados e proteção dos pés" decoding="async"></div></div>'+
       '</header><div class="book-pages" id="mncBookPages"></div>'+
-      '<div class="book-next" id="mncBookNext" aria-live="off"><span class="book-next-symbol" aria-hidden="true">✦</span><p id="mncBookLoadedCount">Preparando sua leitura...</p></div>'+
-      '<footer class="book-ending"><strong>Cuide de você com carinho.</strong><p>Seu bem-estar merece atenção. Mantenha o acompanhamento de saúde, adapte as atividades às suas necessidades e valorize cada passo seguro.</p>'+
-      '<small>Ilustrações: Health Icons (CC0) · Conteúdo educativo.</small></footer>';
+      '<div class="book-next" id="mncBookNext" aria-live="off"><span class="book-next-symbol" aria-hidden="true">✦</span><p id="mncBookLoadedCount">Preparing your guide...</p></div>'+
+      '<footer class="book-ending"><strong>Take care of yourself, one step at a time.</strong><p>Your well-being matters. Follow your care plan, adapt activities to your needs, and celebrate safe steps forward.</p>'+
+      '<small>Illustrations: Health Icons (CC0) · Educational content.</small></footer>';
     content=root.querySelector('#mncBookPages');
     sentinel=root.querySelector('#mncBookNext');
     renderMore();
@@ -99,7 +99,7 @@
   function mount(){
     if(!root){
       if(!guide){
-        wellness.innerHTML='<div class="book-loading"><strong>Preparando seu livro ilustrado...</strong><p>Seu guia prático de cuidados aparecerá aqui.</p></div>';
+        wellness.innerHTML='<div class="book-loading"><strong>Preparing your illustrated guide...</strong><p>Your practical self-care guide will appear here.</p></div>';
         return;
       }
       initBook();
@@ -118,7 +118,7 @@
     });
   }
   function reportError(){
-    const text='<div class="book-loading"><strong>Não foi possível carregar o livro neste momento.</strong><p>Confira sua conexão e tente novamente.</p><button type="button" data-book-retry>Tentar novamente</button></div>';
+    const text='<div class="book-loading"><strong>The guide is not available right now.</strong><p>Check your connection and try again.</p><button type="button" data-book-retry>Try again</button></div>';
     if(!root||!wellness.contains(root))wellness.innerHTML=text;
   }
   async function init(){
@@ -127,9 +127,9 @@
     fetching=(async()=>{
       try{
         const response=await fetch(DATA_URL,{cache:'force-cache',credentials:'same-origin'});
-        if(!response.ok)throw new Error('Não foi possível carregar o conteúdo');
+        if(!response.ok)throw new Error('Unable to load content');
         const data=await response.json();
-        if(!Array.isArray(data.chapters)||data.chapters.length<15||data.chapters.some(x=>!x.title||!x.body))throw new Error('Livro incompleto');
+        if(!Array.isArray(data.chapters)||data.chapters.length<15||data.chapters.some(x=>!x.title||!x.body))throw new Error('Incomplete guide');
         guide=data;
         mount();
       }catch(e){reportError();throw e}
