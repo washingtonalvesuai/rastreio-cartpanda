@@ -3,9 +3,8 @@
   'use strict';
   const DATA_URL='/assets/neuropathy-guide-v2.json';
   const BATCH=4;
-  const care=document.getElementById('careGuidePreview');
   const wellness=document.getElementById('habitsGuideLibrary');
-  if(!care||!wellness)return;
+  if(!wellness)return;
 
   let guide=null, next=0, fetching=null, observer=null, root=null, content=null, sentinel=null;
   const escapeHTML=x=>String(x==null?'':x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -97,26 +96,33 @@
       setTimeout(fill,0);
     }
   }
-  function mount(tab){
-    const target=tab==='habits'?wellness:care;
+  function mount(){
     if(!root){
       if(!guide){
-        target.innerHTML='<div class="book-loading"><strong>Preparando seu livro ilustrado...</strong><p>Seu guia prático de cuidados aparecerá aqui.</p></div>';
+        wellness.innerHTML='<div class="book-loading"><strong>Preparando seu livro ilustrado...</strong><p>Seu guia prático de cuidados aparecerá aqui.</p></div>';
         return;
       }
       initBook();
     }
-    if(root.parentNode!==target){
-      target.replaceChildren(root);
-    }
-    // Capítulos não são duplicados quando o leitor alterna entre as duas abas.
+    if(root.parentNode!==wellness)wellness.replaceChildren(root);
+  }
+  async function openChapter(id){
+    await init();
+    const targetIndex=guide?.chapters?.findIndex(ch=>ch.id===id)??-1;
+    if(targetIndex<0)return;
+    mount();
+    while(next<=targetIndex)renderMore();
+    requestAnimationFrame(()=>{
+      const target=document.getElementById('mnc-chapter-'+id);
+      if(target)target.scrollIntoView({block:'start',behavior:'smooth'});
+    });
   }
   function reportError(){
     const text='<div class="book-loading"><strong>Não foi possível carregar o livro neste momento.</strong><p>Confira sua conexão e tente novamente.</p><button type="button" data-book-retry>Tentar novamente</button></div>';
-    for(const host of [care,wellness])if(!root||!host.contains(root))host.innerHTML=text;
+    if(!root||!wellness.contains(root))wellness.innerHTML=text;
   }
   async function init(){
-    if(guide){mount(document.getElementById('habitsView')?.hidden===false?'habits':'care');return}
+    if(guide){mount();return}
     if(fetching)return fetching;
     fetching=(async()=>{
       try{
@@ -125,7 +131,7 @@
         const data=await response.json();
         if(!Array.isArray(data.chapters)||data.chapters.length<15||data.chapters.some(x=>!x.title||!x.body))throw new Error('Livro incompleto');
         guide=data;
-        mount(document.getElementById('habitsView')?.hidden===false?'habits':'care');
+        mount();
       }catch(e){reportError();throw e}
       finally{fetching=null}
     })();
@@ -134,6 +140,6 @@
   document.addEventListener('click',event=>{
     if(event.target.closest('[data-book-retry]'))init().catch(()=>{});
   });
-  window.MNCGuide={mount,init};
+  window.MNCGuide={mount,init,openChapter};
   init().catch(()=>{});
 })();
