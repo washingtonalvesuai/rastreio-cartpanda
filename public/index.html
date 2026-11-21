@@ -136,12 +136,12 @@
 <main class="app-container"><section id="homeView"><div class="hello"><div><h1>Bem-vindo à sua central de cuidados</h1><p>Seu pedido e suas orientações de bem-estar em um só lugar.</p></div><span class="tiny-email" id="signedEmail"> </span></div>
 <section class="care-home-card" aria-labelledby="careHomeTitle">
  <div><span class="care-home-chip">Meu acompanhamento</span><h2 id="careHomeTitle">Seus cuidados, no seu ritmo</h2>
- <p id="careHomeMessage">Avalie seus hábitos a cada 3 dias e acompanhe sua constância, sem pressão.</p>
+ <p id="careHomeMessage">Acompanhe seus bons hábitos e celebre cada passo da sua rotina de cuidados.</p>
  <div class="care-home-progress"><div class="care-home-progress-top"><span>Score geral de cuidados</span><strong id="careHomeScoreValue">Sem nota</strong></div><div class="care-home-progress-track" role="progressbar" id="careHomeProgress" aria-label="Regularidade geral dos autocuidados" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="careHomeBar"></span></div><span class="care-progress-caption" id="careHomeBarCaption">Uma medida da constância nos cuidados, não da melhora da neuropatia.</span></div>
  <div class="care-home-buttons"><button type="button" class="white-button" data-goto="care">Ver meus cuidados <svg><use href="#ico-arrow"/></svg></button><button type="button" id="careHomeStart" class="big-action" data-open-care-quiz>Fazer minha avaliação</button></div></div>
  <div class="care-home-chip" id="careHomeScore">Ainda sem avaliação</div>
 </section>
-<aside id="careReminder" class="care-reminder" role="status" hidden><div><strong>Está na hora de avaliar seus cuidados</strong><span>Seu check-in de 3 dias está disponível. Você pode continuar usando o aplicativo normalmente.</span></div><div class="care-reminder-actions"><button type="button" class="big-action" data-open-care-quiz>Avaliar agora</button><button type="button" class="secondary-action" id="careDismiss">Depois</button></div></aside>
+<aside id="careReminder" class="care-reminder" role="status" hidden><div><strong>Vamos acompanhar suas conquistas?</strong><span>Que tal celebrar seu progresso? Sua nova avaliação está pronta e leva apenas alguns toques.</span></div><div class="care-reminder-actions"><button type="button" class="big-action" data-open-care-quiz>Avaliar agora</button><button type="button" class="secondary-action" id="careDismiss">Depois</button></div></aside>
 <div class="feature-stage"><div class="banner-track" id="bannerTrack">
 <article class="promo-banner"><div class="promo-content"><div class="promo-kicker">SEU PEDIDO, SEM COMPLICAÇÕES</div><h2>Acompanhe sua entrega com facilidade.</h2><p>Veja o andamento do pedido e acesse o rastreamento da transportadora quando quiser.</p><button class="white-button" data-goto="tracking">Rastrear Meu Pedido <svg><use href="#ico-arrow"/></svg></button></div><div class="promo-deco"><svg><use href="#ico-package"/></svg></div></article>
 <article class="promo-banner guide-banner"><div class="promo-content"><div class="promo-kicker">GUIA DE USO DO PRODUTO</div><h2>Tudo o que você precisa saber.</h2><p>Instruções simples para usar seu produto, sempre à mão.</p><button class="white-button" data-goto="guide">Ver Meu Guia <svg><use href="#ico-arrow"/></svg></button></div><div class="promo-deco"><svg><use href="#ico-book"/></svg></div></article>
@@ -185,31 +185,31 @@
 
 <section id="careView" class="view-content" hidden>
  <div class="page-head"><button class="back-button" type="button" data-goto="home" aria-label="Voltar ao início"><svg style="transform:rotate(180deg)"><use href="#ico-chevron"/></svg></button>
- <div><h1>Meu Plano de Cuidados</h1><p>Pequenos hábitos, acompanhados a cada 3 dias.</p></div></div>
+ <div><h1>Meu Plano de Cuidados</h1><p>Um passo de cada vez para construir hábitos cada vez melhores.</p></div></div>
  <div class="care-panel">
   <div class="care-hero-metrics">
    <div class="care-score-ring" id="careRing"><div class="care-score-inner"><strong id="careTotal">—</strong><span>de 100 pontos</span></div></div>
    <div class="care-score-copy"><h3 id="careStatusTitle">Comece com uma avaliação</h3>
-    <p id="careStatusText">Você pode dar notas simples aos seus hábitos e acompanhar sua evolução de autocuidado.</p>
+    <p id="careStatusText">Acompanhe seus hábitos, reconheça suas conquistas e encontre oportunidades para cuidar ainda melhor de você.</p>
     <div class="care-hint" id="careDueText">Sua primeira avaliação está disponível.</div></div>
   </div>
   <div id="carePillarScores" class="care-pillar-grid" aria-label="Pontuação de cada cuidado"></div>
-  <p class="care-intro">As notas mostram a <strong>regularidade dos cuidados em casa</strong>, não a gravidade ou melhora da neuropatia. Qualquer resultado pode melhorar no seu próprio ritmo.</p>
+  <p class="care-intro">Seu score ajuda a acompanhar a <strong>regularidade dos cuidados em casa</strong>. Cada pequeno hábito é uma oportunidade de fortalecer sua rotina e valorizar seu bem-estar.</p>
  </div>
  <div class="care-panel">
   <h2 style="font-size:23px;margin:0 0 5px">Minhas 2 cápsulas de hoje</h2>
-  <p class="care-intro">Marque apenas depois de tomar as 2 cápsulas conforme o rótulo. Nunca tome uma dose extra para aumentar sua pontuação.</p>
-  <div class="care-daily"><div><strong id="careDailyLabel">Hoje: ainda não marcado</strong><p>Um toque por dia. Salvo neste aparelho.</p></div>
+  <p class="care-intro">Cuidar de você também é manter a rotina do produto. Registre quando tomar as 2 cápsulas conforme o rótulo; não aumente a dose para mudar a pontuação.</p>
+  <div class="care-daily"><div><strong id="careDailyLabel">Hoje: pronto para registrar seus cuidados</strong><p>Um toque por dia. Salvo neste aparelho.</p></div>
    <button type="button" class="big-action" id="careDailyButton" aria-pressed="false">Marcar como tomado hoje</button></div>
-  <p style="font-size:13px;color:var(--muted);margin:0">Se você ainda não recebeu o frasco ou foi orientado a não usar, deixe sem marcar.</p>
+  <p style="font-size:13px;color:var(--muted);margin:0">Ainda não recebeu o produto? Tudo bem! Continue com os outros cuidados e registre as cápsulas quando começar a usá-las conforme orientação.</p>
  </div>
  <div class="care-panel" id="careFormSection">
-  <h2 style="font-size:23px;margin:0 0 8px">Minha avaliação de 3 dias</h2>
-  <p class="care-intro">Responda 6 perguntas simples, uma de cada vez. Você só precisa tocar na resposta; o aplicativo passa para a próxima pergunta automaticamente.</p>
-  <button type="button" id="careStartQuiz" class="big-action care-start" data-open-care-quiz>Começar minha avaliação <svg><use href="#ico-arrow"/></svg></button>
+  <h2 style="font-size:23px;margin:0 0 8px">Meu momento de autocuidado</h2>
+  <p class="care-intro">Reserve um momento para você: são 6 perguntas simples, uma por vez. Toque na resposta e avance automaticamente!</p>
+  <button type="button" id="careStartQuiz" class="big-action care-start" data-open-care-quiz>Quero acompanhar meus cuidados <svg><use href="#ico-arrow"/></svg></button>
  </div>
- <div class="care-panel" id="careWaitSection" hidden><h2 style="font-size:22px;margin:0 0 8px">Avaliação registrada ✓</h2>
- <p class="care-intro" id="careWaitMessage">Continue seus cuidados diariamente. A próxima avaliação aparecerá após 3 dias.</p>
+ <div class="care-panel" id="careWaitSection" hidden><h2 style="font-size:22px;margin:0 0 8px">Parabéns por acompanhar seus cuidados! ✓</h2>
+ <p class="care-intro" id="careWaitMessage">Muito bem! Continue fortalecendo sua rotina. Em 3 dias, você poderá celebrar e acompanhar seu progresso novamente.</p>
  <button class="secondary-action" type="button" data-goto="habits">Rever dicas de cuidados</button></div>
  <div class="care-panel"><h2 style="font-size:22px;margin:0 0 13px">Histórico das minhas avaliações</h2>
   <div id="careHistory" class="care-history"><p class="care-intro">Suas avaliações aparecerão aqui.</p></div>
@@ -248,7 +248,7 @@
  <article class="care-guide-card"><h3>❤️ Cuide das causas e fatores associados</h3><ul><li>Mantenha seu acompanhamento médico e o controle de condições como diabetes.</li><li>Evite fumar e converse com seu profissional de saúde sobre consumo de álcool.</li><li>Procure avaliação para dormência, fraqueza ou feridas novas ou que pioram.</li></ul></article>
  <article class="care-guide-card"><h3>💊 Suplementos com atenção</h3><ul><li>Use as 2 cápsulas por dia conforme o rótulo do seu produto.</li><li>Não duplique doses esquecidas e não combine suplementos sem conferir os ingredientes com um profissional.</li><li>Altas quantidades de vitamina B6 de suplementos podem causar lesão nervosa.</li></ul></article>
 </div>
-<div class="resource-box"><strong>Quando procurar ajuda:</strong> ferida no pé, vermelhidão intensa, inchaço, suspeita de infecção, perda súbita de força ou piora dos sintomas precisam de avaliação profissional. As orientações acima apoiam o autocuidado, mas não comprovam recuperação dos nervos. </div>
+<div class="resource-box"><strong>Quando procurar ajuda:</strong> ferida no pé, vermelhidão intensa, inchaço, suspeita de infecção, perda súbita de força ou piora dos sintomas precisam de avaliação profissional. Cuidar de você com regularidade e manter o acompanhamento profissional são partes importantes de uma rotina de atenção à saúde. </div>
 
 <h3 style="font-size:24px;letter-spacing:-.03em;margin:26px 0 12px">Rotina diária simples</h3>
 <div class="routine-grid">
@@ -277,9 +277,9 @@
   <div id="careQuizDone" class="care-quiz-complete" hidden>
    <div class="care-done-check" aria-hidden="true">✓</div>
    <h2>Avaliação registrada!</h2>
-   <p>Seu score geral de regularidade dos cuidados:</p>
+   <p>Veja como está sua rotina de cuidados:</p>
    <strong id="careQuizFinalScore">—</strong>
-   <p>Que tal continuar com pequenos hábitos todos os dias? Sua próxima avaliação estará disponível em 3 dias.</p>
+   <p>Parabéns por dedicar um tempo a você! Continue fortalecendo seus hábitos. Em 3 dias, vamos acompanhar seu progresso novamente.</p>
    <button type="button" class="big-action" id="careQuizViewScore">Ver meus cuidados</button>
   </div>
   <form id="careCheckinForm" hidden novalidate><div id="careQuestions"></div><div id="careCapsChoices"></div><button type="button" id="careCapsNA"></button><p id="careError" hidden></p></form>
@@ -320,7 +320,7 @@ function putCareData(data){try{localStorage.setItem(careStoreKey(),JSON.stringif
 function careDayKey(date=new Date()){return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-')}
 function careDateText(date){return new Date(date).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'})}
 function careTimeRemaining(ms){const days=Math.ceil(ms/(24*60*60*1000));return days===1?'amanhã': 'em '+days+' dias'}
-function careTone(n){return n>=75?{tone:'green',color:'#7ee7b3',message:'Ótima regularidade'}:n>=50?{tone:'yellow',color:'#f1d18b',message:'Você está construindo sua rotina'}:{tone:'red',color:'#ff9e99',message:'Pequenos passos fazem diferença'}}
+function careTone(n){return n>=75?{tone:'green',color:'#7ee7b3',message:'Parabéns! Sua rotina está firme'}:n>=50?{tone:'yellow',color:'#f1d18b',message:'Muito bem! Continue fortalecendo seus hábitos'}:{tone:'red',color:'#ff9e99',message:'Cada novo cuidado é uma conquista'}}
 function carePercentValue(value){return value===null||value===undefined?null:Math.round(Number(value)*20)}
 function careLatest(){const d=getCareData();return d.records.length?d.records[0]:null}
 function pillDaysFromDaily(){
@@ -343,10 +343,10 @@ let careQuizStep=0;
 let careQuizOpen=false;
 const careQuizChoices=[
  {value:1,label:'Quase não fiz',detail:'Em nenhum ou quase nenhum dia'},
- {value:2,label:'Poucas vezes',detail:'Foi difícil manter esse cuidado'},
+ {value:2,label:'Poucas vezes',detail:'Ainda estou construindo esse hábito'},
  {value:3,label:'Algumas vezes',detail:'Consegui fazer parte dos dias'},
- {value:4,label:'Na maioria dos dias',detail:'Faltou pouco para manter sempre'},
- {value:5,label:'Todos os dias',detail:'Fiz esse cuidado regularmente'}
+ {value:4,label:'Na maioria dos dias',detail:'Estou cada vez mais constante'},
+ {value:5,label:'Todos os dias',detail:'Consegui manter esse cuidado'}
 ];
 function careIsDue(){
  const last=careLatest();
@@ -488,16 +488,16 @@ function renderCare(){
  ring.style.setProperty('--ring',tone?tone.color:'#85b6b0');
  $('careTotal').textContent=score===null?'—':score;
  $('careStatusTitle').textContent=last?tone.message:'Comece com uma avaliação';
- $('careStatusText').textContent=last?'Última avaliação: '+careDateText(last.at)+'. Continue no seu ritmo e acompanhe como estão seus cuidados.':'Dê uma nota a cada hábito. O aplicativo calcula um resumo de sua regularidade.';
- $('careDueText').textContent=due?'Sua avaliação de cuidados está disponível agora.':'Nova avaliação '+careTimeRemaining(CARE_INTERVAL-(now-last.at))+'. Continue seus cuidados normalmente.';
+ $('careStatusText').textContent=last?'Você já deu mais um passo! Última avaliação: '+careDateText(last.at)+'. Siga com seus bons hábitos e celebre seu progresso.':'Dê o primeiro passo: avalie seus hábitos e descubra como fortalecer sua rotina.';
+ $('careDueText').textContent=due?'Que bom ter você aqui! Sua próxima avaliação de cuidados já está disponível.':'Nova avaliação '+careTimeRemaining(CARE_INTERVAL-(now-last.at))+'. Siga cultivando seus bons hábitos!';
  $('careFormSection').hidden=!due;
  $('careWaitSection').hidden=due;
  $('careWaitMessage').textContent=due?'Você pode registrar uma nova avaliação.':'Sua próxima avaliação ficará disponível '+careTimeRemaining(CARE_INTERVAL-(now-last.at))+'. Enquanto isso, você pode marcar as cápsulas diariamente.';
- const homeMessage= due?(last?'Já se passaram 3 dias. Que tal atualizar suas notas?':'Comece sua primeira avaliação de cuidados, sem pressa.'):'Seu próximo check-in será '+careTimeRemaining(CARE_INTERVAL-(now-last.at))+'. Continue cuidando de você!';
+ const homeMessage= due?(last?'Uma nova oportunidade de celebrar seus cuidados! Que tal atualizar sua avaliação?':'Comece sua jornada de cuidados! Sua primeira avaliação já está disponível.'):'Seu próximo check-in será '+careTimeRemaining(CARE_INTERVAL-(now-last.at))+'. Continue investindo em você!';
 
  $('careReminder').hidden=!due||getCareDismissedToday();
  $('careHomeMessage').textContent=homeMessage;
- $('careHomeScore').textContent=last?'Seu cuidado: '+score+'/100':'Primeira avaliação';
+ $('careHomeScore').textContent=last?'Sua constância: '+score+'/100':'Vamos começar!';
  $('careHomeScore').style.color=tone?tone.color:'#9cf1d3';
 
  $('careHomeScoreValue').textContent=score===null?'Sem nota':score+'/100';
@@ -505,11 +505,11 @@ function renderCare(){
  $('careHomeBar').style.backgroundColor=tone?tone.color:'#85b6b0';
  $('careHomeProgress').setAttribute('aria-valuenow',String(score===null?0:score));
  $('careHomeProgress').setAttribute('aria-valuetext',score===null?'Ainda não avaliado':score+' de 100 pontos');
- $('careHomeBarCaption').textContent=score===null?'Comece sua primeira avaliação para acompanhar seus cuidados.':'Seu score reflete a regularidade dos seus cuidados, não a melhora da neuropatia.';
+ $('careHomeBarCaption').textContent=score===null?'Seu primeiro passo começa aqui! Faça sua avaliação e acompanhe suas conquistas.':'Seu score mostra sua dedicação aos cuidados diários. Continue: cada bom hábito conta!';
  $('careHomeStart').hidden=!due;
 
  const todayMarked=data.daily[careDayKey()]===true;
- $('careDailyLabel').textContent=todayMarked?'Hoje: 2 cápsulas registradas ✓':'Hoje: ainda não marcado';
+ $('careDailyLabel').textContent=todayMarked?'Hoje: 2 cápsulas registradas ✓':'Hoje: pronto para registrar seus cuidados';
  $('careDailyButton').textContent=todayMarked?'Desmarcar registro de hoje':'Marcar as 2 cápsulas de hoje';
  $('careDailyButton').setAttribute('aria-pressed',String(todayMarked));
  const all=[...careFields.map(x=>({key:x.key,title:x.title})),{key:'capsules',title:'💊 Uso das cápsulas'}];
@@ -525,7 +525,7 @@ function renderCare(){
   const delta=i<data.records.length-1?Number(r.score)-Number(data.records[i+1].score):null;
   const deltaText=delta===null?'': ' · '+(delta>0?'+':'')+delta+' pontos';
   return '<div class="care-history-row"><span>'+careDateText(r.at)+(i===0?' · mais recente':'')+'</span><strong class="care-tone-'+t.tone+'">'+r.score+'/100'+deltaText+'</strong></div>';
- }).join(''):'<p class="care-intro">Suas avaliações aparecerão aqui depois do primeiro registro.</p>';
+ }).join(''):'<p class="care-intro">Suas conquistas e avaliações aparecerão aqui depois do primeiro registro.</p>';
  if(due){if(capsDraft===undefined&&pillDaysFromDaily()>0)capsDraft=pillDaysFromDaily();paintCareButtons()}
 }
 buildCareQuestions();
