@@ -1,7 +1,7 @@
 {
   "name": "My Natural Care",
   "short_name": "Natural Care",
-  "description": "Order tracking, product instructions and wellness guidance.",
+  "description": "Acompanhe seus pedidos, consulte instruções dos produtos e orientações de bem-estar.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#080b14",
