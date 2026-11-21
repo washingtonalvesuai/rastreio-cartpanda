@@ -1,0 +1,23 @@
+{
+  "name": "My Natural Care",
+  "short_name": "Natural Care",
+  "description": "Order tracking, product instructions and wellness guidance.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#081425",
+  "theme_color": "#081425",
+  "icons": [
+    {
+      "src": "/assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
