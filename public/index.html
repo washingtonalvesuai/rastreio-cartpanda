@@ -163,6 +163,16 @@
 .care-manual-link p{color:#c4d8d4;font-size:16px;margin:0 0 15px;line-height:1.55}
 .care-manual-link .secondary-action{font-size:15px}
 @media(max-width:620px){.care-routine-heading{align-items:flex-start}.care-routine-count{font-size:13px;padding:8px}.care-routine-item{padding:15px 12px}.care-task-copy strong{font-size:18px}.care-task-check{width:48px;height:48px;min-width:48px}.care-task-tools button{font-size:14px}.care-manual-link{flex-direction:column}.care-manual-icon{height:51px;width:51px;min-width:51px}}
+
+.care-mail-panel{background:linear-gradient(135deg,#173c34,#192a3b);border:1px solid rgba(127,225,179,.3)}
+.care-mail-kicker{display:block;color:#8becc3;font-weight:850;font-size:12px;letter-spacing:.1em;margin-bottom:9px}
+.care-mail-panel h2{font-size:23px;margin:0 0 10px;color:#f2fff8;line-height:1.25}
+.care-mail-panel p{color:#d0e5db;font-size:16px;line-height:1.55;margin:0 0 12px}
+.care-mail-panel .care-mail-info{font-size:14px;color:#b9d3cb}
+.care-mail-panel .care-mail-status{margin:12px 0 0;color:#aff9d5;font-size:15px;font-weight:750}
+.care-mail-panel .care-mail-status:empty{display:none}
+.care-mail-panel button:disabled{opacity:.65}
+
 </style>
 </head><body>
 <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs>
@@ -267,6 +277,15 @@
  <div class="care-panel" id="careWaitSection" hidden><h2 style="font-size:22px;margin:0 0 8px">Parabéns por acompanhar seus cuidados! ✓</h2>
  <p class="care-intro" id="careWaitMessage">Muito bem! Continue fortalecendo sua rotina. Em 3 dias, você poderá celebrar e acompanhar seu progresso novamente.</p>
  <button class="secondary-action" type="button" data-goto="habits">Rever dicas de cuidados</button></div>
+
+ <section class="care-panel care-mail-panel" aria-labelledby="careMailTitle">
+  <span class="care-mail-kicker">LEMBRETES DE BEM-ESTAR</span>
+  <h2 id="careMailTitle">Receba seus cuidados por e-mail 💚</h2>
+  <p>Quer receber um lembrete a cada 3 dias para acessar o aplicativo, marcar seus cuidados e atualizar sua avaliação quando estiver disponível?</p>
+  <p class="care-mail-info">É gratuito e opcional. Vamos enviar um e-mail para você confirmar. Você pode cancelar os lembretes em qualquer mensagem recebida.</p>
+  <button type="button" id="careMailSubscribe" class="big-action">Ativar lembretes por e-mail</button>
+  <p id="careMailStatus" class="care-mail-status" role="status" aria-live="polite"></p>
+ </section>
  <div class="care-panel care-manual-link">
    <div class="care-manual-icon" aria-hidden="true">📖</div>
    <div><h2>Quer aprender como fazer cada cuidado?</h2><p>O livro ilustrado com todos os passos está na aba <strong>Bem-estar</strong>. Aqui você só acompanha o que fez.</p>
@@ -360,6 +379,22 @@ function loadIllustratedGuide(){
 }
 document.addEventListener('click',e=>{
  if(e.target.closest('[data-reload-guide]')){guideScriptPromise=null;loadIllustratedGuide();}
+});
+
+
+document.getElementById('careMailSubscribe')?.addEventListener('click',async()=>{
+ const btn=document.getElementById('careMailSubscribe'),status=document.getElementById('careMailStatus');
+ const currentEmail=String(document.getElementById('signedEmail')?.textContent||'').trim();
+ if(!currentEmail||!currentEmail.includes('@')){status.textContent='Entre no aplicativo com o e-mail da compra para solicitar lembretes.';return}
+ btn.disabled=true;btn.textContent='Solicitando confirmação...';status.textContent='';
+ try{
+  const res=await fetch('/api/reminders/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:currentEmail})});
+  const data=await res.json();
+  if(!res.ok)throw new Error(data.error||'Não foi possível solicitar agora.');
+  status.textContent=data.message||'Confira seu e-mail para confirmar os lembretes.';
+  btn.textContent='Solicitar novamente';
+ }catch(err){status.textContent=err.message||'Não foi possível solicitar. Tente mais tarde.';btn.textContent='Tentar novamente'}
+ finally{btn.disabled=false}
 });
 
 const PREPARING_MESSAGE="Estamos preparando seu pedido para envio, assim que for coletado pela transportadora você conseguirá acompanhar o rastreamento.";
