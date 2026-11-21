@@ -1,0 +1,117 @@
+/* My Natural Care · tema claro para teste · contraste e legibilidade 60+ */
+:root{color-scheme:light;--bg:#f5f8f5;--surface:#ffffff;--surface2:#eff6f1;--surface3:#e5efe9;--text:#213a32;--muted:#50685d;--line:#d9e6db;--mint:#126b4e;--green:#197f5e;--blue:#236b80;--glow:rgba(33,127,92,.13)}
+html,body,#appShell{background:#f5f8f5;color:#24392f}
+body{font-size:17px;line-height:1.58}
+#loginScreen{background:radial-gradient(ellipse at 18% 0%,#e4f5e7,transparent 49%),radial-gradient(ellipse at 100% 30%,#e3f4f2,transparent 49%),#f6f9f5}
+#loginScreen::before{border-color:rgba(30,119,80,.10);box-shadow:0 0 0 90px rgba(30,119,80,.025),0 0 0 180px rgba(30,119,80,.014)}
+.auth-brand,.home-note-icon{color:#137451}
+.auth-sub,.auth-help,.login-footer{color:#526b60}
+.auth-form{background:#fff;border:1px solid #d6e7da;box-shadow:0 22px 65px rgba(34,80,50,.11);backdrop-filter:none}
+.auth-form label{color:#244536}
+.email-field{background:#f8fbf8;color:#1b392b;border-color:#cbded1}
+.email-field::placeholder{color:#778b7d}
+.email-field:focus{border-color:#197e58;box-shadow:0 0 0 3px rgba(25,126,88,.13)}
+.main-button,.big-action{background:linear-gradient(110deg,#197f5b,#11694d);color:#fff;box-shadow:0 6px 14px rgba(25,126,88,.10)}
+.main-button:hover,.big-action:hover{filter:brightness(1.06)}
+.text-link{color:#176a51}.login-footer{color:#738779}.footer-support{color:#196e57}
+.auth-error,.care-error{color:#a32e35}
+.app-header{background:rgba(255,255,255,.95);border-bottom:1px solid #d9e6dc;backdrop-filter:blur(14px)}
+.app-brand strong{color:#1b3f30}.app-brand small{color:#5a7162}
+.icon-button,.back-button{background:#eff5ef;color:#184e39;border:1px solid #dceadf}
+.icon-button:hover,.back-button:hover{background:#e3efe8;border-color:#c3dacb}
+.top-menu{background:#fff;border:1px solid #d9e7df;box-shadow:0 18px 48px rgba(36,65,45,.17)}
+.top-menu button{color:#254739}.top-menu button:hover{background:#f0f6ef}
+.hello h1,.section-heading h2,.page-head h1{color:#203b30}
+.hello p,.page-head p,.tiny-email,.section-heading small{color:#5a7162}
+.slider-dots button{background:#bccbc1}.slider-dots button.active{background:#1c8060}
+.promo-banner{color:#fff;border:1px solid rgba(10,74,50,.10)}
+.promo-banner h2,.promo-banner .promo-kicker{color:#fff}
+.promo-banner p{color:#e1eee7}
+.promo-banner .white-button{background:#fff;color:#174836}
+.content-tile{background:#fff;color:#244636;border:1px solid #dce8dd;box-shadow:0 6px 24px rgba(30,67,43,.04)}
+.content-tile:hover{border-color:#80bd9c}
+.tile-copy p{color:#5b6f64}.tile-action{color:#176c4f}
+.home-note{background:#fff;border:1px solid #dfeade}
+.home-note-icon{background:#e5f2e8}
+.home-note p{color:#5c7163}
+.order-state,.side-help,.topic-card,.routine-card{background:#fff;color:#253d32;border:1px solid #dce8dc;box-shadow:0 5px 20px rgba(34,71,46,.035)}
+.order-label,.detail small{color:#617467}
+.order-number{color:#203b2e}
+.status-pill{background:#e9f7ec;border:1px solid #c3e4cc;color:#156345}
+.detail{background:#f2f7f3}
+.notice{background:#ecf8ef;color:#285442;border-left-color:#18875f}
+.side-help h3{color:#274435}.side-help p{color:#5d7065}
+.secondary-action{background:#eff7f0;color:#1b5d43;border:1px solid #c8dfce}
+.secondary-action:hover{background:#e2f0e6}
+.loading{color:#5d7568}.spinner{border-color:#d4e2d8;border-top-color:#167e58}
+.topic-card p,.routine-card{color:#425a4c}
+.routine-card strong,.topic-card h3{color:#284638}
+.resource-box{background:#eff7ef;color:#345543;border:1px solid #d0e7d4}
+.resource-box a{color:#116448}
+.bottom-nav{background:rgba(255,255,255,.97);border:1px solid #d7e5d9;box-shadow:0 9px 36px rgba(36,74,48,.15)}
+.bottom-nav button{color:#547064}
+.bottom-nav button.active{color:#156d4d;background:#e5f4e9}
+.dialog-backdrop,.care-quiz-overlay{background:rgba(24,51,38,.54)}
+.dialog,.care-quiz-dialog{background:#fff;color:#263d31;border:1px solid #dce9df;box-shadow:0 28px 90px rgba(25,60,38,.24)}
+.dialog h2{color:#244537}.dialog p{color:#526a5c}
+.dialog-close,.care-quiz-close{background:#eef5ef;color:#234e39;border:1px solid #d9e9de}
+.install-step{background:#f2f7f3;color:#243f32}
+.install-step ol{color:#4b6654}
+.app-footer{color:#6b806e}
+.care-panel{background:#fff;color:#263f33;border:1px solid #dfe9de;box-shadow:0 6px 25px rgba(39,83,51,.04)}
+.care-intro,.care-score-copy p,.care-pillar small{color:#52685d}
+.care-home-card{background:linear-gradient(125deg,#e5f4eb,#e7f3ef 65%,#f4f8ed);border:1px solid #cce6d3;color:#1d4934;box-shadow:0 6px 24px rgba(41,100,62,.06)}
+.care-home-card p{color:#476453}
+.care-home-chip{background:#fff;color:#176a4d;border:1px solid #d1e7d7}
+.care-home-progress-top{color:#245b40}
+.care-home-progress-track{background:#cbdfd2;border-color:#bbd7c4}
+.care-progress-caption{color:#4d705c}
+.care-home-action{background:rgba(255,255,255,.64);border:1px solid #c7decf;color:#285f44!important}
+.care-home-buttons .white-button{background:#fff;color:#1a694b;border:1px solid #c9ded0}
+.care-reminder{background:linear-gradient(125deg,#eaf7ed,#edf6f3);color:#24533e;border:1px solid #c4e2d0}
+.care-reminder span{color:#527560}
+.care-score-ring{background:conic-gradient(var(--ring) calc(var(--pct) * 1%),#dbe9df 0)}
+.care-score-inner{background:#fff;color:#244437}
+.care-score-inner span{color:#5e7467}
+.care-hint{background:#f1f7f2;border:1px solid #d8e9dd;color:#315441}
+.care-pillar{background:#f8fbf8;border:1px solid #e0eae1}
+.care-meter{background:#dceadf}
+.care-tone-green{color:#176f4d}.care-tone-yellow{color:#95600c}.care-tone-red{color:#ad3d40}
+.care-question{background:#f8fbf8;border:1px solid #dce8dd}
+.care-question p{color:#536e5f}
+.care-rate button,.care-caps-buttons button{background:#fff;color:#244c38;border:1px solid #c5ddcc}
+.care-rate button[aria-pressed=true],.care-caps-buttons button[aria-pressed=true]{background:#1d845e;color:#fff;border-color:#1d845e}
+.care-not-applicable{border:1px solid #c9dfcf;background:#fff;color:#2a674a}
+.care-not-applicable[aria-pressed=true]{background:#dcefe2;color:#225339}
+.care-daily{background:#eff8f1;border:1px solid #d0e6d5}
+.care-daily p{color:#587266}
+.care-history-row{background:#f8faf7;border:1px solid #e1e9e0}
+.care-quiz-dialog{background:linear-gradient(160deg,#fff,#f8fbf8 85%);border:1px solid #d3e4d7}
+.care-quiz-top>span{color:#287858}
+.care-quiz-progress-head{color:#3e6450}
+.care-quiz-progress{background:#d7e8da}
+.care-quiz-progress>span{background:linear-gradient(90deg,#24956a,#2681a0)}
+.care-quiz-heading{color:#1d4431}
+.care-quiz-explain{color:#496154}
+.care-quiz-options button{background:#fff;color:#244635;border:1px solid #cedfd3}
+.care-quiz-options button:hover{background:#f0f8f2;border-color:#68aa83}
+.care-quiz-options button[aria-pressed=true]{background:#e4f5e9;color:#24523b;border-color:#4c9a71}
+.care-quiz-options button small{color:#587365}
+.care-quiz-options button[aria-pressed=true] small{color:#345c44}
+.care-quiz-bottom p{color:#5c7465}
+.care-quiz-complete p{color:#556d5f}
+.care-quiz-complete .care-done-check{background:#e4f5e9;color:#16724f}
+.care-quiz-error{color:#a63b3d}
+.care-reset-area{background:#f8f9f8;border:1px solid #e1e9e1}
+.care-reset-area p{color:#53695c}
+.care-reset-button{border:1px solid #d7a9a0;background:#fff5f2;color:#9c4038}
+.care-reset-button:hover{background:#fee8e3}
+.care-reset-dialog .reset-email{background:#edf7ee;color:#21543d;border:1px solid #cbe3d1}
+.care-reset-dialog .reset-warning{color:#4b6758}
+@media(max-width:620px){
+ body{font-size:17px}
+ .bottom-nav{background:rgba(255,255,255,.98);border-top:1px solid #d4e4d7}
+ .bottom-nav button{font-size:11.5px;min-height:63px;font-weight:800}
+ .bottom-nav button svg{width:24px;height:24px}
+ .care-pillar small{font-size:13px}
+}
