@@ -80,3 +80,43 @@
  .book-cover-top{margin-bottom:19px}
 }
 @media(prefers-reduced-motion:reduce){.book-chapter{content-visibility:visible}}
+
+
+/* Livro de Bem-estar no tema escuro original — leitura confortável e contraste alto. */
+.gc-guide-pending,.book-loading{background:#172333;border-color:#344654;color:#e8f7ef}
+.gc-guide-pending h2,.book-loading strong{color:#f4fff9}
+.gc-guide-pending p,.book-loading p{color:#c0d5cf}
+.gc-guide-pending button,.book-loading button{background:#63ddb0;color:#0b3225}
+.mnc-book{background:#131e2d;color:#ebf5f1;border-color:#344556;box-shadow:0 14px 48px rgba(0,0,0,.21)}
+.book-cover{background:linear-gradient(132deg,#143a33,#173341 60%,#1b293a);border-bottom-color:#31534d}
+.book-edition{color:#a2f5cf}
+.book-total{background:rgba(124,235,183,.14);border:1px solid rgba(133,236,194,.28);color:#b7f8dd}
+.book-cover h2{color:#f1fff6}
+.book-cover h2 em{color:#8cebbb}
+.book-cover p{color:#d0e2dd}
+.book-cover-tip{background:rgba(16,38,39,.75);border-color:#3b6258;color:#dbf5e9}
+.book-cover-art{background:rgba(21,69,57,.62);box-shadow:0 15px 40px rgba(0,0,0,.1)}
+.book-chapter{border-bottom-color:#324555}
+.book-ordinal{color:#9aeac6}
+.book-ordinal span:last-child{background:#203e37;color:#d2f2e2}
+.book-heading-text h3{color:#effcf8}
+.book-summary{color:#c4d8d0}
+.book-illustration{background:linear-gradient(150deg,#1e4942,#1f3644);border-color:#36584f}
+.book-illustration img,.book-cover-art img{filter:none}
+.book-illustration figcaption{color:#b8efd6}
+.book-chapter:nth-child(3n+2) .book-illustration{background:linear-gradient(145deg,#204454,#243b40)}
+.book-chapter:nth-child(3n) .book-illustration{background:linear-gradient(145deg,#32404a,#1b483c)}
+.book-today{background:#1b3a34;border-left-color:#76e8b4}
+.book-today strong{color:#a8f6d0}
+.book-today p{color:#e0f4eb}
+.book-chapter-text{color:#dae9e4}
+.book-section h4{color:#a2f2cb}
+.book-section p,.book-section li{color:#d9e8e2}
+.book-section li::marker{color:#8dedc1}
+.book-chapter-foot{border-top-color:#344c53;color:#b5cec2}
+.book-next{color:#b3cec3}
+.book-next-symbol{color:#8cebbf}
+.book-ending{background:#19332f;color:#e0f8eb;border-top:1px solid #33554b}
+.book-ending strong{color:#edfff5}
+.book-ending p{color:#c7e0d2}
+.book-ending small{color:#afcabb}
