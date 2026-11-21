@@ -164,15 +164,6 @@
 .care-manual-link .secondary-action{font-size:15px}
 @media(max-width:620px){.care-routine-heading{align-items:flex-start}.care-routine-count{font-size:13px;padding:8px}.care-routine-item{padding:15px 12px}.care-task-copy strong{font-size:18px}.care-task-check{width:48px;height:48px;min-width:48px}.care-task-tools button{font-size:14px}.care-manual-link{flex-direction:column}.care-manual-icon{height:51px;width:51px;min-width:51px}}
 
-.care-mail-panel{background:linear-gradient(135deg,#173c34,#192a3b);border:1px solid rgba(127,225,179,.3)}
-.care-mail-kicker{display:block;color:#8becc3;font-weight:850;font-size:12px;letter-spacing:.1em;margin-bottom:9px}
-.care-mail-panel h2{font-size:23px;margin:0 0 10px;color:#f2fff8;line-height:1.25}
-.care-mail-panel p{color:#d0e5db;font-size:16px;line-height:1.55;margin:0 0 12px}
-.care-mail-panel .care-mail-info{font-size:14px;color:#b9d3cb}
-.care-mail-panel .care-mail-status{margin:12px 0 0;color:#aff9d5;font-size:15px;font-weight:750}
-.care-mail-panel .care-mail-status:empty{display:none}
-.care-mail-panel button:disabled{opacity:.65}
-
 </style>
 </head><body>
 <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs>
@@ -278,14 +269,6 @@
  <p class="care-intro" id="careWaitMessage">Muito bem! Continue fortalecendo sua rotina. Em 3 dias, você poderá celebrar e acompanhar seu progresso novamente.</p>
  <button class="secondary-action" type="button" data-goto="habits">Rever dicas de cuidados</button></div>
 
- <section class="care-panel care-mail-panel" id="careMailPanel" aria-labelledby="careMailTitle" hidden>
-  <span class="care-mail-kicker">LEMBRETES DE BEM-ESTAR</span>
-  <h2 id="careMailTitle">Receba seus cuidados por e-mail 💚</h2>
-  <p>Quer receber um lembrete a cada 3 dias para acessar o aplicativo, marcar seus cuidados e atualizar sua avaliação quando estiver disponível?</p>
-  <p class="care-mail-info">É gratuito e opcional. Vamos enviar um e-mail para você confirmar. Você pode cancelar os lembretes em qualquer mensagem recebida.</p>
-  <button type="button" id="careMailSubscribe" class="big-action">Ativar lembretes por e-mail</button>
-  <p id="careMailStatus" class="care-mail-status" role="status" aria-live="polite"></p>
- </section>
  <div class="care-panel care-manual-link">
    <div class="care-manual-icon" aria-hidden="true">📖</div>
    <div><h2>Quer aprender como fazer cada cuidado?</h2><p>O livro ilustrado com todos os passos está na aba <strong>Bem-estar</strong>. Aqui você só acompanha o que fez.</p>
@@ -382,29 +365,6 @@ document.addEventListener('click',e=>{
 });
 
 
-
-async function checkCareMailAvailability(){
- try{
-  const res=await fetch('/api/reminders/config',{cache:'no-store'});
-  const data=await res.json();
-  const panel=document.getElementById('careMailPanel');
-  if(panel)panel.hidden=!(res.ok&&data.available===true);
- }catch{const panel=document.getElementById('careMailPanel');if(panel)panel.hidden=true;}
-}
-document.getElementById('careMailSubscribe')?.addEventListener('click',async()=>{
- const btn=document.getElementById('careMailSubscribe'),status=document.getElementById('careMailStatus');
- const currentEmail=String(document.getElementById('signedEmail')?.textContent||'').trim();
- if(!currentEmail||!currentEmail.includes('@')){status.textContent='Entre no aplicativo com o e-mail da compra para solicitar lembretes.';return}
- btn.disabled=true;btn.textContent='Solicitando confirmação...';status.textContent='';
- try{
-  const res=await fetch('/api/reminders/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:currentEmail})});
-  const data=await res.json();
-  if(!res.ok)throw new Error(data.error||'Não foi possível solicitar agora.');
-  status.textContent=data.message||'Confira seu e-mail para confirmar os lembretes.';
-  btn.textContent='Solicitar novamente';
- }catch(err){status.textContent=err.message||'Não foi possível solicitar. Tente mais tarde.';btn.textContent='Tentar novamente'}
- finally{btn.disabled=false}
-});
 
 const PREPARING_MESSAGE="Estamos preparando seu pedido para envio, assim que for coletado pela transportadora você conseguirá acompanhar o rastreamento.";
 const $=id=>document.getElementById(id);const login=$('loginScreen'),app=$('appShell'),form=$('accessForm'),input=$('customerEmail'),error=$('emailError'),signed=$('signedEmail'),result=$('orderResult'),loading=$('orderLoading');
@@ -770,7 +730,7 @@ function renderCare(){
 buildCareQuestions();
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!app.hidden)renderCare()});
 
-function showApp(value){email=value;signed.textContent=value;login.hidden=true;app.hidden=false;storeEmail(value);go('home');loadOrder();renderCare();void checkCareMailAvailability();}
+function showApp(value){email=value;signed.textContent=value;login.hidden=true;app.hidden=false;storeEmail(value);go('home');loadOrder();renderCare();}
 function signOut(){careDraft={};capsDraft=undefined;lookupSeq++;email='';lastOrder=null;carrierUrl='';result.innerHTML='';try{localStorage.removeItem(EMAIL_KEY)}catch{};$('accountMenu').hidden=true;app.hidden=true;login.hidden=false;input.value='';input.focus();window.scrollTo(0,0);}
 function go(view){if(!['home','tracking','guide','habits','care'].includes(view))return;currentView=view;$('homeView').hidden=view!=='home';$('contentViews').hidden=view==='home';['tracking','guide','habits','care'].forEach(x=>{$(x+'View').hidden=x!==view});document.querySelectorAll('.bottom-nav button').forEach(b=>{const active=b.dataset.goto===view;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});$('accountMenu').hidden=true;$('accountToggle').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'instant'});if(view==='tracking'&&!lastOrder)loadOrder();if(view==='care'||view==='home')renderCare();if(view==='habits')loadIllustratedGuide().then(ok=>{if(ok&&window.MNCGuide)window.MNCGuide.mount('habits')});}
 function renderState(title,message){carrierUrl='';result.innerHTML=`<div class="order-state"><h2 style="font-size:22px;margin:0 0 8px">${escapeHTML(title)}</h2><p style="color:var(--muted);margin:0 0 18px">${escapeHTML(message)}</p><button type="button" id="retryLookup" class="secondary-action">${icon('reload')} Tentar Novamente</button></div>`;$('retryLookup').addEventListener('click',loadOrder);}
