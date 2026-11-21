@@ -210,7 +210,7 @@ export default {
    let raw;try{raw=await req.text();if(raw.length>65536)return j({error:"Too large"},413)}catch{return j({error:"Bad request"},400)}
    let payload;try{payload=JSON.parse(raw)}catch{return j({error:"Invalid JSON"},400)}
    const id=String(payload?.order?.id||"");
-   if(payload?.event!=="order.paid"||!/^\\d{1,25}$/.test(id))return j({error:"Invalid event"},400);
+   if(payload?.event!=="order.paid"||!/^[0-9]{1,25}$/.test(id))return j({error:"Invalid event"},400);
    try{const result=await scanShipping(env,Date.now(),id);return j({ok:true,verified:result.count>0});}
    catch(e){console.error("Paid webhook verification failed",String(e).slice(0,130));return j({error:"Verification temporarily unavailable"},503)}
   }
