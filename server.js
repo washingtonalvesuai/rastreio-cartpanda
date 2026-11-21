@@ -72,8 +72,11 @@ function ordersList(data) {
   return [];
 }
 function isPaid(o) {
-  const s=norm(o?.financial_status||o?.payment_status);
-  return s==="paid"||s==="partially_refunded";
+  // Cartpanda returns numeric payment_status=3 for a paid order.
+  // Keep explicit text statuses for API variations; do not infer payment from fulfillment.
+  const s=norm(o?.financial_status??o?.payment_status);
+  const test=String(o?.test??o?.is_cartx_test??"0");
+  return (s==="3"||s==="paid"||s==="partially_refunded")&&test!=="1";
 }
 function safeUrl(value) {
   try {
@@ -172,12 +175,6 @@ app.get("/api/internal/email-orders",async(req,res)=>{
    return {id,email,number:String(order.number||order.order_number||"").slice(0,75),status:statusFor(order,trackingFrom(order)),created_at:String(order.created_at||order.date_created||"").slice(0,50)};
   }).filter(Boolean);
   console.info("[mail] snapshot page="+page+" found="+all.length+" paid="+all.filter(isPaid).length+" usable="+orders.length);
-  if(page===1&&all.length){
-    const samples=all.slice(0,5).map(o=>({financial_status:String(o?.financial_status??"none").slice(0,40),payment_status:String(o?.payment_status??"none").slice(0,40),status:String(o?.status??"none").slice(0,40),order_status:String(o?.order_status??"none").slice(0,40),transaction_status:String(o?.transaction?.status??"none").slice(0,40)}));
-    console.info("[mail] order status shapes="+JSON.stringify(samples));
-    console.info("[mail] order field names="+JSON.stringify(Object.keys(all[0]).filter(k=>!/email|name|address|phone|note|token|url|secret|customer|client|shipping|billing|number|id|ip|card|payment_method/i.test(k)).slice(0,40)));
-  }
-
   const lastPage=Number(raw?.orders?.last_page||raw?.last_page)||null;
   const hasMore=page<MAX_SCAN_PAGES&&all.length>0&&(lastPage===null||page<lastPage);
   return res.json({orders,hasMore});
