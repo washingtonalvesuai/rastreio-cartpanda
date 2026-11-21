@@ -115,6 +115,8 @@
 @media(max-width:620px){.care-quiz-overlay{padding:7px;align-items:center}.care-quiz-dialog{border-radius:22px;padding:19px;max-height:94dvh}.care-quiz-options button{min-height:65px;font-size:17px}.care-home-progress{width:100%}.care-quiz-bottom{flex-wrap:wrap}.care-quiz-bottom p{width:100%;text-align:left}}
 @media(prefers-reduced-motion:reduce){.care-home-progress-track>span,.care-quiz-progress>span{transition:none}}
 
+
+.care-home-action{margin:4px 0 15px!important;padding:12px 14px;border-radius:13px;border:1px solid rgba(113,237,189,.23);background:rgba(113,237,189,.08);color:#d5f3e6!important;font-size:14px!important;line-height:1.5}
 </style>
 </head><body>
 <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs>
@@ -137,7 +139,7 @@
 <section class="care-home-card" aria-labelledby="careHomeTitle">
  <div><span class="care-home-chip">Meu acompanhamento</span><h2 id="careHomeTitle">Seus cuidados, no seu ritmo</h2>
  <p id="careHomeMessage">Acompanhe seus bons hábitos e celebre cada passo da sua rotina de cuidados.</p>
- <div class="care-home-progress"><div class="care-home-progress-top"><span>Score geral de cuidados</span><strong id="careHomeScoreValue">Sem nota</strong></div><div class="care-home-progress-track" role="progressbar" id="careHomeProgress" aria-label="Regularidade geral dos autocuidados" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="careHomeBar"></span></div><span class="care-progress-caption" id="careHomeBarCaption">Uma medida da constância nos cuidados, não da melhora da neuropatia.</span></div>
+ <div class="care-home-progress"><div class="care-home-progress-top"><span>Score geral de cuidados</span><strong id="careHomeScoreValue">Sem nota</strong></div><div class="care-home-progress-track" role="progressbar" id="careHomeProgress" aria-label="Regularidade geral dos autocuidados" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="careHomeBar"></span></div><span class="care-progress-caption" id="careHomeBarCaption">Acompanhe sua constância e celebre os avanços nos seus hábitos!</span></div><p id="careHomeAction" class="care-home-action" aria-live="polite">Comece com uma avaliação e escolha um pequeno cuidado para praticar hoje.</p>
  <div class="care-home-buttons"><button type="button" class="white-button" data-goto="care">Ver meus cuidados <svg><use href="#ico-arrow"/></svg></button><button type="button" id="careHomeStart" class="big-action" data-open-care-quiz>Fazer minha avaliação</button></div></div>
  <div class="care-home-chip" id="careHomeScore">Ainda sem avaliação</div>
 </section>
@@ -507,6 +509,21 @@ function renderCare(){
  $('careHomeProgress').setAttribute('aria-valuetext',score===null?'Ainda não avaliado':score+' de 100 pontos');
  $('careHomeBarCaption').textContent=score===null?'Seu primeiro passo começa aqui! Faça sua avaliação e acompanhe suas conquistas.':'Seu score mostra sua dedicação aos cuidados diários. Continue: cada bom hábito conta!';
  $('careHomeStart').hidden=!due;
+
+ const careTips={
+  food:'Que tal incluir uma fruta ou verdura em uma refeição hoje? Cada escolha conta!',
+  movement:'Escolha um movimento leve e seguro para você, conforme sua orientação de saúde.',
+  feet:'Reserve um minuto para observar seus pés e escolher calçados confortáveis.',
+  sleep:'Experimente manter um horário tranquilo para descansar hoje.',
+  water:'Deixe água por perto e hidrate-se conforme suas necessidades e orientação de saúde.',
+  capsules:'Coloque o frasco em um lugar visível e siga a indicação de 2 cápsulas por dia, sem dobrar doses.'
+ };
+ const weakest=last?Object.entries(last.pillars||{}).filter(([k,v])=>v!==null&&v!==undefined&&careTips[k]).sort((a,b)=>a[1]-b[1])[0]:null;
+ $('careHomeAction').textContent=!last?
+  'Sua jornada começa com um pequeno passo: faça sua primeira avaliação e descubra como fortalecer seus hábitos.':
+  (weakest&&weakest[1]<80?'Uma ideia simples para hoje: '+careTips[weakest[0]]:
+    'Sua dedicação merece reconhecimento! Continue cuidando de você com regularidade.');
+
 
  const todayMarked=data.daily[careDayKey()]===true;
  $('careDailyLabel').textContent=todayMarked?'Hoje: 2 cápsulas registradas ✓':'Hoje: pronto para registrar seus cuidados';
