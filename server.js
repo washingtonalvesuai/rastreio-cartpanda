@@ -150,11 +150,13 @@ async function findPaidOrder(email) {
 
 // Internal snapshot for the private scheduled email Worker. Never expose this to browsers.
 const MAIL_TOKEN=String(process.env.MNC_MAIL_INTERNAL_TOKEN||"");
+console.log("[mail] Private event connection: "+(MAIL_TOKEN?"configured":"not configured"));
 function authorizedMailer(req){
  const provided=String(req.get("Authorization")||"").replace(/^Bearer\s+/i,"");
  if(!MAIL_TOKEN||provided.length!==MAIL_TOKEN.length)return false;
  return crypto.timingSafeEqual(Buffer.from(provided),Buffer.from(MAIL_TOKEN));
 }
+app.get("/api/mail-status",(_,res)=>res.json({mailer_ready:Boolean(MAIL_TOKEN),integration_version:"three-care-emails"}));
 app.get("/api/internal/email-orders",async(req,res)=>{
  if(!authorizedMailer(req))return res.status(401).json({error:"Unauthorized"});
  if(!SHOP||!TOKEN)return res.status(503).json({error:"Orders API is not configured"});
