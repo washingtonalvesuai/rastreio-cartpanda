@@ -1,77 +1,80 @@
-/* Biblioteca ilustrada de 28 capítulos. CSS isolado para preservar o app existente. */
-.gc-preview-section{margin:0 0 18px}
-.gc-guide-pending,.gc-load-error{border-radius:22px;background:linear-gradient(125deg,#18372e,#183248);border:1px solid rgba(113,237,189,.25);padding:25px;margin:6px 0}
-.gc-guide-pending h2,.gc-load-error strong{font-size:23px;line-height:1.18;margin:7px 0 10px;display:block}
-.gc-guide-pending p,.gc-load-error p{color:#c3d9d5;font-size:15px;line-height:1.55}
-.gc-eyebrow{font-size:11px;font-weight:850;letter-spacing:.12em;color:#9af0d3;line-height:1.5;display:block}
-.gc-section-head{display:flex;justify-content:space-between;align-items:end;gap:14px;margin-bottom:18px}
-.gc-section-head h2{font-size:clamp(24px,3vw,30px);line-height:1.16;margin:4px 0 8px;letter-spacing:-.045em}
-.gc-section-head p{color:#c5d6df;margin:0;font-size:15px;max-width:590px;line-height:1.55}
-.gc-chapter-count{padding:7px 11px;border-radius:99px;background:rgba(112,229,188,.12);color:#a7f2d8;font-size:13px;font-weight:850;white-space:nowrap}
-.gc-preview,.gc-library{min-width:0}
-.gc-preview{background:linear-gradient(160deg,#142131,#121a27);border:1px solid rgba(255,255,255,.11);border-radius:24px;padding:clamp(17px,3vw,24px)}
-.gc-preview-grid,.gc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.gc-card{width:100%;min-width:0;border:1px solid rgba(255,255,255,.12);background:#192635;color:#f4fafb;border-radius:20px;text-align:left;display:grid;grid-template-columns:126px minmax(0,1fr);gap:17px;align-items:stretch;padding:12px;cursor:pointer;transition:border-color .15s,background-color .15s,transform .15s}
-.gc-card:hover,.gc-card:focus-visible{background:#213448;border-color:rgba(126,231,179,.75);transform:translateY(-1px);outline:none}
-.gc-card:focus-visible{box-shadow:0 0 0 3px rgba(126,231,179,.25)}
-.gc-illustration{display:flex;align-items:center;justify-content:center;border-radius:17px;min-height:142px;background:radial-gradient(circle at 20% 22%,rgba(139,235,200,.15),transparent 56%),linear-gradient(145deg,#27505c,#1c3d45);overflow:hidden}
-.gc-illustration img{display:block;width:82px;height:82px;max-width:75%;object-fit:contain}
-.gc-card:nth-child(3n+2) .gc-illustration{background:radial-gradient(circle at 85% 18%,rgba(99,183,247,.16),transparent 56%),linear-gradient(145deg,#264660,#234352)}
-.gc-card:nth-child(3n) .gc-illustration{background:radial-gradient(circle at 10% 70%,rgba(194,172,239,.13),transparent 50%),linear-gradient(145deg,#343e60,#234650)}
-.gc-card-copy{display:flex;flex-direction:column;align-items:start;gap:6px;min-width:0;justify-content:center;padding:5px 3px 5px 0}
-.gc-card-copy small{font-size:12px;color:#9ae7cd;font-weight:800;line-height:1.4}
-.gc-card-copy strong{font-size:17px;line-height:1.26;letter-spacing:-.015em}
-.gc-card-copy>span{font-size:14px;line-height:1.48;color:#bacfda}
-.gc-card-copy em{font-size:13px;line-height:1.4;color:#94f4cb;font-weight:800;font-style:normal;margin-top:4px}
-.gc-card-mini{grid-template-columns:100px minmax(0,1fr);gap:13px}
-.gc-card-mini .gc-illustration{min-height:120px}
-.gc-card-mini .gc-illustration img{width:66px;height:66px}
-.gc-card-mini .gc-card-copy strong{font-size:16px}
-.gc-card-mini .gc-card-copy>span{font-size:13px}
-.gc-see-all,.gc-more,.gc-load-error button{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:54px;border-radius:15px;background:rgba(111,230,191,.14);color:#b9ffe6;border:1px solid rgba(111,230,191,.42);font-weight:850;font-size:16px;margin-top:17px;padding:11px 16px;cursor:pointer}
-.gc-see-all:hover,.gc-more:hover,.gc-load-error button:hover{background:rgba(111,230,191,.23)}
-.gc-hero{background:linear-gradient(120deg,#174038,#1a394c);border-radius:24px;padding:clamp(20px,4vw,29px);border:1px solid rgba(116,228,195,.21);display:flex;justify-content:space-between;gap:22px;align-items:center;margin-bottom:19px}
-.gc-hero h2{font-size:clamp(25px,4vw,37px);letter-spacing:-.04em;line-height:1.15;margin:6px 0 10px;max-width:570px}
-.gc-hero p{margin:0 0 10px;line-height:1.55;font-size:16px;color:#dbebe8;max-width:540px}
-.gc-source{font-size:12px;color:#b5d6cd}
-.gc-hero-icons{display:flex;gap:8px;justify-content:center;flex:none}
-.gc-hero-icons img{padding:18px;width:78px;height:78px;border-radius:20px;background:rgba(255,255,255,.10);object-fit:contain}
-.gc-hero-icons img:nth-child(2){transform:translateY(17px)}
-.gc-search{display:grid;gap:7px;margin:5px 0 15px}
-.gc-search span{font-size:14px;font-weight:800;color:#dce9ed}
-.gc-search input{height:55px;min-width:0;width:100%;border-radius:15px;border:1px solid rgba(255,255,255,.19);background:#182735;color:#fff;font-size:17px;padding:0 18px;outline:none}
-.gc-search input:focus{border-color:#94f4cb;box-shadow:0 0 0 3px rgba(148,244,203,.11)}
-.gc-filters{display:flex;gap:8px;overflow-x:auto;scrollbar-width:thin;overscroll-behavior-x:contain;padding:3px 0 12px;margin-bottom:7px}
-.gc-filters button{white-space:nowrap;border-radius:99px;border:1px solid rgba(255,255,255,.18);padding:10px 15px;min-height:44px;background:#203246;color:#e4f1fa;font-size:14px;font-weight:800;cursor:pointer}
-.gc-filters button[aria-pressed=true]{background:#8cf1c7;color:#102e30;border-color:#8cf1c7}
-.gc-meta{font-size:13px;color:#b3cad3;margin:5px 0 13px}
-.gc-empty{grid-column:1/-1;padding:25px;border-radius:15px;border:1px dashed rgba(255,255,255,.15)}
-.gc-empty strong{font-size:19px}.gc-empty p{font-size:15px;color:#bacbd7}
-.gc-responsible,.gc-care-note{border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:17px;margin-top:22px;background:rgba(255,255,255,.04)}
-.gc-responsible strong,.gc-care-note strong{font-size:17px}.gc-responsible p,.gc-care-note p{margin:7px 0 0;color:#c4d5e0;font-size:15px;line-height:1.6}
-.gc-reader{background:linear-gradient(#142234,#101b29);border-radius:23px;padding:clamp(18px,4vw,30px);border:1px solid rgba(255,255,255,.12)}
-.gc-reader-head{display:grid;grid-template-columns:145px minmax(0,1fr);gap:24px;align-items:center;margin:18px 0 22px}
-.gc-reader-head .gc-illustration{min-height:155px}
-.gc-reader-head h2{font-size:clamp(24px,3.9vw,36px);line-height:1.16;margin:6px 0 11px;letter-spacing:-.04em}
-.gc-reader-head p{color:#c6d8e0;font-size:17px;line-height:1.6;margin:0}
-.gc-back{padding:10px 13px;min-height:45px;background:rgba(126,231,179,.11);border:1px solid rgba(126,231,179,.33);color:#b9ffe1;border-radius:13px;font-size:15px;font-weight:850}
-.gc-reader-bottom{margin-top:23px}
-.gc-today{border-radius:17px;padding:17px 20px;background:linear-gradient(120deg,#224e44,#284c57);border:1px solid rgba(112,229,188,.3);margin:0 0 21px}
-.gc-today strong{color:#b9ffe0;font-size:17px}
-.gc-today p{color:#f0fff7;font-size:16px;line-height:1.6;margin:8px 0 0}
-.gc-rich{font-size:16px;line-height:1.72;color:#dae6f0}
-.gc-rich p{margin:0 0 14px}
-.gc-rich h3{font-size:19px;line-height:1.3;color:#b8ffe3;margin:0 0 11px;letter-spacing:0}
-.gc-rich ul,.gc-rich ol{margin:8px 0 15px;padding-left:26px}
-.gc-rich li{padding-left:3px;margin:8px 0}
-.gc-article-section{margin-bottom:20px}
-.gc-details{border:1px solid rgba(255,255,255,.12);border-radius:15px;margin:10px 0;overflow:hidden;background:rgba(255,255,255,.035)}
-.gc-details summary{cursor:pointer;padding:17px 18px;font-size:16px;font-weight:850;display:flex;align-items:center;justify-content:space-between;gap:14px;list-style:none;color:#e6f4f9}
-.gc-details summary::-webkit-details-marker{display:none}
-.gc-details summary span{color:#b5ffe0;font-size:22px}
-.gc-details[open] summary{background:rgba(111,230,191,.08)}
-.gc-details[open] summary span{transform:rotate(45deg)}
-.gc-details-body{padding:17px 18px 9px;border-top:1px solid rgba(255,255,255,.08)}
-@media(max-width:830px){.gc-preview-grid,.gc-grid{grid-template-columns:1fr}.gc-hero-icons img{width:65px;height:65px;padding:13px}}
-@media(max-width:620px){.gc-hero{align-items:start;flex-direction:column}.gc-hero-icons{align-self:stretch;justify-content:space-between}.gc-hero-icons img{width:74px;height:74px}.gc-section-head{align-items:start}.gc-preview{padding:16px}.gc-card{grid-template-columns:104px minmax(0,1fr);gap:12px;padding:10px}.gc-card .gc-illustration{min-height:130px}.gc-card .gc-illustration img{width:65px;height:65px}.gc-card-copy strong{font-size:16px}.gc-card-copy>span{font-size:13px}.gc-reader-head{grid-template-columns:1fr;gap:13px}.gc-reader-head .gc-illustration{min-height:132px}.gc-reader-head .gc-illustration img{width:88px;height:88px}.gc-preview-grid{gap:11px}}
-@media(prefers-reduced-motion:reduce){.gc-card{transition:none}}
+/* My Natural Care — livro contínuo ilustrado para leitores de todas as idades */
+.gc-preview-section{margin:0 0 27px}
+.gc-preview,.gc-library{max-width:900px;margin:0 auto;min-width:0}
+.gc-guide-pending,.book-loading{padding:26px;border-radius:20px;background:#fffefa;border:1px solid #dbe8e1;color:#25483c}
+.gc-guide-pending h2,.book-loading strong{display:block;font-size:23px;line-height:1.32;margin:7px 0}
+.gc-guide-pending p,.book-loading p{font-size:17px;line-height:1.7;color:#52695e}
+.gc-guide-pending button,.book-loading button{display:block;border:0;border-radius:13px;background:#167455;color:#fff;font-size:16px;font-weight:800;min-height:52px;padding:10px 20px;margin-top:15px}
+.mnc-book{background:#fffefb;color:#213a34;border:1px solid #d8e5db;border-radius:24px;box-shadow:0 14px 48px rgba(30,66,45,.06);overflow:hidden;max-width:900px;margin:0 auto 26px}
+.book-cover{padding:clamp(24px,5vw,48px);background:linear-gradient(132deg,#e3f2e7,#eef6e9 60%,#fcf9ed);border-bottom:1px solid #cfdfd0}
+.book-cover-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:26px;flex-wrap:wrap}
+.book-edition{font:850 12px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;color:#146747;letter-spacing:.12em}
+.book-total{padding:7px 12px;border-radius:99px;background:rgba(19,105,69,.09);color:#20573b;font-size:13px;font-weight:800}
+.book-cover-layout{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:24px;align-items:center}
+.book-cover h2{font:800 clamp(30px,5vw,43px)/1.16 system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:-.045em;color:#173e30;margin:0 0 17px}
+.book-cover h2 em{font-style:normal;color:#28795c}
+.book-cover p{font-size:19px;line-height:1.65;color:#3c6252;margin:0 0 20px;max-width:520px}
+.book-cover-tip{background:rgba(255,255,255,.76);border:1px solid #cce2d1;border-radius:15px;padding:13px 17px;line-height:1.6;color:#305f47;font-weight:700;font-size:16px;max-width:570px}
+.book-cover-art{display:grid;place-items:center;width:174px;height:174px;border-radius:44px;background:rgba(255,255,255,.65);box-shadow:0 15px 40px rgba(63,114,84,.08);transform:rotate(-7deg)}
+.book-cover-art img{display:block;width:122px;height:122px;object-fit:contain;transform:rotate(7deg)}
+.book-pages{padding:0 clamp(20px,6vw,70px)}
+.book-chapter{padding:clamp(32px,5vw,55px) 0 clamp(40px,7vw,67px);border-bottom:1px solid #dfe9e1;content-visibility:auto;contain-intrinsic-size:auto 900px}
+.book-ordinal{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#357a60;font-size:13px;font-weight:900;letter-spacing:.085em}
+.book-ordinal span:last-child{color:#507365;letter-spacing:0;background:#edf6ee;border-radius:99px;padding:6px 12px;font-size:13px}
+.book-chapter-header{display:grid;grid-template-columns:minmax(0,1fr) 174px;gap:26px;align-items:center;margin-bottom:26px}
+.book-heading-text h3{font:800 clamp(27px,3.8vw,39px)/1.18 system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:-.035em;color:#173d33;margin:0 0 13px}
+.book-summary{font-size:19px;line-height:1.6;color:#50695c;margin:0}
+.book-illustration{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:170px;margin:0;padding:18px;border-radius:26px;background:linear-gradient(150deg,#e3f3e9,#d7edeb);border:1px solid #d6e8db;text-align:center}
+.book-illustration img{width:104px;height:104px;max-width:100%;object-fit:contain;display:block}
+.book-illustration figcaption{font-size:12px;font-weight:800;color:#427359;line-height:1.45}
+.book-chapter:nth-child(3n+2) .book-illustration{background:linear-gradient(145deg,#e3f1f5,#f0f4e7)}
+.book-chapter:nth-child(3n) .book-illustration{background:linear-gradient(145deg,#f3f2e5,#e3f2e5)}
+.book-today{background:#eef8ef;border-left:5px solid #218164;border-radius:0 16px 16px 0;padding:17px 21px;margin-bottom:27px}
+.book-today strong{display:block;font-size:17px;line-height:1.45;color:#15583f}
+.book-today p{font-size:18px;line-height:1.66;color:#284f3c;margin:8px 0 0}
+.book-chapter-text{font:400 19px/1.82 system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#2e403a}
+.book-section{margin:0 0 25px}
+.book-section h4{font:800 21px/1.35 system-ui,-apple-system,"Segoe UI",sans-serif;color:#1c5f47;letter-spacing:-.02em;margin:31px 0 14px}
+.book-section p{font-size:19px;line-height:1.82;margin:0 0 16px}
+.book-section ul,.book-section ol{padding-left:27px;margin:12px 0 20px}
+.book-section li{font-size:19px;line-height:1.72;padding-left:6px;margin-bottom:12px}
+.book-section li::marker{font-weight:800;color:#217857}
+.book-chapter-foot{padding-top:20px;margin-top:29px;border-top:1px dashed #d3e1d4;color:#657f6f;font-size:14px;font-weight:700;text-align:center}
+.book-next{text-align:center;padding:25px 16px 37px;color:#507665}
+.book-next-symbol{font-size:26px;color:#34896a;display:block}
+.book-next p{margin:5px 0;font-size:14px}
+.book-ending{padding:34px clamp(22px,6vw,70px) 40px;background:#edf6ef;color:#274d3b;text-align:center}
+.book-ending strong{font-size:24px;line-height:1.25}
+.book-ending p{font-size:17px;line-height:1.65;margin:13px auto;max-width:600px}
+.book-ending small{display:block;font-size:12px;color:#63816e}
+#habitsView .page-head{max-width:900px;margin:0 auto 20px}
+#careView .gc-reading-section{margin-top:6px}
+@media(max-width:700px){
+ .book-cover-layout{grid-template-columns:1fr;gap:15px}
+ .book-cover-art{width:108px;height:108px;border-radius:26px;justify-self:end}
+ .book-cover-art img{width:76px;height:76px}
+ .book-chapter-header{grid-template-columns:minmax(0,1fr) 114px;gap:14px}
+ .book-illustration{min-height:132px;padding:10px;border-radius:18px}
+ .book-illustration img{width:80px;height:80px}
+ .book-illustration figcaption{font-size:11px}
+ .book-cover{padding:23px 21px}
+ .book-cover h2{font-size:31px}
+ .book-cover p{font-size:17px}
+ .book-pages{padding:0 22px}
+ .book-chapter-text,.book-section p,.book-section li{font-size:18px}
+ .book-section h4{font-size:19px}
+ .book-summary{font-size:17px}
+ .book-heading-text h3{font-size:26px}
+ .book-today p{font-size:17px}
+ .book-ordinal{font-size:11px}
+ .book-ordinal span:last-child{font-size:11px}
+}
+@media(max-width:400px){
+ .book-chapter-header{grid-template-columns:1fr}
+ .book-illustration{flex-direction:row;justify-content:flex-start;gap:17px;min-height:96px;max-width:100%;padding:12px}
+ .book-illustration img{width:73px;height:73px}
+ .book-illustration figcaption{font-size:12px}
+ .book-pages{padding:0 20px}
+ .book-cover-top{margin-bottom:19px}
+}
+@media(prefers-reduced-motion:reduce){.book-chapter{content-visibility:visible}}
