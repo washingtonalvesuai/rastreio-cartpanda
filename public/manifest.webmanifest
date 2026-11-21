@@ -4,8 +4,8 @@
   "description": "Acompanhe seus pedidos, consulte instruções dos produtos e orientações de bem-estar.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f5f8f5",
-  "theme_color": "#f5f8f5",
+  "background_color": "#080b14",
+  "theme_color": "#080b14",
   "icons": [
     {
       "src": "/assets/icon-192.png",
