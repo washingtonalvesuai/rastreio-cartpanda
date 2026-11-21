@@ -167,7 +167,7 @@ app.get("/api/internal/email-orders",async(req,res)=>{
    if(!email)return null;
    const id=String(order.id||order.order_id||"").slice(0,90);
    if(!id)return null;
-   return {id,email,number:String(order.number||order.order_number||"").slice(0,75),status:statusFor(order,trackingFrom(order))};
+   return {id,email,number:String(order.number||order.order_number||"").slice(0,75),status:statusFor(order,trackingFrom(order)),created_at:String(order.created_at||order.date_created||"").slice(0,50)};
   }).filter(Boolean);
   const lastPage=Number(raw?.orders?.last_page||raw?.last_page)||null;
   const hasMore=page<MAX_SCAN_PAGES&&all.length>0&&(lastPage===null||page<lastPage);
@@ -180,30 +180,6 @@ app.get("/api/internal/email-orders",async(req,res)=>{
 
 // Requests for recurring reminders are verified against a paid order, then
 // a confirmation link must be opened by the actual email owner.
-app.get("/api/reminders/config",(_,res)=>res.json({available:Boolean(MAIL_TOKEN)}));
-app.post("/api/reminders/subscribe",rateLimit,async(req,res)=>{
- const email=norm(req.body?.email);
- if(!email||email.length>254||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-  return res.status(400).json({error:"Informe um e-mail válido."});
- if(!MAIL_TOKEN)return res.status(503).json({error:"E-mails de cuidados ainda não estão disponíveis."});
- try{
-  const order=await findPaidOrder(email);
-  if(!order)return res.json({ok:true,message:"Se este e-mail possui uma compra confirmada, enviaremos um link de ativação."});
-  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),11000);
-  try{
-   const response=await fetch("https://mynaturalcare.app/_mail/subscribe",{
-    method:"POST",headers:{"Authorization":"Bearer "+MAIL_TOKEN,"Content-Type":"application/json"},
-    body:JSON.stringify({email}),signal:controller.signal
-   });
-   if(!response.ok)throw new Error("Notification service HTTP "+response.status);
-  }finally{clearTimeout(timer)}
-  return res.json({ok:true,message:"Confira sua caixa de entrada para confirmar os lembretes. Se não encontrar, veja também o spam."});
- }catch(e){
-  console.error("[mail] Reminder request failed",e.message);
-  return res.status(503).json({error:"Não conseguimos solicitar o lembrete agora. Tente novamente mais tarde."});
- }
-});
-
 app.use(express.static(path.join(path.dirname(fileURLToPath(import.meta.url)), "public"), { index: "index.html", maxAge: "1h" }));
 app.get("/health",(_,res)=>res.json({
   ok:true,configured:Boolean(SHOP&&TOKEN)
