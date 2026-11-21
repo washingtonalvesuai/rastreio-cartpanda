@@ -177,7 +177,7 @@ app.get("/api/internal/email-orders",async(req,res)=>{
    if(!email)return null;
    const id=String(order.id||order.order_id||"").slice(0,90);
    if(!id)return null;
-   return {id,email,number:String(order.number||order.order_number||"").slice(0,75),status:statusFor(order,trackingFrom(order)),created_at:String(order.created_at||order.date_created||"").slice(0,50)};
+   return {id,email,number:String(order.number||order.order_number||"").slice(0,75),status:statusFor(order,trackingFrom(order)),created_at:String(order.created_at||order.date_created||"").slice(0,50),product_name:String(order.line_items?.[0]?.title||order.line_items?.[0]?.name||"NervLief").slice(0,100)};
   }).filter(Boolean);
   console.info("[mail] snapshot page="+page+" found="+all.length+" paid="+all.filter(isPaid).length+" usable="+orders.length);
   const lastPage=Number(raw?.orders?.last_page||raw?.last_page)||null;
