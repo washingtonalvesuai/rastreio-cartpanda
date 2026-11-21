@@ -1,6 +1,6 @@
 <!doctype html><html lang="pt-BR"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#080b14"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="My Natural Care">
+<meta name="theme-color" content="#f5f8f5"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="My Natural Care">
 <meta name="description" content="O My Natural Care ajuda você a acompanhar pedidos, consultar instruções de produtos e conhecer hábitos saudáveis para o dia a dia.">
 <meta property="og:type" content="website"><meta property="og:site_name" content="My Natural Care"><meta property="og:title" content="My Natural Care — Seus cuidados em um só lugar"><meta property="og:description" content="Acompanhe seu pedido e consulte guias úteis sobre o produto e bem-estar."><meta property="og:image" content="https://mynaturalcare.app/assets/whatsapp-logo.png"><meta property="og:url" content="https://mynaturalcare.app/"><meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/assets/icon-192.png"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest"><title>My Natural Care | Seu Aplicativo de Cuidados</title>
@@ -131,6 +131,7 @@
 
 
 </style>
+<link rel="stylesheet" href="/assets/light-theme.css">
 </head><body>
 <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs>
 <symbol id="ico-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></symbol>
@@ -226,11 +227,9 @@
  <div class="care-panel" id="careWaitSection" hidden><h2 style="font-size:22px;margin:0 0 8px">Parabéns por acompanhar seus cuidados! ✓</h2>
  <p class="care-intro" id="careWaitMessage">Muito bem! Continue fortalecendo sua rotina. Em 3 dias, você poderá celebrar e acompanhar seu progresso novamente.</p>
  <button class="secondary-action" type="button" data-goto="habits">Rever dicas de cuidados</button></div>
- <section class="gc-preview-section" aria-labelledby="gcPreviewTitle">
+ <section class="gc-reading-section" aria-label="Livro prático de cuidados e bem-estar">
   <div id="careGuidePreview" class="gc-preview"><div class="gc-guide-pending" role="status">
-    <span class="gc-eyebrow">GUIA PRÁTICO ILUSTRADO</span><h2 id="gcPreviewTitle">Aprenda a cuidar melhor de você</h2>
-    <p>Orientações organizadas para facilitar sua rotina, desde a alimentação até a proteção dos pés.</p>
-    <button type="button" class="gc-see-all" data-goto="habits">Explorar o guia de cuidados <span aria-hidden="true">→</span></button>
+    <h2>Seu livro ilustrado de cuidados</h2><p>Leia com calma: capítulos, ilustrações e orientações em sequência, como em um livro.</p>
   </div></div>
 </section>
 
@@ -248,9 +247,9 @@
 
 <section id="habitsView" class="view-content" hidden>
  <div class="page-head"><button class="back-button" type="button" data-goto="home" aria-label="Voltar ao início"><svg style="transform:rotate(180deg)"><use href="#ico-chevron"/></svg></button>
- <div><h1>Guia Completo de Cuidados</h1><p>Ilustrações e orientações para ajudar na sua rotina de bem-estar.</p></div></div>
+ <div><h1>Seu Livro de Bem-estar</h1><p>Leitura simples, ilustrada e em sequência. É só rolar a página.</p></div></div>
  <div id="habitsGuideLibrary" class="gc-library">
-   <div class="gc-guide-pending" role="status"><span class="gc-eyebrow">GUIA PRÁTICO</span><h2>28 cuidados para você explorar</h2><p>Os conteúdos serão carregados assim que você abrir esta área.</p></div>
+   <div class="gc-guide-pending" role="status"><h2>Preparando sua leitura...</h2><p>O livro completo aparece aqui, com 28 capítulos em sequência.</p></div>
  </div>
 </section>
 </div></main><nav class="bottom-nav" aria-label="Navegação do aplicativo"><button type="button" class="active" data-goto="home" aria-current="page"><svg><use href="#ico-home"/></svg><span>Início</span></button><button type="button" data-goto="tracking"><svg><use href="#ico-package"/></svg><span>Rastreio</span></button><button type="button" data-goto="guide"><svg><use href="#ico-book"/></svg><span>Guia</span></button><button type="button" data-goto="habits"><svg><use href="#ico-leaf"/></svg><span>Bem-estar</span></button><button type="button" data-goto="care"><svg><use href="#ico-leaf"/></svg><span>Cuidados</span></button></nav><footer class="app-footer">© 2026 My Natural Care · <a href="mailto:support@nervlief.com">Suporte ao Cliente</a><br>Conteúdo educativo; não substitui orientação médica.</footer></section>
@@ -311,7 +310,7 @@ function loadIllustratedGuide(){
   script.onload=()=>resolve(true);
   script.onerror=()=>{
    guideScriptPromise=null;
-   const feedback='<div class="gc-load-error"><strong>Não foi possível abrir o guia agora.</strong><p>Verifique a conexão e tente novamente.</p><button type="button" data-reload-guide>Tentar novamente</button></div>';
+   const feedback='<div class="book-loading"><strong>Não foi possível carregar o livro agora.</strong><p>Verifique a conexão e tente novamente.</p><button type="button" data-reload-guide>Tentar novamente</button></div>';
    for(const id of ['careGuidePreview','habitsGuideLibrary']){const box=document.getElementById(id);if(box)box.innerHTML=feedback;}
    reject(new Error('Falha ao carregar a biblioteca de cuidados'));
   };
@@ -354,7 +353,7 @@ function putCareData(data){try{localStorage.setItem(careStoreKey(),JSON.stringif
 function careDayKey(date=new Date()){return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-')}
 function careDateText(date){return new Date(date).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'})}
 function careTimeRemaining(ms){const days=Math.ceil(ms/(24*60*60*1000));return days===1?'amanhã': 'em '+days+' dias'}
-function careTone(n){return n>=75?{tone:'green',color:'#7ee7b3',message:'Parabéns! Sua rotina está firme'}:n>=50?{tone:'yellow',color:'#f1d18b',message:'Muito bem! Continue fortalecendo seus hábitos'}:{tone:'red',color:'#ff9e99',message:'Cada novo cuidado é uma conquista'}}
+function careTone(n){return n>=75?{tone:'green',color:'#177a57',message:'Parabéns! Sua rotina está firme'}:n>=50?{tone:'yellow',color:'#986610',message:'Muito bem! Continue fortalecendo seus hábitos'}:{tone:'red',color:'#b44147',message:'Cada novo cuidado é uma conquista'}}
 function carePercentValue(value){return value===null||value===undefined?null:Math.round(Number(value)*20)}
 function careLatest(){const d=getCareData();return d.records.length?d.records[0]:null}
 function pillDaysFromDaily(){
@@ -626,7 +625,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!app.hidd
 
 function showApp(value){email=value;signed.textContent=value;login.hidden=true;app.hidden=false;storeEmail(value);go('home');loadOrder();renderCare();}
 function signOut(){careDraft={};capsDraft=undefined;lookupSeq++;email='';lastOrder=null;carrierUrl='';result.innerHTML='';try{localStorage.removeItem(EMAIL_KEY)}catch{};$('accountMenu').hidden=true;app.hidden=true;login.hidden=false;input.value='';input.focus();window.scrollTo(0,0);}
-function go(view){if(!['home','tracking','guide','habits','care'].includes(view))return;currentView=view;$('homeView').hidden=view!=='home';$('contentViews').hidden=view==='home';['tracking','guide','habits','care'].forEach(x=>{$(x+'View').hidden=x!==view});document.querySelectorAll('.bottom-nav button').forEach(b=>{const active=b.dataset.goto===view;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});$('accountMenu').hidden=true;$('accountToggle').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'instant'});if(view==='tracking'&&!lastOrder)loadOrder();if(view==='care'||view==='home')renderCare();if(view==='care'||view==='habits')loadIllustratedGuide();}
+function go(view){if(!['home','tracking','guide','habits','care'].includes(view))return;currentView=view;$('homeView').hidden=view!=='home';$('contentViews').hidden=view==='home';['tracking','guide','habits','care'].forEach(x=>{$(x+'View').hidden=x!==view});document.querySelectorAll('.bottom-nav button').forEach(b=>{const active=b.dataset.goto===view;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});$('accountMenu').hidden=true;$('accountToggle').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'instant'});if(view==='tracking'&&!lastOrder)loadOrder();if(view==='care'||view==='home')renderCare();if(view==='care'||view==='habits')loadIllustratedGuide().then(ok=>{if(ok&&window.MNCGuide)window.MNCGuide.mount(view)});}
 function renderState(title,message){carrierUrl='';result.innerHTML=`<div class="order-state"><h2 style="font-size:22px;margin:0 0 8px">${escapeHTML(title)}</h2><p style="color:var(--muted);margin:0 0 18px">${escapeHTML(message)}</p><button type="button" id="retryLookup" class="secondary-action">${icon('reload')} Tentar Novamente</button></div>`;$('retryLookup').addEventListener('click',loadOrder);}
 function renderOrder(data){lastOrder=data;const order=data?.order||data||{},t=order.tracking||{};const number=order.number||order.order_number||order.order_id||'',company=t.tracking_company||order.tracking_company||'Ainda não informada',trackingNumber=t.tracking_number||order.tracking_number||'Em breve';carrierUrl=safeURL(t.tracking_url||order.tracking_url);const statuses={preparing:'Preparando envio',shipped:'Enviado',partially_shipped:'Enviado parcialmente',delivered:'Entregue',pending:'Preparando envio'};const status=statuses[String(order.status||'').toLowerCase()]||'Pedido confirmado';result.innerHTML=`<div class="order-state"><div class="order-top"><div><div class="order-label">Último pedido</div><div class="order-number">${number?'#'+escapeHTML(number):'Seu pedido'}</div></div><span class="status-pill">${escapeHTML(status)}</span></div><div class="detail-grid"><div class="detail"><small>Transportadora</small><strong>${escapeHTML(company)}</strong></div><div class="detail"><small>Código de rastreamento</small><strong>${escapeHTML(trackingNumber)}</strong></div></div>${carrierUrl?`<a href="${escapeHTML(carrierUrl)}" class="big-action" target="_blank" rel="noopener noreferrer">Abrir Rastreamento da Transportadora ${icon('arrow')}</a><p style="font-size:13px;color:var(--muted);margin:12px 0 0">O site oficial da transportadora será aberto em uma nova aba.</p>`:`<div class="notice">${escapeHTML(PREPARING_MESSAGE)}</div>`}</div>`;}
 async function loadOrder(){if(!email)return;const seq=++lookupSeq;loading.hidden=false;try{const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),13000);let r;try{r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',body:JSON.stringify({email}),signal:controller.signal})}finally{clearTimeout(timer)}if(seq!==lookupSeq)return;if(r.status===404){lastOrder=null;renderState('Preparando seu pedido para envio 📦',PREPARING_MESSAGE);return;}if(!r.ok){lastOrder=null;renderState('O rastreamento está temporariamente indisponível.','Tente novamente mais tarde ou entre em contato com o suporte. Seus guias continuam disponíveis.');return;}const json=await r.json();if(seq!==lookupSeq)return;if(json.error){lastOrder=null;renderState('Preparando seu pedido para envio 📦',PREPARING_MESSAGE);return;}if(json.number||json.order||json.order_id||json.order_number)renderOrder(json);else renderState('Preparando seu pedido para envio 📦',PREPARING_MESSAGE);}catch{if(seq===lookupSeq)renderState('Não foi possível atualizar o rastreamento.','Verifique sua conexão e tente novamente.');}finally{if(seq===lookupSeq)loading.hidden=true;}}
