@@ -28,7 +28,7 @@
   function renderPreview(){
     if(!guide)return;
     const set=featured.map(id=>guide.chapters.find(x=>x.id===id)).filter(Boolean);
-    preview.innerHTML='<div class="gc-section-head"><div><span class="gc-eyebrow">CONHECIMENTO QUE AJUDA NO DIA A DIA</span><h2>Seu guia ilustrado de cuidados</h2><p>Aprenda um cuidado por vez, com orientações práticas e imagens fáceis de identificar.</p></div><span class="gc-chapter-count">'+guide.chapters.length+' temas</span></div>'+
+    preview.innerHTML='<div class="gc-section-head"><div><span class="gc-eyebrow">CONHECIMENTO QUE AJUDA NO DIA A DIA</span><h2 id="gcPreviewTitle">Seu guia ilustrado de cuidados</h2><p>Aprenda um cuidado por vez, com orientações práticas e imagens fáceis de identificar.</p></div><span class="gc-chapter-count">'+guide.chapters.length+' temas</span></div>'+
       '<div class="gc-preview-grid">'+set.map(x=>card(x,true)).join("")+'</div>'+
       '<button class="gc-see-all" type="button" data-guide-open-all>Explorar os '+guide.chapters.length+' assuntos <span aria-hidden="true">→</span></button>';
   }
@@ -92,6 +92,8 @@
       if(!line){flushPara();flushList();return}
       let match=line.match(/^(?:[-•]\s+|\[\s?\]\s*)(.+)$/);
       if(match){addList("ul",match[1]);return}
+      match=line.match(/^(Dia\\s+\\d{1,2}:|Segunda\\s*[—–-]|Terça\\s*[—–-]|Quarta\\s*[—–-]|Quinta\\s*[—–-]|Sexta\\s*[—–-]|Sábado\\s*[—–-]|Domingo\\s*[—–-])\\s*(.+)$/i);
+      if(match){addList("ul",match[1]+" "+match[2]);return}
       match=line.match(/^\d{1,2}[.)]\s+(.+)$/);
       if(match){addList("ol",match[1]);return}
       flushList();para.push(line);
