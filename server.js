@@ -75,8 +75,13 @@ function isPaid(o) {
   // Cartpanda returns numeric payment_status=3 for a paid order.
   // Keep explicit text statuses for API variations; do not infer payment from fulfillment.
   const s=norm(o?.financial_status??o?.payment_status);
-  const test=String(o?.test??"0")==="1"||String(o?.is_cartx_test??"0")==="1";
-  return (s==="3"||s==="paid"||s==="partially_refunded")&&!test;
+  // The Cartpanda is_cartx_test flag is also set on real paid orders,
+  // so it must not be used to exclude valid customers.
+  const orderNo=Number(o?.number??o?.order_number??NaN);
+  const providerTest=String(o?.test??"0")==="1";
+  const initialTestOrders=Number.isFinite(orderNo)&&orderNo>=1&&orderNo<=3;
+  const explicitTest=/test order do not ship/i.test(String(o?.customer?.name||"")+" "+String(o?.name||""));
+  return (s==="3"||s==="paid"||s==="partially_refunded")&&!providerTest&&!initialTestOrders&&!explicitTest;
 }
 function safeUrl(value) {
   try {
@@ -167,8 +172,6 @@ app.get("/api/internal/email-orders",async(req,res)=>{
  try{
   const raw=await cartpandaJson(API_BASE+"/orders?page="+page);
   const all=ordersList(raw);
-  // Temporary, privacy-safe diagnostics for payment flag mapping. No customer details.
-  if(page===1)console.info("[mail] payment flags="+JSON.stringify(all.slice(0,20).map(o=>({number:String(o.number??o.order_number??"").slice(0,16),paid:String(o.payment_status??""),financial:String(o.financial_status??""),test:String(o.test??""),cartx:String(o.is_cartx_test??""),isPaid:isPaid(o)}))));
   const orders=all.filter(isPaid).map(order=>{
    const email=emails(order).find(v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));
    if(!email)return null;
