@@ -102,7 +102,7 @@ async function scanReminders(env,now){
   const start=Number(row.last_reminder_at||row.confirmed_at),key="care-"+(await hash(row.email)).slice(0,30)+"-"+start;
   const prev=await env.DB.prepare("SELECT state FROM dispatches WHERE delivery_key=?").bind(key).first();
   if(prev?.state==="sent"){await env.DB.prepare("UPDATE subscriptions SET last_reminder_at=? WHERE email=?").bind(now,row.email).run();continue}
-  const token=random(),optout=BASE+"/_mail/unsubscribe?token="+token;
+  const token=await hash("unsub:"+row.email+":"+row.confirmed_at+":"+env.INTERNAL_TOKEN),optout=BASE+"/_mail/unsubscribe?token="+token;
   await env.DB.prepare("INSERT OR IGNORE INTO dispatches(delivery_key,email,kind,state,created_at) VALUES(?,?,'care','pending',?)").bind(key,row.email,now).run();
   const subject="Seu momento de cuidar de você chegou 💚",message="Acesse o My Natural Care para acompanhar seus cuidados de hoje e, quando estiver disponível, atualizar sua avaliação.";
   try{
