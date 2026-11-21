@@ -32,7 +32,7 @@
 .care-home-card p{margin:0 0 12px;color:#d4e6df;font-size:15px}
 .care-home-chip{background:rgba(113,237,189,.14);border-radius:999px;color:#9cf1d3;padding:6px 12px;font-size:13px;font-weight:800}
 .care-hero-metrics{display:grid;grid-template-columns:155px 1fr;gap:20px;align-items:center}
-.care-score-ring{--pct:0;--ring:#85b6b0;width:148px;height:148px;border-radius:50%;background:conic-gradient(var(--ring) calc(var(--pct)*1%),rgba(255,255,255,.09) 0);padding:10px;display:grid;place-items:center}
+.care-score-ring{--pct:0;--ring:#85b6b0;width:148px;height:148px;border-radius:50%;background:conic-gradient(var(--ring) calc(var(--pct) * 1%),rgba(255,255,255,.09) 0);padding:10px;display:grid;place-items:center}
 .care-score-inner{width:100%;height:100%;background:#111b2a;border-radius:50%;display:grid;align-content:center;text-align:center}
 .care-score-inner strong{font-size:37px;line-height:1.1;letter-spacing:-1px}
 .care-score-inner span{color:#c2cedb;font-size:13px}
@@ -67,6 +67,14 @@
 .care-guide-card h3{font-size:18px;margin:0 0 9px}.care-guide-card p{color:#bfcfdc;font-size:15px;margin:0 0 8px}.care-guide-card ul{padding-left:20px;color:#cad8e1;font-size:15px;margin:7px 0}.care-guide-card li+li{margin-top:6px}
 @media(max-width:700px){.care-hero-metrics{grid-template-columns:1fr}.care-score-ring{margin:auto}.care-pillar-grid,.care-guide-grid{grid-template-columns:1fr}.care-home-card{padding:18px}.care-panel{padding:17px}.care-rate{gap:6px}.bottom-nav{width:min(610px,calc(100% - 12px));padding:6px;bottom:7px}.bottom-nav button{font-size:11px;min-height:56px;padding:4px 2px}.bottom-nav button svg{width:21px;height:21px}}
 
+
+.care-reminder{display:flex;align-items:center;justify-content:space-between;gap:14px;background:linear-gradient(120deg,#23362e,#1b3441);border:1px solid rgba(113,237,189,.35);padding:15px 17px;border-radius:17px;margin:0 0 17px;flex-wrap:wrap}
+.care-reminder strong{display:block;font-size:17px;margin-bottom:2px}
+.care-reminder span{font-size:14px;color:#c7dfd5}
+.care-reminder-actions{display:flex;gap:8px;flex-wrap:wrap}
+.care-reminder-actions button{min-height:43px;padding:8px 12px;font-size:14px}
+@media(max-width:620px){.care-reminder{align-items:stretch}.care-reminder-actions{width:100%}.care-reminder-actions button{flex:1}}
+
 </style>
 </head><body>
 <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs>
@@ -86,6 +94,7 @@
 <section id="loginScreen" aria-labelledby="loginTitle"><div class="auth-wrap"><img class="auth-logo" src="/assets/icon-192.png" alt="Ícone do aplicativo My Natural Care"><div class="auth-brand">My Natural Care</div><h1 id="loginTitle">Boas-vindas ao seu<br>espaço de cuidados.</h1><p class="auth-sub">Acompanhe seu pedido e consulte seus guias de bem-estar em um único aplicativo simples.</p><form id="accessForm" class="auth-form" novalidate><label for="customerEmail">E-mail utilizado na compra</label><input class="email-field" id="customerEmail" type="email" inputmode="email" autocomplete="email" required placeholder="seu@email.com"><button class="main-button" type="submit">Acessar Meu Aplicativo <svg><use href="#ico-arrow"/></svg></button><div class="auth-error" id="emailError" hidden>Digite um endereço de e-mail válido.</div><div class="auth-help"><svg><use href="#ico-lock"/></svg>Sem senha ou código de confirmação</div></form><div class="login-extras"><button type="button" class="text-link" data-open-install>Como instalar o aplicativo</button><span style="color:#6e8292">•</span><a class="text-link" href="mailto:support@nervlief.com">Precisa de ajuda?</a></div><p class="login-footer">© 2026 My Natural Care · Acesso fácil para todas as idades</p></div></section>
 <section id="appShell" hidden><header class="app-header"><div class="app-header-in"><div class="app-brand"><img src="/assets/icon-192.png" alt="My Natural Care"><div><strong>My Natural Care</strong><small>Sua central pessoal de bem-estar</small></div></div><div class="header-actions"><button type="button" class="icon-button" title="Instalar aplicativo" aria-label="Instalar aplicativo" data-open-install><svg><use href="#ico-download"/></svg></button><button type="button" class="icon-button" id="accountToggle" title="Conta" aria-label="Menu da conta" aria-expanded="false"><svg><use href="#ico-user"/></svg></button></div></div><div id="accountMenu" class="top-menu" hidden><button id="changeEmail" type="button"><svg><use href="#ico-user"/></svg>Trocar e-mail</button><button type="button" data-open-install><svg><use href="#ico-download"/></svg>Instalar aplicativo</button><a style="display:flex;gap:10px;padding:12px 14px;align-items:center;font-size:15px" href="mailto:support@nervlief.com"><svg><use href="#ico-help"/></svg>Suporte ao cliente</a></div></header>
 <main class="app-container"><section id="homeView"><div class="hello"><div><h1>Bem-vindo à sua central de cuidados</h1><p>Seu pedido e suas orientações de bem-estar em um só lugar.</p></div><span class="tiny-email" id="signedEmail"> </span></div>
+<aside id="careReminder" class="care-reminder" role="status" hidden><div><strong>Está na hora de avaliar seus cuidados</strong><span>Seu check-in de 3 dias está disponível. Você pode continuar usando o aplicativo normalmente.</span></div><div class="care-reminder-actions"><button type="button" class="big-action" data-goto="care">Avaliar agora</button><button type="button" class="secondary-action" id="careDismiss">Depois</button></div></aside>
 <div class="feature-stage"><div class="banner-track" id="bannerTrack">
 <article class="promo-banner"><div class="promo-content"><div class="promo-kicker">SEU PEDIDO, SEM COMPLICAÇÕES</div><h2>Acompanhe sua entrega com facilidade.</h2><p>Veja o andamento do pedido e acesse o rastreamento da transportadora quando quiser.</p><button class="white-button" data-goto="tracking">Rastrear Meu Pedido <svg><use href="#ico-arrow"/></svg></button></div><div class="promo-deco"><svg><use href="#ico-package"/></svg></div></article>
 <article class="promo-banner guide-banner"><div class="promo-content"><div class="promo-kicker">GUIA DE USO DO PRODUTO</div><h2>Tudo o que você precisa saber.</h2><p>Instruções simples para usar seu produto, sempre à mão.</p><button class="white-button" data-goto="guide">Ver Meu Guia <svg><use href="#ico-arrow"/></svg></button></div><div class="promo-deco"><svg><use href="#ico-book"/></svg></div></article>
@@ -261,6 +270,15 @@ function pillDaysFromDaily(){
  for(let i=0;i<3;i++){const date=new Date(now.getFullYear(),now.getMonth(),now.getDate()-i);if(d.daily[careDayKey(date)]===true)n++}
  return n;
 }
+
+function getCareDismissedToday(){
+ try{return localStorage.getItem('mnc_care_later_'+hashCareEmail(email))===careDayKey()}catch{return false}
+}
+$('careDismiss').addEventListener('click',()=>{
+ try{localStorage.setItem('mnc_care_later_'+hashCareEmail(email),careDayKey())}catch{}
+ $('careReminder').hidden=true;
+});
+
 function buildCareQuestions(){
  const host=$('careQuestions');
  host.innerHTML=careFields.map(field=>'<div class="care-question"><h3>'+field.title+'</h3><p>'+field.hint+'</p><div class="care-rate" role="group" aria-label="Nota de '+field.title.slice(2)+' de 1 a 5">'+[1,2,3,4,5].map(n=>'<button type="button" data-care-rating="'+field.key+'" data-rating="'+n+'" aria-pressed="false" aria-label="Nota '+n+' de 5">'+n+'</button>').join('')+'</div><button type="button" class="care-not-applicable" data-care-na="'+field.key+'" aria-pressed="false">Não se aplica</button></div>').join('');
@@ -325,6 +343,8 @@ function renderCare(){
  $('careWaitSection').hidden=due;
  $('careWaitMessage').textContent=due?'Você pode registrar uma nova avaliação.':'Sua próxima avaliação ficará disponível '+careTimeRemaining(CARE_INTERVAL-(now-last.at))+'. Enquanto isso, você pode marcar as cápsulas diariamente.';
  const homeMessage= due?(last?'Já se passaram 3 dias. Que tal atualizar suas notas?':'Comece sua primeira avaliação de cuidados, sem pressa.'):'Seu próximo check-in será '+careTimeRemaining(CARE_INTERVAL-(now-last.at))+'. Continue cuidando de você!';
+
+ $('careReminder').hidden=!due||getCareDismissedToday();
  $('careHomeMessage').textContent=homeMessage;
  $('careHomeScore').textContent=last?'Seu cuidado: '+score+'/100':'Primeira avaliação';
  $('careHomeScore').style.color=tone?tone.color:'#9cf1d3';
@@ -352,7 +372,7 @@ buildCareQuestions();
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!app.hidden)renderCare()});
 
 function showApp(value){email=value;signed.textContent=value;login.hidden=true;app.hidden=false;storeEmail(value);go('home');loadOrder();renderCare();}
-function signOut(){lookupSeq++;email='';lastOrder=null;carrierUrl='';result.innerHTML='';try{localStorage.removeItem(EMAIL_KEY)}catch{};$('accountMenu').hidden=true;app.hidden=true;login.hidden=false;input.value='';input.focus();window.scrollTo(0,0);}
+function signOut(){careDraft={};capsDraft=undefined;lookupSeq++;email='';lastOrder=null;carrierUrl='';result.innerHTML='';try{localStorage.removeItem(EMAIL_KEY)}catch{};$('accountMenu').hidden=true;app.hidden=true;login.hidden=false;input.value='';input.focus();window.scrollTo(0,0);}
 function go(view){if(!['home','tracking','guide','habits','care'].includes(view))return;currentView=view;$('homeView').hidden=view!=='home';$('contentViews').hidden=view==='home';['tracking','guide','habits','care'].forEach(x=>{$(x+'View').hidden=x!==view});document.querySelectorAll('.bottom-nav button').forEach(b=>{const active=b.dataset.goto===view;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});$('accountMenu').hidden=true;$('accountToggle').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'instant'});if(view==='tracking'&&!lastOrder)loadOrder();if(view==='care'||view==='home')renderCare();}
 function renderState(title,message){carrierUrl='';result.innerHTML=`<div class="order-state"><h2 style="font-size:22px;margin:0 0 8px">${escapeHTML(title)}</h2><p style="color:var(--muted);margin:0 0 18px">${escapeHTML(message)}</p><button type="button" id="retryLookup" class="secondary-action">${icon('reload')} Tentar Novamente</button></div>`;$('retryLookup').addEventListener('click',loadOrder);}
 function renderOrder(data){lastOrder=data;const order=data?.order||data||{},t=order.tracking||{};const number=order.number||order.order_number||order.order_id||'',company=t.tracking_company||order.tracking_company||'Ainda não informada',trackingNumber=t.tracking_number||order.tracking_number||'Em breve';carrierUrl=safeURL(t.tracking_url||order.tracking_url);const statuses={preparing:'Preparando envio',shipped:'Enviado',partially_shipped:'Enviado parcialmente',delivered:'Entregue',pending:'Preparando envio'};const status=statuses[String(order.status||'').toLowerCase()]||'Pedido confirmado';result.innerHTML=`<div class="order-state"><div class="order-top"><div><div class="order-label">Último pedido</div><div class="order-number">${number?'#'+escapeHTML(number):'Seu pedido'}</div></div><span class="status-pill">${escapeHTML(status)}</span></div><div class="detail-grid"><div class="detail"><small>Transportadora</small><strong>${escapeHTML(company)}</strong></div><div class="detail"><small>Código de rastreamento</small><strong>${escapeHTML(trackingNumber)}</strong></div></div>${carrierUrl?`<a href="${escapeHTML(carrierUrl)}" class="big-action" target="_blank" rel="noopener noreferrer">Abrir Rastreamento da Transportadora ${icon('arrow')}</a><p style="font-size:13px;color:var(--muted);margin:12px 0 0">O site oficial da transportadora será aberto em uma nova aba.</p>`:`<div class="notice">O link de rastreamento ainda não está disponível. Consulte novamente após a preparação do pedido para envio.</div>`}</div>`;}
