@@ -230,9 +230,130 @@ const escapeHTML=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 const safeURL=v=>{try{const u=new URL(String(v));return u.protocol==='https:'?u.href:''}catch{return''}};
 const validEmail=v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v||''));
 const storeEmail=v=>{try{localStorage.setItem(EMAIL_KEY,v)}catch{}};
-function showApp(value){email=value;signed.textContent=value;login.hidden=true;app.hidden=false;storeEmail(value);go('home');loadOrder();}
+
+// Acompanhamento voluntário local: notas de hábitos, NÃO um indicador clínico.
+const CARE_INTERVAL=3*24*60*60*1000;
+const careFields=[
+ {key:'food',title:'🥗 Alimentação',hint:'Nos últimos 3 dias, procurei fazer refeições equilibradas com frutas, verduras, proteínas e alimentos variados.'},
+ {key:'movement',title:'🚶 Movimento seguro',hint:'Fiz movimentos adequados para minhas condições e para as orientações que recebi, sem ultrapassar meus limites.'},
+ {key:'feet',title:'🦶 Cuidados com os pés',hint:'Observei e protegi meus pés, especialmente se tenho dormência ou diabetes.'},
+ {key:'sleep',title:'🌙 Sono e descanso',hint:'Procurei dormir e acordar em horários regulares e ter um descanso suficiente.'},
+ {key:'water',title:'💧 Hidratação',hint:'Mantive a hidratação adequada às minhas necessidades e recomendações de saúde.'}
+];
+let careDraft={},capsDraft=undefined;
+const careStoreKey=()=> 'mnc_care_v2_'+hashCareEmail(email);
+const hashCareEmail=value=>{let h=2166136261;for(const char of String(value||'').toLowerCase()){h^=char.charCodeAt(0);h=Math.imul(h,16777619)}return (h>>>0).toString(36)};
+function getCareData(){
+ try {
+  const obj=JSON.parse(localStorage.getItem(careStoreKey())||'null');
+  return obj&&Array.isArray(obj.records)&&obj.daily&&typeof obj.daily==='object'?obj:{records:[],daily:{}};
+ }catch{return {records:[],daily:{}}}
+}
+function putCareData(data){try{localStorage.setItem(careStoreKey(),JSON.stringify(data));return true}catch{return false}}
+function careDayKey(date=new Date()){return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-')}
+function careDateText(date){return new Date(date).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'})}
+function careTimeRemaining(ms){const days=Math.ceil(ms/(24*60*60*1000));return days===1?'amanhã': 'em '+days+' dias'}
+function careTone(n){return n>=75?{tone:'green',color:'#7ee7b3',message:'Ótima regularidade'}:n>=50?{tone:'yellow',color:'#f1d18b',message:'Você está construindo sua rotina'}:{tone:'red',color:'#ff9e99',message:'Pequenos passos fazem diferença'}}
+function carePercentValue(value){return value===null||value===undefined?null:Math.round(Number(value)*20)}
+function careLatest(){const d=getCareData();return d.records.length?d.records[0]:null}
+function pillDaysFromDaily(){
+ const d=getCareData();let n=0;const now=new Date();
+ for(let i=0;i<3;i++){const date=new Date(now.getFullYear(),now.getMonth(),now.getDate()-i);if(d.daily[careDayKey(date)]===true)n++}
+ return n;
+}
+function buildCareQuestions(){
+ const host=$('careQuestions');
+ host.innerHTML=careFields.map(field=>'<div class="care-question"><h3>'+field.title+'</h3><p>'+field.hint+'</p><div class="care-rate" role="group" aria-label="Nota de '+field.title.slice(2)+' de 1 a 5">'+[1,2,3,4,5].map(n=>'<button type="button" data-care-rating="'+field.key+'" data-rating="'+n+'" aria-pressed="false" aria-label="Nota '+n+' de 5">'+n+'</button>').join('')+'</div><button type="button" class="care-not-applicable" data-care-na="'+field.key+'" aria-pressed="false">Não se aplica</button></div>').join('');
+ host.addEventListener('click',e=>{
+  const rate=e.target.closest('[data-care-rating]'),na=e.target.closest('[data-care-na]');
+  if(rate){careDraft[rate.dataset.careRating]=Number(rate.dataset.rating);paintCareButtons()}
+  else if(na){careDraft[na.dataset.careNa]=null;paintCareButtons()}
+ });
+ $('careCapsChoices').addEventListener('click',e=>{
+  const btn=e.target.closest('[data-caps]');
+  if(btn){capsDraft=Number(btn.dataset.caps);paintCareButtons()}
+ });
+ $('careCapsNA').addEventListener('click',()=>{capsDraft=null;paintCareButtons()});
+ $('careDailyButton').addEventListener('click',()=>{
+  if(!email)return;
+  const data=getCareData(),today=careDayKey();
+  if(data.daily[today]===true)delete data.daily[today];else data.daily[today]=true;
+  const keys=Object.keys(data.daily).sort().reverse();
+  keys.slice(100).forEach(k=>delete data.daily[k]);
+  putCareData(data);if(capsDraft===undefined)capsDraft=pillDaysFromDaily();renderCare();
+ });
+ $('careCheckinForm').addEventListener('submit',e=>{
+  e.preventDefault();if(!email)return;
+  const data=getCareData(),last=data.records[0];
+  if(last&&Date.now()-Number(last.at)<CARE_INTERVAL){renderCare();return}
+  const incomplete=careFields.some(field=>careDraft[field.key]===undefined)||capsDraft===undefined;
+  if(incomplete){$('careError').hidden=false;$('careError').textContent='Escolha uma nota ou “Não se aplica” para cada cuidado e informe os dias das cápsulas.';return}
+  $('careError').hidden=true;
+  const pillars={};let sum=0,count=0;
+  careFields.forEach(field=>{const v=careDraft[field.key];const p=carePercentValue(v);pillars[field.key]=p;if(p!==null){sum+=p;count++}});
+  pillars.capsules=capsDraft===null?null:Math.round(capsDraft/3*100);
+  if(pillars.capsules!==null){sum+=pillars.capsules;count++}
+  if(!count){$('careError').hidden=false;$('careError').textContent='Escolha pelo menos um cuidado para avaliar.';return}
+  data.records.unshift({at:Date.now(),pillars,score:Math.round(sum/count)});
+  data.records=data.records.slice(0,40);
+  if(!putCareData(data)){$('careError').hidden=false;$('careError').textContent='Não foi possível salvar neste aparelho. Verifique se o navegador permite armazenamento local.';return}
+  careDraft={};capsDraft=undefined;renderCare();
+ });
+ buildEmptyCareQuestions();
+}
+function buildEmptyCareQuestions(){paintCareButtons()}
+function paintCareButtons(){
+ document.querySelectorAll('[data-care-rating]').forEach(b=>b.setAttribute('aria-pressed',String(careDraft[b.dataset.careRating]===Number(b.dataset.rating))));
+ document.querySelectorAll('[data-care-na]').forEach(b=>b.setAttribute('aria-pressed',String(Object.prototype.hasOwnProperty.call(careDraft,b.dataset.careNa)&&careDraft[b.dataset.careNa]===null)));
+ document.querySelectorAll('[data-caps]').forEach(b=>b.setAttribute('aria-pressed',String(capsDraft===Number(b.dataset.caps))));
+ $('careCapsNA').setAttribute('aria-pressed',String(capsDraft===null));
+}
+function renderCare(){
+ if(!email)return;
+ const data=getCareData(),last=data.records[0]||null,now=Date.now();
+ const due=!last||now-Number(last.at)>=CARE_INTERVAL;
+ const score=last?Number(last.score):null;
+ const tone=score!==null?careTone(score):null;
+ const ring=$('careRing');
+ ring.style.setProperty('--pct',score===null?0:score);
+ ring.style.setProperty('--ring',tone?tone.color:'#85b6b0');
+ $('careTotal').textContent=score===null?'—':score;
+ $('careStatusTitle').textContent=last?tone.message:'Comece com uma avaliação';
+ $('careStatusText').textContent=last?'Última avaliação: '+careDateText(last.at)+'. Continue no seu ritmo e acompanhe como estão seus cuidados.':'Dê uma nota a cada hábito. O aplicativo calcula um resumo de sua regularidade.';
+ $('careDueText').textContent=due?'Sua avaliação de cuidados está disponível agora.':'Nova avaliação '+careTimeRemaining(CARE_INTERVAL-(now-last.at))+'. Continue seus cuidados normalmente.';
+ $('careFormSection').hidden=!due;
+ $('careWaitSection').hidden=due;
+ $('careWaitMessage').textContent=due?'Você pode registrar uma nova avaliação.':'Sua próxima avaliação ficará disponível '+careTimeRemaining(CARE_INTERVAL-(now-last.at))+'. Enquanto isso, você pode marcar as cápsulas diariamente.';
+ const homeMessage= due?(last?'Já se passaram 3 dias. Que tal atualizar suas notas?':'Comece sua primeira avaliação de cuidados, sem pressa.'):'Seu próximo check-in será '+careTimeRemaining(CARE_INTERVAL-(now-last.at))+'. Continue cuidando de você!';
+ $('careHomeMessage').textContent=homeMessage;
+ $('careHomeScore').textContent=last?'Seu cuidado: '+score+'/100':'Primeira avaliação';
+ $('careHomeScore').style.color=tone?tone.color:'#9cf1d3';
+ const todayMarked=data.daily[careDayKey()]===true;
+ $('careDailyLabel').textContent=todayMarked?'Hoje: 2 cápsulas registradas ✓':'Hoje: ainda não marcado';
+ $('careDailyButton').textContent=todayMarked?'Desmarcar registro de hoje':'Marcar as 2 cápsulas de hoje';
+ $('careDailyButton').setAttribute('aria-pressed',String(todayMarked));
+ const all=[...careFields.map(x=>({key:x.key,title:x.title})),{key:'capsules',title:'💊 Uso das cápsulas'}];
+ $('carePillarScores').innerHTML=all.map(p=>{
+  const n=last?last.pillars[p.key]:null;
+  const t=n===null||n===undefined?null:careTone(Number(n));
+  const pct=n===null||n===undefined?0:Number(n);
+  const label=t?pct+'/100':'—';
+  return '<div class="care-pillar"><div class="care-pillar-head"><strong>'+p.title+'</strong><span class="'+(t?'care-tone-'+t.tone:'')+'">'+label+'</span></div><div class="care-meter"><i style="width:'+pct+'%;background:'+(t?t.color:'#85b6b0')+'"></i></div><small>'+(t?t.message:'Ainda não avaliado / não se aplica')+'</small></div>';
+ }).join('');
+ $('careHistory').innerHTML=data.records.length?data.records.slice(0,8).map((r,i)=>{
+  const t=careTone(r.score);
+  const delta=i<data.records.length-1?Number(r.score)-Number(data.records[i+1].score):null;
+  const deltaText=delta===null?'': ' · '+(delta>0?'+':'')+delta+' pontos';
+  return '<div class="care-history-row"><span>'+careDateText(r.at)+(i===0?' · mais recente':'')+'</span><strong class="care-tone-'+t.tone+'">'+r.score+'/100'+deltaText+'</strong></div>';
+ }).join(''):'<p class="care-intro">Suas avaliações aparecerão aqui depois do primeiro registro.</p>';
+ if(due){if(capsDraft===undefined&&pillDaysFromDaily()>0)capsDraft=pillDaysFromDaily();paintCareButtons()}
+}
+buildCareQuestions();
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!app.hidden)renderCare()});
+
+function showApp(value){email=value;signed.textContent=value;login.hidden=true;app.hidden=false;storeEmail(value);go('home');loadOrder();renderCare();}
 function signOut(){lookupSeq++;email='';lastOrder=null;carrierUrl='';result.innerHTML='';try{localStorage.removeItem(EMAIL_KEY)}catch{};$('accountMenu').hidden=true;app.hidden=true;login.hidden=false;input.value='';input.focus();window.scrollTo(0,0);}
-function go(view){if(!['home','tracking','guide','habits'].includes(view))return;currentView=view;$('homeView').hidden=view!=='home';$('contentViews').hidden=view==='home';['tracking','guide','habits'].forEach(x=>{$(x+'View').hidden=x!==view});document.querySelectorAll('.bottom-nav button').forEach(b=>{const active=b.dataset.goto===view;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});$('accountMenu').hidden=true;$('accountToggle').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'instant'});if(view==='tracking'&&!lastOrder)loadOrder();}
+function go(view){if(!['home','tracking','guide','habits','care'].includes(view))return;currentView=view;$('homeView').hidden=view!=='home';$('contentViews').hidden=view==='home';['tracking','guide','habits','care'].forEach(x=>{$(x+'View').hidden=x!==view});document.querySelectorAll('.bottom-nav button').forEach(b=>{const active=b.dataset.goto===view;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});$('accountMenu').hidden=true;$('accountToggle').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'instant'});if(view==='tracking'&&!lastOrder)loadOrder();if(view==='care'||view==='home')renderCare();}
 function renderState(title,message){carrierUrl='';result.innerHTML=`<div class="order-state"><h2 style="font-size:22px;margin:0 0 8px">${escapeHTML(title)}</h2><p style="color:var(--muted);margin:0 0 18px">${escapeHTML(message)}</p><button type="button" id="retryLookup" class="secondary-action">${icon('reload')} Tentar Novamente</button></div>`;$('retryLookup').addEventListener('click',loadOrder);}
 function renderOrder(data){lastOrder=data;const order=data?.order||data||{},t=order.tracking||{};const number=order.number||order.order_number||order.order_id||'',company=t.tracking_company||order.tracking_company||'Ainda não informada',trackingNumber=t.tracking_number||order.tracking_number||'Em breve';carrierUrl=safeURL(t.tracking_url||order.tracking_url);const statuses={preparing:'Preparando envio',shipped:'Enviado',partially_shipped:'Enviado parcialmente',delivered:'Entregue',pending:'Preparando envio'};const status=statuses[String(order.status||'').toLowerCase()]||'Pedido confirmado';result.innerHTML=`<div class="order-state"><div class="order-top"><div><div class="order-label">Último pedido</div><div class="order-number">${number?'#'+escapeHTML(number):'Seu pedido'}</div></div><span class="status-pill">${escapeHTML(status)}</span></div><div class="detail-grid"><div class="detail"><small>Transportadora</small><strong>${escapeHTML(company)}</strong></div><div class="detail"><small>Código de rastreamento</small><strong>${escapeHTML(trackingNumber)}</strong></div></div>${carrierUrl?`<a href="${escapeHTML(carrierUrl)}" class="big-action" target="_blank" rel="noopener noreferrer">Abrir Rastreamento da Transportadora ${icon('arrow')}</a><p style="font-size:13px;color:var(--muted);margin:12px 0 0">O site oficial da transportadora será aberto em uma nova aba.</p>`:`<div class="notice">O link de rastreamento ainda não está disponível. Consulte novamente após a preparação do pedido para envio.</div>`}</div>`;}
 async function loadOrder(){if(!email)return;const seq=++lookupSeq;loading.hidden=false;try{const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),13000);let r;try{r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',body:JSON.stringify({email}),signal:controller.signal})}finally{clearTimeout(timer)}if(seq!==lookupSeq)return;if(r.status===404){lastOrder=null;renderState('Ainda não encontramos seu pedido.','Confira se você digitou o mesmo e-mail utilizado na compra. Você ainda pode acessar o guia e a área de bem-estar.');return;}if(!r.ok){lastOrder=null;renderState('O rastreamento está temporariamente indisponível.','Tente novamente mais tarde ou entre em contato com o suporte. Seus guias continuam disponíveis.');return;}const json=await r.json();if(seq!==lookupSeq)return;if(json.error){lastOrder=null;renderState('Ainda não encontramos seu pedido.','Confira o e-mail utilizado na compra ou entre em contato com o suporte.');return;}if(json.number||json.order||json.order_id||json.order_number)renderOrder(json);else renderState('O rastreamento ainda não está disponível.','As informações do seu pedido poderão aparecer após o processamento da compra pela loja.');}catch{if(seq===lookupSeq)renderState('Não foi possível atualizar o rastreamento.','Verifique sua conexão e tente novamente.');}finally{if(seq===lookupSeq)loading.hidden=true;}}
