@@ -26,6 +26,8 @@
 .book-summary{font-size:19px;line-height:1.6;color:#50695c;margin:0}
 .book-illustration{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:170px;margin:0;padding:18px;border-radius:26px;background:linear-gradient(150deg,#e3f3e9,#d7edeb);border:1px solid #d6e8db;text-align:center}
 .book-illustration img{width:104px;height:104px;max-width:100%;object-fit:contain;display:block}
+/* Ícones Health Icons eram verde-claros no tema escuro; aplicar contraste no tema claro. */
+.book-illustration img,.book-cover-art img{filter:brightness(0) saturate(100%) invert(28%) sepia(29%) saturate(1140%) hue-rotate(100deg) brightness(92%) contrast(91%)}
 .book-illustration figcaption{font-size:12px;font-weight:800;color:#427359;line-height:1.45}
 .book-chapter:nth-child(3n+2) .book-illustration{background:linear-gradient(145deg,#e3f1f5,#f0f4e7)}
 .book-chapter:nth-child(3n) .book-illustration{background:linear-gradient(145deg,#f3f2e5,#e3f2e5)}
