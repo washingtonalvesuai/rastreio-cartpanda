@@ -1,5 +1,5 @@
 
-/* My Natural Care: D1-based order notification and opt-in care email scheduler. */
+/* My Natural Care: Three 72-hour post-purchase care emails and transactional shipment notices. */
 const BASE="https://mynaturalcare.app",FROM="My Natural Care <support@mynaturalcare.app>";
 const DAY=86400000,INTERVAL=3*DAY;
 const clean=v=>String(v||"").trim().toLowerCase();
@@ -24,44 +24,41 @@ async function send(env,email,subject,body,text,kind,key,button,url,footer,heade
  });
  if(!r.ok)throw Error("Resend "+r.status+" "+(await r.text()).slice(0,100));
 }
-async function subscribe(req,env){
- if(!env.INTERNAL_TOKEN||req.headers.get("Authorization")!=="Bearer "+env.INTERNAL_TOKEN)return j({error:"Unauthorized"},401);
- let body;try{body=await req.json()}catch{return j({error:"Invalid JSON"},400)}
- const email=clean(body.email);
- if(!valid(email))return j({error:"Invalid email"},400);
- const now=Date.now();
- const current=await env.DB.prepare("SELECT active,last_request_at FROM subscriptions WHERE email=?").bind(email).first();
- if(current?.active===1||current?.last_request_at&&now-current.last_request_at<12*3600000)return j({ok:true});
- const token=random(),digest=await hash(token),link=BASE+"/_mail/confirm?token="+token;
- await env.DB.prepare("INSERT INTO subscriptions(email,active,last_request_at,created_at) VALUES (?,0,?,?) ON CONFLICT(email) DO UPDATE SET last_request_at=excluded.last_request_at").bind(email,now,now).run();
- await env.DB.prepare("DELETE FROM confirmations WHERE email=?").bind(email).run();
- await env.DB.prepare("INSERT INTO confirmations(token_hash,email,expires_at,created_at) VALUES (?,?,?,?)").bind(digest,email,now+2*DAY,now).run();
- try{
-  const subject="Confirme seus lembretes de cuidados 💚",message="Você solicitou lembretes de autocuidado a cada 3 dias. Confirme seu e-mail para ativar. Se não solicitou, ignore esta mensagem.";
-  await send(env,email,subject,"<p>"+message+"</p><p>O link expira em 48 horas.</p>",message+"\n"+link,"optin","optin-"+digest.slice(0,50),"Confirmar lembretes",link);
-  return j({ok:true});
- }catch(e){console.error("Confirmation send failed",String(e).slice(0,120));return j({error:"Temporary delivery issue"},503)}
+
+/* Care emails are automatically attached to paid orders placed after CAMPAIGN_START.
+ * Customers can unsubscribe from the three-message onboarding sequence.
+ * A prior opt-out stays respected on future purchases.
+ */
+async function autoEnroll(env,email,purchasedAt){
+ const token=await hash("optout:v2:"+email+":"+env.INTERNAL_TOKEN);
+ const tokenHash=await hash(token);
+ await env.DB.prepare("INSERT OR IGNORE INTO subscriptions(email,active,confirmed_at,last_reminder_at,unsubscribe_hash,created_at,care_sent_count) VALUES (?,1,NULL,NULL,?,?,0)")
+  .bind(email,tokenHash,purchasedAt).run();
 }
-async function confirm(req,env){
- const token=new URL(req.url).searchParams.get("token")||"";
- if(!/^[a-f0-9]{64}$/.test(token))return page("Link inválido","Solicite uma nova confirmação pelo aplicativo.");
- const row=await env.DB.prepare("SELECT email,expires_at FROM confirmations WHERE token_hash=?").bind(await hash(token)).first();
- if(!row||row.expires_at<Date.now())return page("Link expirado","Solicite um novo e-mail de confirmação pelo aplicativo.");
- const now=Date.now();
- await env.DB.prepare("UPDATE subscriptions SET active=1,confirmed_at=?,last_reminder_at=NULL,unsubscribe_hash=NULL WHERE email=?").bind(now,row.email).run();
- await env.DB.prepare("DELETE FROM confirmations WHERE email=?").bind(row.email).run();
- return page("Lembretes ativados!","Você receberá um lembrete a cada 3 dias e poderá cancelar pelos links dos e-mails.");
+function unsubscribeConfirmation(token){
+ const url=BASE+"/_mail/unsubscribe?token="+token;
+ return '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Cancelar lembretes</title></head>'+
+ '<body style="background:#0c1521;color:#e6fff3;font:18px/1.65 Arial,sans-serif;padding:22px"><main style="max-width:510px;margin:50px auto;padding:27px;background:#172838;border:1px solid #285844;border-radius:18px">'+
+ '<h1>Cancelar lembretes de cuidados?</h1><p>Você deixará de receber os e-mails periódicos. Os avisos do seu pedido continuarão disponíveis.</p>'+
+ '<form method="POST" action="'+esc(url)+'"><button type="submit" style="padding:16px 23px;background:#9ef1c9;color:#153c2e;border:0;border-radius:12px;font-size:18px;font-weight:bold">Confirmar cancelamento</button></form></main></body></html>';
 }
 async function unsubscribe(req,env){
  const token=new URL(req.url).searchParams.get("token")||"";
- if(!/^[a-f0-9]{64}$/.test(token))return page("Link inválido","Confira o link de cancelamento do e-mail.");
- await env.DB.prepare("UPDATE subscriptions SET active=0,unsubscribe_hash=NULL WHERE unsubscribe_hash=?").bind(await hash(token)).run();
- return page("Lembretes cancelados","Você não receberá novos lembretes. Avisos transacionais sobre seus pedidos continuam disponíveis.");
+ if(!/^[a-f0-9]{64}$/.test(token))return page("Link inválido","Confira o link do e-mail que você recebeu.");
+ const row=await env.DB.prepare("SELECT email FROM subscriptions WHERE unsubscribe_hash=?").bind(await hash(token)).first();
+ if(!row)return page("Link inválido ou já utilizado","Se você já cancelou, não precisa fazer mais nada.");
+ if(req.method==="GET")return new Response(unsubscribeConfirmation(token),{headers:{"Content-Type":"text/html; charset=utf-8","Cache-Control":"no-store","Referrer-Policy":"no-referrer"}});
+ await env.DB.prepare("UPDATE subscriptions SET active=0,unsubscribe_hash=NULL WHERE email=? AND unsubscribe_hash=?").bind(row.email,await hash(token)).run();
+ return page("Lembretes cancelados","Os e-mails periódicos foram desativados. Você continuará podendo acompanhar o pedido pelo aplicativo.");
 }
 async function order(env,item,now){
  const id=String(item.id||"").replace(/[^a-zA-Z0-9_-]/g,"").slice(0,100),email=clean(item.email),status=clean(item.status);
  if(!id||!valid(email)||!["preparing","shipped","partially_shipped","delivered"].includes(status))return 0;
  const number=String(item.number||"").slice(0,80);
+ const purchasedAt=Date.parse(String(item.created_at||""));
+ const campaignStart=Date.parse(String(env.CAMPAIGN_START||""));
+ const eligibleForCare=Number.isFinite(purchasedAt)&&Number.isFinite(campaignStart)&&purchasedAt>=campaignStart&&purchasedAt<=now;
+ if(eligibleForCare)await autoEnroll(env,email,purchasedAt);
  const prev=await env.DB.prepare("SELECT status,eligible_for_shipping,shipping_sent_at FROM orders WHERE order_id=?").bind(id).first();
  if(!prev){await env.DB.prepare("INSERT OR IGNORE INTO orders(order_id,email,order_number,status,first_seen_at,last_seen_at) VALUES(?,?,?,?,?,?)").bind(id,email,number,status,now,now).run();return 0}
  const eligible=prev.eligible_for_shipping||prev.status==="preparing"&&["shipped","partially_shipped"].includes(status);
@@ -95,22 +92,40 @@ async function scanShipping(env,now){
  }
  return {count,sent};
 }
+
+const CARE_SEQUENCE=[
+ {subject:"Seu primeiro passo: cuide de você hoje 💚",action:"Comece com três hábitos simples",body:"<p>Hoje é um bom dia para separar alguns minutos para você.</p><p>Confira seus cuidados no My Natural Care: escolha uma refeição equilibrada, observe seus pés e organize um horário para descansar.</p><p>Você encontra as orientações completas no livro de Bem-estar.</p>",text:"Dê seu primeiro passo: acompanhe seus cuidados e encontre o livro de Bem-estar em "+BASE},
+ {subject:"Academia em casa: movimentos leves para o dia 🪑",action:"Conhecer a Academia em Casa",body:"<p>Que tal conhecer as atividades da Academia em Casa?</p><p>O manual ensina movimentos simples sentados, cuidados com o ambiente e maneiras de criar uma rotina segura.</p><p>Pratique somente movimentos adequados para sua condição. Quem tem feridas, instabilidade ou fraqueza deve pedir orientação profissional antes.</p>",text:"Conheça os movimentos leves e seguros no manual de Bem-estar: "+BASE},
+ {subject:"Como estão seus cuidados? Confira sua evolução 🌿",action:"Ver meus cuidados e progresso",body:"<p>Pequenas atitudes podem se tornar bons hábitos.</p><p>Abra a aba Cuidados para conferir suas marcações, registrar as cápsulas conforme o rótulo e preencher a avaliação quando estiver disponível.</p><p>O livro de Bem-estar continua lá para ajudar sempre que você precisar.</p>",text:"Confira suas marcações, o score e o livro de Bem-estar em "+BASE}
+];
 async function scanReminders(env,now){
- const r=await env.DB.prepare("SELECT email,confirmed_at,last_reminder_at FROM subscriptions WHERE active=1 AND confirmed_at IS NOT NULL AND COALESCE(last_reminder_at,confirmed_at)<=? LIMIT 75").bind(now-INTERVAL).all();
+ const due=now-INTERVAL;
+ const r=await env.DB.prepare("SELECT email,created_at,last_reminder_at,care_sent_count FROM subscriptions WHERE active=1 AND care_sent_count<3 AND COALESCE(last_reminder_at,created_at)<=? ORDER BY COALESCE(last_reminder_at,created_at) ASC LIMIT 60").bind(due).all();
  let sent=0;
  for(const row of r.results||[]){
-  const start=Number(row.last_reminder_at||row.confirmed_at),key="care-"+(await hash(row.email)).slice(0,30)+"-"+start;
-  const prev=await env.DB.prepare("SELECT state FROM dispatches WHERE delivery_key=?").bind(key).first();
-  if(prev?.state==="sent"){await env.DB.prepare("UPDATE subscriptions SET last_reminder_at=? WHERE email=?").bind(now,row.email).run();continue}
-  const token=await hash("unsub:"+row.email+":"+row.confirmed_at+":"+env.INTERNAL_TOKEN),optout=BASE+"/_mail/unsubscribe?token="+token;
-  await env.DB.prepare("INSERT OR IGNORE INTO dispatches(delivery_key,email,kind,state,created_at) VALUES(?,?,'care','pending',?)").bind(key,row.email,now).run();
-  const subject="Seu momento de cuidar de você chegou 💚",message="Acesse o My Natural Care para acompanhar seus cuidados de hoje e, quando estiver disponível, atualizar sua avaliação.";
+  const step=Number(row.care_sent_count||0)+1;
+  if(step<1||step>3)continue;
+  const email=row.email,details=CARE_SEQUENCE[step-1];
+  const key="care-v2-"+(await hash(email)).slice(0,30)+"-"+step;
+  const existing=await env.DB.prepare("SELECT state FROM dispatches WHERE delivery_key=?").bind(key).first();
+  if(existing?.state==="sent"){
+   await env.DB.prepare("UPDATE subscriptions SET care_sent_count=?,last_reminder_at=COALESCE(last_reminder_at,?) WHERE email=? AND active=1 AND care_sent_count<?").bind(step,now,email,step).run();
+   continue;
+  }
+  const token=await hash("optout:v2:"+email+":"+env.INTERNAL_TOKEN);
+  const url=BASE+"/_mail/unsubscribe?token="+token;
+  await env.DB.prepare("INSERT OR IGNORE INTO dispatches(delivery_key,email,kind,state,created_at) VALUES(?,?,'care','pending',?)").bind(key,email,now).run();
   try{
-   await send(env,row.email,subject,"<p>"+message+"</p><p>Cuide de você no seu próprio ritmo.</p>",message+"\nAcesse: "+BASE+"\nCancelar: "+optout,"care",key,"Acessar meus cuidados",BASE,'Lembrete solicitado por você. <a href="'+esc(optout)+'" style="color:#167b58">Cancelar lembretes</a>.',{"List-Unsubscribe":"<"+optout+">","List-Unsubscribe-Post":"List-Unsubscribe=One-Click"});
-   await env.DB.prepare("UPDATE subscriptions SET last_reminder_at=?,unsubscribe_hash=? WHERE email=? AND active=1").bind(now,await hash(token),row.email).run();
+   await send(env,email,details.subject,details.body,details.text+"\n\nCancelar estes lembretes: "+url,"care",key,details.action,BASE,
+    'Você recebe esta sequência de 3 e-mails de orientação após sua compra. <a href="'+esc(url)+'" style="color:#167b58">Não quero mais receber lembretes</a>.',
+    {"List-Unsubscribe":"<"+url+">","List-Unsubscribe-Post":"List-Unsubscribe=One-Click"});
    await env.DB.prepare("UPDATE dispatches SET state='sent',sent_at=?,last_error=NULL WHERE delivery_key=?").bind(now,key).run();
+   await env.DB.prepare("UPDATE subscriptions SET care_sent_count=?,last_reminder_at=? WHERE email=? AND active=1 AND care_sent_count<?").bind(step,now,email,step).run();
    sent++;
-  }catch(e){await env.DB.prepare("UPDATE dispatches SET last_error=? WHERE delivery_key=?").bind(String(e).slice(0,150),key).run();console.error("Care dispatch failed",String(e).slice(0,110))}
+  }catch(e){
+   await env.DB.prepare("UPDATE dispatches SET last_error=? WHERE delivery_key=?").bind(String(e).slice(0,150),key).run();
+   console.error("Care sequence email failed",step,String(e).slice(0,110));
+  }
  }
  return sent;
 }
@@ -130,9 +145,7 @@ async function cron(env){
 export default {
  async fetch(req,env){
   const p=new URL(req.url).pathname;
-  if(p==="/_mail/health"&&req.method==="GET")return j({ok:true});
-  if(p==="/_mail/subscribe"&&req.method==="POST")return subscribe(req,env);
-  if(p==="/_mail/confirm"&&req.method==="GET")return confirm(req,env);
+  if(p==="/_mail/health"&&req.method==="GET")return j({ok:true,ready:Boolean(env.DB&&env.INTERNAL_TOKEN&&env.RESEND_API_KEY&&env.CAMPAIGN_START)});
   if(p==="/_mail/unsubscribe"&&["GET","POST"].includes(req.method))return unsubscribe(req,env);
   return j({error:"Not found"},404);
  },
