@@ -74,7 +74,7 @@ async function order(env,item,now){
  const key="ship-"+id,dispatch=await env.DB.prepare("SELECT state FROM dispatches WHERE delivery_key=?").bind(key).first();
  if(dispatch?.state==="sent"){await env.DB.prepare("UPDATE orders SET shipping_sent_at=? WHERE order_id=?").bind(now,id).run();return 0}
  await env.DB.prepare("INSERT OR IGNORE INTO dispatches(delivery_key,email,kind,state,created_at) VALUES(?,?,'shipping','pending',?)").bind(key,email,now).run();
- const subject="Your order is on its way 📦",text="Your order"+(number?" #"+number:"")+" has shipped. Acompanhe o rastreamento em "+BASE;
+ const subject="Your order is on its way 📦",text="Your order"+(number?" #"+number:"")+" has shipped. Track its progress in the My Natural Care app: "+BASE;
  try{
   await send(env,email,subject,"<p>Good news! Your order"+(number?" <b>#"+esc(number)+"</b>":"")+" has shipped.</p><p>View your latest tracking information directly in the app.</p>",text,"shipping",key,"Track My Order",BASE);
   await env.DB.prepare("UPDATE dispatches SET state='sent',sent_at=?,last_error=NULL WHERE delivery_key=?").bind(now,key).run();
