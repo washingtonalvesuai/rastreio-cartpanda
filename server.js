@@ -180,6 +180,7 @@ app.get("/api/internal/email-orders",async(req,res)=>{
 
 // Requests for recurring reminders are verified against a paid order, then
 // a confirmation link must be opened by the actual email owner.
+app.get("/api/reminders/config",(_,res)=>res.json({available:Boolean(MAIL_TOKEN)}));
 app.post("/api/reminders/subscribe",rateLimit,async(req,res)=>{
  const email=norm(req.body?.email);
  if(!email||email.length>254||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
