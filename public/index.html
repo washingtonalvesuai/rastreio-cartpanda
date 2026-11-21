@@ -455,7 +455,7 @@ function putCareData(data){try{localStorage.setItem(careStoreKey(),JSON.stringif
 function careDayKey(date=new Date()){return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-')}
 function careDateText(date){return new Date(date).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'})}
 function careTimeRemaining(ms){const days=Math.ceil(ms/(24*60*60*1000));return days===1?'amanhã': 'em '+days+' dias'}
-function careTone(n){return n>=75?{tone:'green',color:'#177a57',message:'Parabéns! Sua rotina está firme'}:n>=50?{tone:'yellow',color:'#986610',message:'Muito bem! Continue fortalecendo seus hábitos'}:{tone:'red',color:'#b44147',message:'Cada novo cuidado é uma conquista'}}
+function careTone(n){return n>=75?{tone:'green',color:'#7ee7b3',message:'Parabéns! Sua rotina está firme'}:n>=50?{tone:'yellow',color:'#f1d18b',message:'Muito bem! Continue fortalecendo seus hábitos'}:{tone:'red',color:'#ff9e99',message:'Cada novo cuidado é uma conquista'}}
 function carePercentValue(value){return value===null||value===undefined?null:Math.round(Number(value)*20)}
 function careLatest(){const d=getCareData();return d.records.length?d.records[0]:null}
 function pillDaysFromDaily(){
