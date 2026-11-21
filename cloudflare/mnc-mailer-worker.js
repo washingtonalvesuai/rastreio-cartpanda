@@ -1,5 +1,7 @@
 
-/* My Natural Care: Three 72-hour post-purchase care emails and transactional shipment notices. */
+/* My Natural Care: instant order welcome, three 72-hour care emails and shipping notices. */
+/* Only orders created after this rollout may receive the new order welcome. */
+const WELCOME_START_MS=Date.parse("2026-11-21T21:17:35.526Z");
 const BASE="https://mynaturalcare.app",FROM="My Natural Care <support@mynaturalcare.app>";
 const DAY=86400000,INTERVAL=3*DAY;
 const clean=v=>String(v||"").trim().toLowerCase();
@@ -15,11 +17,12 @@ function page(title,description){
 function layout(title,body,buttonText,buttonUrl,footer){
  const template="<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><meta name=\"color-scheme\" content=\"light\">\n<style>@media(max-width:620px){.inner{padding:27px 22px!important}.brand{padding:24px 22px!important}.hero-title{font-size:29px!important;line-height:1.2!important}.hero-text{font-size:16px!important}.btn{display:block!important;text-align:center!important}.shell{width:100%!important}}</style></head>\n<body style=\"margin:0;padding:0;background:#f0f3f0;font-family:Arial,Helvetica,sans-serif;color:#263a34;\">\n<div style=\"display:none;max-height:0;overflow:hidden;opacity:0\">{{PREHEADER}}</div>\n<table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" style=\"border-collapse:collapse;background:#f0f3f0\"><tr><td align=\"center\" style=\"padding:40px 14px 44px\">\n<table role=\"presentation\" class=\"shell\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"600\" style=\"width:600px;max-width:100%;border-collapse:separate;overflow:hidden;border-radius:23px;border:1px solid #dce5df;box-shadow:0 12px 46px rgba(14,32,26,.09);background:#ffffff\">\n<tr><td style=\"height:7px;background:#45c294;font-size:1px;line-height:1px\">&nbsp;</td></tr>\n<tr><td class=\"brand\" style=\"background:#0d1922;padding:32px 40px\">\n<table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\"><tr><td valign=\"middle\" style=\"padding-right:13px\"><span style=\"display:inline-block;width:43px;height:43px;line-height:43px;text-align:center;background:#94e9c4;color:#123628;border-radius:12px;font-size:23px;font-weight:800\">M</span></td><td valign=\"middle\"><div style=\"font-size:19px;font-weight:800;letter-spacing:.2px;color:#ffffff\">My Natural Care</div><div style=\"margin-top:3px;color:#b4d7c9;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase\">Wellness, made personal</div></td></tr></table>\n</td></tr>\n<tr><td class=\"inner\" style=\"padding:43px 42px 35px\">\n<div style=\"display:inline-block;border-radius:99px;padding:8px 13px;background:#e5f6ed;color:#176f52;font-size:11px;font-weight:800;letter-spacing:1.9px;text-transform:uppercase\">{{EYEBROW}}</div>\n<h1 class=\"hero-title\" style=\"margin:22px 0 16px;font-size:35px;line-height:1.18;letter-spacing:-1px;font-weight:800;color:#112a24\">{{TITLE}}</h1>\n<div style=\"width:45px;height:3px;background:#43be8e;border-radius:20px;margin-bottom:26px\"></div>\n<div class=\"hero-text\" style=\"font-size:17px;line-height:1.75;color:#41574f\">{{BODY}}</div>\n<table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin:30px 0 30px\"><tr><td bgcolor=\"#176b50\" style=\"background:#176b50;border-radius:11px\"><a class=\"btn\" href=\"{{URL}}\" style=\"display:inline-block;padding:17px 26px;font-size:16px;font-weight:800;text-decoration:none;color:#ffffff;border-radius:11px;letter-spacing:.1px\">{{BUTTON}} &nbsp;→</a></td></tr></table>\n<div style=\"border-top:1px solid #e5ebe6;padding-top:20px;font-size:13px;line-height:1.7;color:#708077\">Need a hand? Our team is here to help.<br><a style=\"color:#166f52;font-weight:700;text-decoration:none\" href=\"mailto:support@mynaturalcare.app\">support@mynaturalcare.app</a></div>\n</td></tr>\n<tr><td class=\"inner\" style=\"padding:22px 42px 27px;background:#f7faf7;border-top:1px solid #e8eee9\"><p style=\"margin:0 0 7px;font-size:12px;color:#52665c;font-weight:800;letter-spacing:1.2px\">MY NATURAL CARE</p><div style=\"font-size:12px;line-height:1.75;color:#708077\">{{FOOTER}}</div><div style=\"font-size:11px;line-height:1.6;color:#87958b;margin-top:13px\">Practical guidance, not medical advice. Follow the directions on your product label and consult a healthcare professional for personal health concerns.</div></td></tr>\n</table><div style=\"padding-top:22px;color:#95a39a;font-size:12px;text-align:center\">© 2026 My Natural Care · All rights reserved.</div>\n</td></tr></table></body></html>";
  const isShipping=/shipped|order is on its way|shipment/i.test(title);
- const preheader=isShipping?"Your order has an update. Track its journey in the app.":"A little guidance for your daily care routine.";
+ const isWelcome=/thank you for your order|thanks for your order/i.test(title);
+ const preheader=isShipping?"Your order has an update. Track its journey in the app.":isWelcome?"Thank you for choosing My Natural Care. Your order has been confirmed.":"A little guidance for your daily care routine.";
  return template.replaceAll("{{TITLE}}",esc(title)).replaceAll("{{BODY}}",body)
   .replaceAll("{{BUTTON}}",esc(buttonText)).replaceAll("{{URL}}",esc(buttonUrl))
   .replaceAll("{{FOOTER}}",footer||"You are receiving this email as part of your My Natural Care order experience.")
-  .replaceAll("{{EYEBROW}}",isShipping?"ORDER & DELIVERY":"YOUR WELLNESS JOURNEY")
+  .replaceAll("{{EYEBROW}}",isShipping?"ORDER & DELIVERY":isWelcome?"YOUR ORDER IS CONFIRMED":"YOUR WELLNESS JOURNEY")
   .replaceAll("{{PREHEADER}}",preheader);
 }
 async function send(env,email,subject,body,text,kind,key,button,url,footer,headers){
@@ -58,6 +61,32 @@ async function unsubscribe(req,env){
  await env.DB.prepare("UPDATE subscriptions SET active=0,unsubscribe_hash=NULL WHERE email=? AND unsubscribe_hash=?").bind(row.email,await hash(token)).run();
  return page("Care Emails Unsubscribed","Your care email series has been turned off. You can still track your order in the app.");
 }
+async function sendWelcome(env,id,email,number,now){
+ const key="welcome-v1-"+id;
+ const prev=await env.DB.prepare("SELECT state FROM dispatches WHERE delivery_key=?").bind(key).first();
+ if(prev?.state==="sent")return 0;
+ await env.DB.prepare("INSERT OR IGNORE INTO dispatches(delivery_key,email,kind,state,created_at) VALUES(?,?,'welcome','pending',?)").bind(key,email,now).run();
+ const subject="Thank you for your order — Welcome to My Natural Care";
+ const safeNumber=number?" <strong>#"+esc(number)+"</strong>":"";
+ const body='<p style="margin:0 0 18px">Thank you for choosing <strong>My Natural Care</strong>. We are happy to have you here!</p>'+
+ '<div style="padding:22px;background:#f1f8f4;border:1px solid #deeee4;border-radius:14px;margin-bottom:20px">'+
+ '<p style="margin:0 0 8px;color:#206448;font-size:12px;font-weight:800;letter-spacing:1.4px">ORDER CONFIRMED</p>'+
+ '<p style="margin:0;color:#274d3b;font-size:17px">Your payment has been confirmed.'+(number?" Order"+safeNumber+".":"")+'</p></div>'+
+ '<p style="margin:0 0 18px">Your My Natural Care companion app brings together your order information and practical wellness guidance in one place.</p>'+
+ '<p style="margin:0 0 18px"><strong>Getting started is simple:</strong> Open the app, use the same email address you entered at checkout, and explore your order and care guide.</p>'+
+ '<p style="margin:0">Over the coming days, we will also share a few useful care tips by email. We are here if you need help.</p>';
+ const text="Thank you for choosing My Natural Care! Your payment has been confirmed."+(number?" Order #"+number+".":"")+
+ "\n\nOpen your companion app at "+BASE+" using the same email address you used at checkout. You can view your order and helpful wellness guidance in one place.\n\nNeed assistance? support@mynaturalcare.app";
+ try{
+  await send(env,email,subject,body,text,"welcome",key,"Open My Natural Care",BASE);
+  await env.DB.prepare("UPDATE dispatches SET state='sent',sent_at=?,last_error=NULL WHERE delivery_key=?").bind(now,key).run();
+  return 1;
+ }catch(e){
+  await env.DB.prepare("UPDATE dispatches SET last_error=? WHERE delivery_key=?").bind(String(e).slice(0,160),key).run();
+  console.error("Order welcome dispatch failed",String(e).slice(0,110));
+  return 0;
+ }
+}
 async function order(env,item,now){
  const id=String(item.id||"").replace(/[^a-zA-Z0-9_-]/g,"").slice(0,100),email=clean(item.email),status=clean(item.status);
  if(!id||!valid(email)||!["preparing","shipped","partially_shipped","delivered"].includes(status))return 0;
@@ -66,23 +95,25 @@ async function order(env,item,now){
  const campaignStart=Date.parse(String(env.CAMPAIGN_START||""));
  const eligibleForCare=Number.isFinite(purchasedAt)&&Number.isFinite(campaignStart)&&purchasedAt>=campaignStart&&purchasedAt<=now;
  if(eligibleForCare)await autoEnroll(env,email,purchasedAt);
+ const eligibleForWelcome=Number.isFinite(purchasedAt)&&purchasedAt>=WELCOME_START_MS&&purchasedAt<=now;
+ const welcomeSent=eligibleForWelcome?await sendWelcome(env,id,email,number,now):0;
  const prev=await env.DB.prepare("SELECT status,eligible_for_shipping,shipping_sent_at FROM orders WHERE order_id=?").bind(id).first();
- if(!prev){await env.DB.prepare("INSERT OR IGNORE INTO orders(order_id,email,order_number,status,first_seen_at,last_seen_at) VALUES(?,?,?,?,?,?)").bind(id,email,number,status,now,now).run();return 0}
+ if(!prev){await env.DB.prepare("INSERT OR IGNORE INTO orders(order_id,email,order_number,status,first_seen_at,last_seen_at) VALUES(?,?,?,?,?,?)").bind(id,email,number,status,now,now).run();return welcomeSent}
  const eligible=prev.eligible_for_shipping||prev.status==="preparing"&&["shipped","partially_shipped"].includes(status);
  await env.DB.prepare("UPDATE orders SET email=?,order_number=?,status=?,last_seen_at=?,eligible_for_shipping=? WHERE order_id=?").bind(email,number,status,now,eligible?1:0,id).run();
- if(!eligible||prev.shipping_sent_at)return 0;
+ if(!eligible||prev.shipping_sent_at)return welcomeSent;
  const key="ship-"+id,dispatch=await env.DB.prepare("SELECT state FROM dispatches WHERE delivery_key=?").bind(key).first();
- if(dispatch?.state==="sent"){await env.DB.prepare("UPDATE orders SET shipping_sent_at=? WHERE order_id=?").bind(now,id).run();return 0}
+ if(dispatch?.state==="sent"){await env.DB.prepare("UPDATE orders SET shipping_sent_at=? WHERE order_id=?").bind(now,id).run();return welcomeSent}
  await env.DB.prepare("INSERT OR IGNORE INTO dispatches(delivery_key,email,kind,state,created_at) VALUES(?,?,'shipping','pending',?)").bind(key,email,now).run();
  const subject="Your order is on its way 📦",text="Your order"+(number?" #"+number:"")+" has shipped. Track its progress in the My Natural Care app: "+BASE;
  try{
   await send(env,email,subject,"<p>Good news! Your order"+(number?" <b>#"+esc(number)+"</b>":"")+" has shipped.</p><p>View your latest tracking information directly in the app.</p>",text,"shipping",key,"Track My Order",BASE);
   await env.DB.prepare("UPDATE dispatches SET state='sent',sent_at=?,last_error=NULL WHERE delivery_key=?").bind(now,key).run();
   await env.DB.prepare("UPDATE orders SET shipping_sent_at=? WHERE order_id=?").bind(now,id).run();
-  return 1;
- }catch(e){await env.DB.prepare("UPDATE dispatches SET last_error=? WHERE delivery_key=?").bind(String(e).slice(0,160),key).run();console.error("Shipping dispatch failed",String(e).slice(0,110));return 0}
+  return welcomeSent+1;
+ }catch(e){await env.DB.prepare("UPDATE dispatches SET last_error=? WHERE delivery_key=?").bind(String(e).slice(0,160),key).run();console.error("Shipping dispatch failed",String(e).slice(0,110));return welcomeSent}
 }
-async function scanShipping(env,now){
+async function scanShipping(env,now,targetId=null){
  const origin=String(env.RENDER_ORIGIN||"https://rastreio-cartpanda.onrender.com").replace(/\/$/,"");
  let count=0,sent=0;
  for(let pageNum=1;pageNum<=20;pageNum++){
@@ -94,7 +125,11 @@ async function scanShipping(env,now){
    response=await r.json();
   }finally{clearTimeout(timer)}
   if(!Array.isArray(response.orders))throw Error("Snapshot format");
-  for(const item of response.orders){count++;sent+=await order(env,item,now)}
+  for(const item of response.orders){
+   if(targetId&&String(item.id)!==targetId)continue;
+   count++;sent+=await order(env,item,now);
+   if(targetId)return {count,sent};
+  }
   if(!response.hasMore)break;
  }
  return {count,sent};
@@ -156,7 +191,7 @@ async function cron(env){
  try{
   const ship=await scanShipping(env,now),care=await scanReminders(env,Date.now());
   await env.DB.prepare("UPDATE job_runs SET finished_at=?,processed=?,sent=?,result='ok' WHERE id=?").bind(Date.now(),ship.count,ship.sent+care,id).run();
-  console.log("Scan completed: "+ship.count+" orders, "+ship.sent+" shipments, "+care+" reminders");
+  console.log("Scan completed: "+ship.count+" orders, "+ship.sent+" transactional emails, "+care+" reminders");
  }catch(e){
   await env.DB.prepare("UPDATE job_runs SET finished_at=?,result=? WHERE id=?").bind(Date.now(),String(e).slice(0,140),id).run();
   console.error("Scan failed",String(e).slice(0,150));
@@ -167,7 +202,18 @@ async function cron(env){
 export default {
  async fetch(req,env){
   const p=new URL(req.url).pathname;
-  if(p==="/_mail/health"&&req.method==="GET")return j({ok:true,ready:Boolean(env.DB&&env.INTERNAL_TOKEN&&env.RESEND_API_KEY&&env.CAMPAIGN_START)});
+  if(p==="/_mail/health"&&req.method==="GET")return j({ok:true,ready:Boolean(env.DB&&env.INTERNAL_TOKEN&&env.RESEND_API_KEY&&env.CAMPAIGN_START),welcome_ready:Boolean(env.WEBHOOK_TOKEN)});
+  if(p==="/_mail/cartpanda-paid"&&req.method==="POST"){
+   const given=new URL(req.url).searchParams.get("key")||"";
+   if(!env.WEBHOOK_TOKEN||given.length!==env.WEBHOOK_TOKEN.length||(await hash(given))!==(await hash(env.WEBHOOK_TOKEN)))return j({error:"Unauthorized"},401);
+   if(Number(req.headers.get("content-length")||0)>65536)return j({error:"Too large"},413);
+   let raw;try{raw=await req.text();if(raw.length>65536)return j({error:"Too large"},413)}catch{return j({error:"Bad request"},400)}
+   let payload;try{payload=JSON.parse(raw)}catch{return j({error:"Invalid JSON"},400)}
+   const id=String(payload?.order?.id||"");
+   if(payload?.event!=="order.paid"||!/^\\d{1,25}$/.test(id))return j({error:"Invalid event"},400);
+   try{const result=await scanShipping(env,Date.now(),id);return j({ok:true,verified:result.count>0});}
+   catch(e){console.error("Paid webhook verification failed",String(e).slice(0,130));return j({error:"Verification temporarily unavailable"},503)}
+  }
   if(p==="/_mail/unsubscribe"&&["GET","POST"].includes(req.method))return unsubscribe(req,env);
   return j({error:"Not found"},404);
  },
