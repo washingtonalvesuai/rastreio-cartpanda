@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#16416a">
+<meta name="description" content="NervLief customer care: track your order, review your product guide and explore healthy daily habits.">
+<title>NervLief | My Order & Care Guide</title>
+<style>
+:root{color-scheme:light;--navy:#153d63;--navy2:#244e72;--teal:#0f795f;--green:#176d52;--bg:#f2f6fa;--ink:#20344a;--muted:#53677b;--edge:#dce5ee;--white:#fff;--soft:#e8f4ef;--link:#125e9d;--shadow:0 12px 35px rgba(18,52,83,.08)}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.55 system-ui,-apple-system,"Segoe UI",Arial,sans-serif;-webkit-text-size-adjust:100%}button,input{font:inherit}button,a,input{touch-action:manipulation}a{color:var(--link)}:focus-visible{outline:3px solid #e7aa32;outline-offset:3px}
+.container{max-width:1050px;margin:0 auto;padding:0 20px}.topbar{background:var(--navy);color:#fff}.toprow{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:84px}.brand{display:flex;align-items:center;gap:12px;font-size:25px;font-weight:800;letter-spacing:-.7px}.brand-logo{display:grid;place-items:center;width:45px;height:45px;border-radius:14px;background:#2fa783;color:#fff;font-size:24px;font-weight:900}.brand span b{color:#88e4ba}.top-support{color:#fff;font-size:15px;text-decoration:none;font-weight:650}.top-support:hover{text-decoration:underline}
+main{padding-bottom:52px}.welcome{margin:36px auto 0;padding:45px clamp(20px,5vw,52px);background:linear-gradient(125deg,#fff 42%,#e7f4f1 100%);border-radius:25px;border:1px solid var(--edge);box-shadow:var(--shadow)}.eyebrow{display:inline-flex;align-items:center;gap:7px;padding:5px 13px;background:#e6f4ed;color:var(--green);border-radius:50px;font-size:14px;font-weight:800;letter-spacing:.02em}.welcome h1{max-width:760px;font-size:clamp(32px,4.4vw,51px);line-height:1.12;letter-spacing:-1.3px;color:var(--navy);margin:20px 0 15px}.welcome .intro{max-width:700px;color:var(--muted);font-size:20px;margin:0 0 26px}
+.form-box{max-width:650px;padding:24px;border:1px solid #cddfe8;border-radius:18px;background:#fff}.form-label{display:block;font-weight:800;color:#233d56;margin-bottom:9px;font-size:18px}.field-row{display:flex;gap:11px}.email-input{min-width:0;flex:1;width:100%;border:2px solid #aabccf;border-radius:12px;min-height:58px;padding:12px 14px;color:#172f45;background:#fff}.email-input:focus{border-color:#2365a0;outline:3px solid #d6eaff}.action{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:58px;padding:12px 22px;background:var(--green);color:#fff;border:0;border-radius:12px;font-weight:850;cursor:pointer;text-align:center;text-decoration:none;white-space:nowrap}.action:hover{background:#0c6148}.action.secondary{background:#fff;color:var(--navy);border:2px solid #b8cbd9}.action.secondary:hover{background:#f1f7f9}.helper{margin:13px 0 0;font-size:15px;color:var(--muted)}.error-text{color:#ad252b;font-weight:700;margin:9px 0 0}.no-password{display:flex;align-items:center;gap:7px}.no-password svg{flex:none}
+.trust-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0 0}.trust-item{display:flex;align-items:center;gap:12px;padding:15px 17px;border:1px solid #dae5ed;border-radius:15px;background:#fff;color:var(--navy);font-weight:700;font-size:15px}.trust-item .ico{font-size:24px;line-height:1}
+.dashboard{margin:28px auto 0}.dash-heading{padding:14px 2px 20px}.dash-heading h1{font-size:clamp(26px,4vw,39px);line-height:1.18;color:var(--navy);margin:0 0 9px}.dash-heading p{font-size:17px;color:var(--muted);margin:0}.dash-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}.email-display{display:inline-flex;align-items:center;gap:7px;color:var(--muted);font-size:14px;max-width:75%;overflow-wrap:anywhere}.text-button{background:none;border:0;color:var(--link);font-weight:750;cursor:pointer;padding:10px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:15px 0 20px}.tab{display:flex;align-items:center;justify-content:center;gap:10px;min-height:72px;border:2px solid var(--edge);background:#fff;color:var(--navy);border-radius:16px;font-size:17px;font-weight:800;cursor:pointer;padding:10px}.tab[aria-selected="true"]{background:var(--navy);border-color:var(--navy);color:#fff}.tab svg{width:25px;height:25px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}
+.panel{background:#fff;border:1px solid var(--edge);border-radius:22px;padding:clamp(21px,4vw,36px);box-shadow:var(--shadow)}.panel[hidden],.dashboard[hidden],.welcome[hidden],.loading[hidden]{display:none!important}.section-title{font-size:clamp(26px,3vw,32px);line-height:1.2;letter-spacing:-.4px;color:var(--navy);margin:0 0 9px}.section-desc{color:var(--muted);margin:0 0 25px}.card{background:#fff;border:1px solid var(--edge);border-radius:16px;padding:22px}.note-card{border-left:5px solid #358fbf;background:#f1f8fd;padding:19px 21px;border-radius:10px;color:#22435e;margin:19px 0}.note-card strong{display:block;margin-bottom:5px}.notice-green{border-left:5px solid #238b62;background:#e9f7f0;padding:17px 20px;border-radius:10px;margin:18px 0}.notice-green strong{color:#145f46}.hint-muted{font-size:15px;color:var(--muted)}
+.order-state{border:1px solid var(--edge);background:#f8fafc;border-radius:18px;padding:25px}.order-top{display:flex;align-items:flex-start;justify-content:space-between;gap:13px;flex-wrap:wrap}.order-num{font-size:25px;color:var(--navy);font-weight:850}.pill{border-radius:30px;background:#e7f4ef;color:#176949;font-size:13px;font-weight:850;padding:7px 12px}.pill.pending{background:#fff1dc;color:#82530b}.order-label{font-size:15px;color:var(--muted);font-weight:650}.status-line{display:flex;align-items:center;gap:12px;margin-top:16px;font-size:20px;font-weight:850;color:var(--navy)}.status-line .status-icon{width:43px;height:43px;display:grid;place-items:center;border-radius:50%;background:#d9eee5;color:#167653}.tracking-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}.detail{border-radius:11px;background:#fff;padding:13px 16px;border:1px solid var(--edge)}.detail small{display:block;font-size:13px;color:var(--muted);font-weight:650}.detail strong{display:block;margin-top:3px;overflow-wrap:anywhere;color:var(--navy)}
+.ordered-sections{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.step-card{padding:22px;border:1px solid var(--edge);border-radius:16px;background:#fff}.step-num{width:42px;height:42px;display:grid;place-items:center;background:#e9f4ee;color:var(--green);border-radius:50%;font-weight:900;font-size:19px;margin-bottom:15px}.step-card h3{font-size:20px;line-height:1.3;color:var(--navy);margin:0 0 8px}.step-card p{margin:0;color:#445970;font-size:16px;line-height:1.6}.subheading{font-size:22px;color:var(--navy);margin:29px 0 14px}.supply{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}.supply-item{border:1px solid var(--edge);background:#f7fafc;border-radius:13px;padding:14px 5px;text-align:center}.supply-item strong{display:block;color:var(--navy);font-size:23px}.supply-item small{font-size:13px;color:var(--muted)}.resource-links{margin-top:25px;padding-top:16px;border-top:1px solid var(--edge);font-size:14px;color:var(--muted)}.resource-links a{font-weight:650}.bottom-help{margin-top:21px;background:#e7f2f8;border:1px solid #cbdde8;border-radius:17px;padding:22px;display:flex;align-items:center;justify-content:space-between;gap:18px}.bottom-help h3{font-size:19px;margin:0;color:var(--navy)}.bottom-help p{font-size:15px;color:var(--muted);margin:5px 0 0}.site-footer{border-top:1px solid var(--edge);padding:24px 0 36px;color:var(--muted);text-align:center;font-size:14px}.site-footer a{color:var(--navy);font-weight:700}
+.loading{display:flex;align-items:center;gap:14px;padding:28px 12px;color:var(--navy);font-weight:650}.spinner{width:29px;height:29px;border-radius:50%;border:3px solid #cbdbe7;border-top-color:var(--navy);animation:spin .7s linear infinite;flex:none}@keyframes spin{to{transform:rotate(360deg)}}
+.demo-alert{background:#fff0ca;border:1px solid #e1bd60;padding:12px 17px;color:#714800;border-radius:12px;font-weight:750;margin:14px 0}
+@media(max-width:800px){.trust-strip{grid-template-columns:1fr}.ordered-sections{grid-template-columns:1fr}.supply{grid-template-columns:repeat(3,minmax(0,1fr))}.bottom-help{flex-direction:column;align-items:flex-start}.top-support{font-size:13px}}
+@media(max-width:640px){body{font-size:17px}.toprow{min-height:70px}.brand{font-size:21px}.brand-logo{width:39px;height:39px}.top-support{font-size:0}.top-support::before{content:'Support';font-size:13px}.welcome{margin-top:15px;padding:25px 18px;border-radius:18px}.welcome h1{font-size:35px}.welcome .intro{font-size:18px}.form-box{padding:17px}.field-row{flex-direction:column}.field-row .action{width:100%}.tabs{gap:6px}.tab{min-height:85px;flex-direction:column;gap:6px;padding:8px 5px;font-size:13px;line-height:1.25}.tab svg{width:24px;height:24px}.panel{padding:19px;border-radius:17px}.tracking-grid{grid-template-columns:1fr}.supply{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.spinner{animation:none}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="container toprow">
+  <div class="brand" aria-label="NervLief Customer Care"><div class="brand-logo" aria-hidden="true">N</div><span>Nerv<b>Lief</b></span></div>
+  <a class="top-support" href="mailto:support@nervlief.com">Need help? Contact Support</a>
+</div></header>
+<main class="container">
+  <section id="welcome" class="welcome" aria-labelledby="welcomeTitle">
+    <span class="eyebrow">✓ NervLief Customer Care</span>
+    <h1 id="welcomeTitle">Your order and care guide, all in one place.</h1>
+    <p class="intro">Track your package, learn how to use NervLief, and explore simple daily habits to support your well-being.</p>
+    <form id="accessForm" class="form-box" novalidate>
+      <label class="form-label" for="customerEmail">Email address used at checkout</label>
+      <div class="field-row">
+        <input id="customerEmail" class="email-input" type="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" placeholder="you@example.com" aria-describedby="emailHelp emailError" required>
+        <button id="accessButton" type="submit" class="action">Access My Care Center <span aria-hidden="true">→</span></button>
+      </div>
+      <p id="emailHelp" class="helper no-password"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="#176d52" d="M12 2a5 5 0 0 1 5 5v3h1a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-6a3 3 0 0 1 3-3h1V7a5 5 0 0 1 5-5Zm0 2a3 3 0 0 0-3 3v3h6V7a3 3 0 0 0-3-3Z"/></svg>No password. No registration. Just your email.</p>
+      <p id="emailError" class="error-text" role="alert" hidden></p>
+    </form>
+  </section>
+  <div id="introBenefits" class="trust-strip" aria-label="Available information">
+    <div class="trust-item"><span class="ico" aria-hidden="true">📦</span><span>Track your delivery</span></div>
+    <div class="trust-item"><span class="ico" aria-hidden="true">📘</span><span>Easy product instructions</span></div>
+    <div class="trust-item"><span class="ico" aria-hidden="true">🌿</span><span>Healthy daily habits</span></div>
+  </div>
+  <section id="dashboard" class="dashboard" hidden>
+    <div id="demoAlert" class="demo-alert" hidden>This is a SAMPLE preview. The order shown below is not a real customer order.</div>
+    <div class="dash-heading">
+      <h1>Welcome to your NervLief Care Center</h1>
+      <p>Your package information and helpful wellness resources are right here.</p>
+      <div class="dash-bar"><span id="signedEmail" class="email-display"></span><button class="text-button" id="changeEmail" type="button">Change email</button></div>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Care center sections">
+      <button class="tab" type="button" id="tab-order" role="tab" aria-controls="panel-order" aria-selected="true" data-tab="order">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h12v11H3zM15 10h4l3 3v5h-7z"/><circle cx="7.5" cy="19" r="2"/><circle cx="18.5" cy="19" r="2"/></svg><span>My Order</span>
+      </button>
+      <button class="tab" type="button" id="tab-use" role="tab" aria-controls="panel-use" aria-selected="false" data-tab="use">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7c2 0 3 1 3 3v13c-1-1-2-2-4-2H4zM20 4h-6c-2 0-3 1-3 3v13c1-1 2-2 4-2h5z"/></svg><span>How to Use</span>
+      </button>
+      <button class="tab" type="button" id="tab-habits" role="tab" aria-controls="panel-habits" aria-selected="false" data-tab="habits">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21c-5-5-9-7-9-12a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 5-4 7-9 12z"/><path d="M8 12h3l1-2 2 4 1-2h2"/></svg><span>Healthy Habits</span>
+      </button>
+    </nav>
+    <section class="panel" role="tabpanel" id="panel-order" aria-labelledby="tab-order">
+      <h2 class="section-title">Track My Order</h2>
+      <p class="section-desc">See the latest available information about your NervLief package.</p>
+      <div id="orderLoading" class="loading" hidden><span class="spinner" aria-hidden="true"></span><span>Looking for your order…</span></div>
+      <div id="orderResult" aria-live="polite"></div>
+      <div class="bottom-help"><div><h3>Need help with your order?</h3><p>Our support team can help with delivery questions.</p></div><a class="action secondary" href="mailto:support@nervlief.com?subject=NervLief%20Order%20Support">Contact Support</a></div>
+    </section>
+    <section class="panel" role="tabpanel" id="panel-use" aria-labelledby="tab-use" hidden>
+      <h2 class="section-title">Your NervLief Usage Guide</h2>
+      <p class="section-desc">A simple overview of the usage instructions from your previous NervLief guide.</p>
+      <div class="notice-green"><strong>Start with the label on your bottle.</strong> The previous product guide describes a daily serving of 2 capsules. Follow the directions on your current product label or those given by your healthcare professional if they differ.</div>
+      <div class="ordered-sections">
+        <article class="step-card"><div class="step-num">1</div><h3>Daily routine</h3><p>The previous NervLief guide lists <strong>2 capsules per day</strong>. Do not exceed the amount on your current label.</p></article>
+        <article class="step-card"><div class="step-num">2</div><h3>Choose a consistent time</h3><p>The previous guide suggests taking both in the morning or one in the morning and one in the evening, if the current label permits.</p></article>
+        <article class="step-card"><div class="step-num">3</div><h3>Take with water</h3><p>Use a glass of water. The earlier guide recommends taking capsules with food for comfort.</p></article>
+        <article class="step-card"><div class="step-num">4</div><h3>Keep your health team informed</h3><p>Tell your clinician about supplements you take, especially if you use prescription medicines or have ongoing health conditions.</p></article>
+      </div>
+      <h3 class="subheading">How long does my supply last?</h3>
+      <p class="hint-muted">Based on the old guide's 60 capsules per bottle and 2 capsules per day. The current label takes priority.</p>
+      <div class="supply" aria-label="Supply duration by package size">
+        <div class="supply-item"><strong>2</strong><small>bottles · 60 days</small></div>
+        <div class="supply-item"><strong>3</strong><small>bottles · 90 days</small></div>
+        <div class="supply-item"><strong>6</strong><small>bottles · 180 days</small></div>
+        <div class="supply-item"><strong>9</strong><small>bottles · 270 days</small></div>
+        <div class="supply-item"><strong>12</strong><small>bottles · 360 days</small></div>
+      </div>
+      <div class="note-card"><strong>Important to know</strong>A supplement cannot be assumed to repair nerves or guarantee a result in 30, 60 or 90 days. Neuropathy has different causes and may need medical evaluation and treatment. If your symptoms worsen or you develop new weakness or foot sores, contact a healthcare professional.</div>
+      <div class="resource-links">General information: <a href="https://www.nhs.uk/conditions/peripheral-neuropathy/" target="_blank" rel="noopener noreferrer">NHS — Peripheral Neuropathy</a> · <a href="https://ods.od.nih.gov/factsheets/VitaminB6-Consumer/" target="_blank" rel="noopener noreferrer">NIH — Vitamin B6 Safety</a></div>
+    </section>
+    <section class="panel" role="tabpanel" id="panel-habits" aria-labelledby="tab-habits" hidden>
+      <h2 class="section-title">Simple Daily Habits for Nerve Health</h2>
+      <p class="section-desc">Small, practical steps that support your overall health alongside the care recommended by your clinician.</p>
+      <div class="ordered-sections">
+        <article class="step-card"><div class="step-num">🥗</div><h3>Build balanced meals</h3><p>Include vegetables, fruit, beans, whole grains, and protein such as eggs, fish, or poultry. These foods provide nutrients that support general health; no single food cures neuropathy.</p></article>
+        <article class="step-card"><div class="step-num">🚶</div><h3>Move safely each day</h3><p>Try gentle walking or chair-based movement if safe for you. If you have reduced foot sensation, balance difficulties or wounds, ask a clinician which activities are appropriate.</p></article>
+        <article class="step-card"><div class="step-num">🦶</div><h3>Check your feet</h3><p>Look for cuts, blisters, redness, or swelling every day, especially if you have diabetes or numbness. Wear comfortable shoes, and avoid walking barefoot when feeling is reduced.</p></article>
+        <article class="step-card"><div class="step-num">😴</div><h3>Make rest a priority</h3><p>Keep regular sleep and wake times, and build a calm bedtime routine. Let your healthcare team know if discomfort keeps you awake.</p></article>
+        <article class="step-card"><div class="step-num">💧</div><h3>Stay comfortably hydrated</h3><p>Drink water throughout the day as appropriate for your health. If you have heart or kidney conditions requiring fluid limits, follow your clinician's guidance.</p></article>
+        <article class="step-card"><div class="step-num">❤️</div><h3>Care for the bigger picture</h3><p>Avoid smoking, limit alcohol, keep up with checkups, and manage blood sugar with your medical team if you have diabetes.</p></article>
+      </div>
+      <h3 class="subheading">An easy daily routine</h3>
+      <div class="ordered-sections">
+        <article class="step-card"><div class="step-num">☀️</div><h3>Morning</h3><p>Eat a balanced breakfast, review the directions on your bottle, and check your feet if sensation is reduced.</p></article>
+        <article class="step-card"><div class="step-num">🌤️</div><h3>Afternoon</h3><p>Enjoy a nutritious lunch, drink water as appropriate, and do a little gentle movement suited to your abilities.</p></article>
+        <article class="step-card"><div class="step-num">🌙</div><h3>Evening</h3><p>Choose a comfortable dinner, inspect your feet if needed, and maintain a relaxing bedtime routine.</p></article>
+        <article class="step-card"><div class="step-num">🩺</div><h3>Whenever you need help</h3><p>Contact a clinician for new or worsening symptoms, injuries, redness, swelling or wounds. Seek prompt help for suspected infection.</p></article>
+      </div>
+      <div class="note-card"><strong>About vitamins</strong>More is not always better. Too much supplemental vitamin B6 can itself damage nerves. Before combining supplements, ask your healthcare professional to review your total vitamin intake.</div>
+      <div class="resource-links">Health references: <a href="https://www.niddk.nih.gov/health-information/diabetes/overview/preventing-problems/foot-problems" target="_blank" rel="noopener noreferrer">NIDDK — Foot Care</a> · <a href="https://www.nhs.uk/conditions/peripheral-neuropathy/treatment/" target="_blank" rel="noopener noreferrer">NHS — Treatment and Lifestyle</a> · <a href="https://ods.od.nih.gov/factsheets/VitaminB6-Consumer/" target="_blank" rel="noopener noreferrer">NIH — Vitamin B6</a></div>
+    </section>
+  </section>
+</main>
+<footer class="site-footer"><div class="container">© 2026 NervLief · <a href="mailto:support@nervlief.com">Customer Support</a><div>Educational guidance only. Not a substitute for medical advice, diagnosis, or treatment.</div></div></footer>
+<script>
+(function(){
+  'use strict';
+  // This app never exposes a Cartpanda API key in the browser. The server endpoint
+  // must be connected to the NEW Cartpanda store before real order lookup works.
+  var API_URL='/api/order-by-email';
+  var welcome=document.getElementById('welcome');
+  var form=document.getElementById('accessForm');
+  var emailInput=document.getElementById('customerEmail');
+  var emailError=document.getElementById('emailError');
+  var dashboard=document.getElementById('dashboard');
+  var orderResult=document.getElementById('orderResult');
+  var orderLoading=document.getElementById('orderLoading');
+  var preview=false;
+  var currentEmail='';
+  var attempt=0;
+  function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]});}
+  function safeUrl(v){try{var u=new URL(String(v));return u.protocol==='https:'?u.href:''}catch(_){return ''}}
+  function setOrderHtml(html){orderLoading.hidden=true;orderResult.innerHTML=html;}
+  function infoState(heading,message){setOrderHtml('<div class="order-state"><h3 style="color:var(--navy);margin:0 0 8px;font-size:22px">'+escapeHtml(heading)+'</h3><p style="color:var(--muted);margin:0 0 14px">'+escapeHtml(message)+'</p><button type="button" class="action secondary" id="retryOrder">Try Again</button></div>');var retry=document.getElementById('retryOrder');if(retry)retry.addEventListener('click',function(){loadOrder(currentEmail)});}
+  function prettyStatus(raw,tracking){var value=String(raw||'').toLowerCase().replace(/[^a-z0-9_ -]/g,'');var map={delivered:'Delivered',in_transit:'In transit',intransit:'In transit',shipped:'Shipped',fulfilled:'Prepared for shipping',processing:'Preparing your order',paid:'Order confirmed',confirmed:'Order confirmed',pending:'Order being processed',created:'Order received'};return map[value]||(tracking?'Tracking details available':'Order received');}
+  function paintOrder(raw){var o=(raw&&raw.order)||raw||{};var t=o.tracking||{};var number=o.number||o.order_number||o.order_id||'';var company=t.tracking_company||o.tracking_company||'';var trackingNumber=t.tracking_number||o.tracking_number||'';var trackingUrl=safeUrl(t.tracking_url||o.tracking_url||'');var status=prettyStatus(o.status,trackingNumber||trackingUrl);var html='<div class="order-state"><div class="order-top"><div><div class="order-label">Order number</div><div class="order-num">'+(number?'#'+escapeHtml(number):'Your order')+'</div></div><span class="pill">'+escapeHtml(status)+'</span></div><div class="status-line"><span class="status-icon" aria-hidden="true">✓</span><span>'+escapeHtml(status)+'</span></div><div class="tracking-grid"><div class="detail"><small>Carrier</small><strong>'+escapeHtml(company||'Not assigned yet')+'</strong></div><div class="detail"><small>Tracking number</small><strong>'+escapeHtml(trackingNumber||'Coming soon')+'</strong></div></div>';
+    if(trackingUrl){html+='<a href="'+escapeHtml(trackingUrl)+'" target="_blank" rel="noopener noreferrer" class="action">Track with Carrier ↗</a><p class="helper">The official carrier website will open in a new tab for the latest updates.</p>'}
+    else{html+='<div class="notice-green"><strong>Tracking is not available yet.</strong> When your package is prepared for shipping and a carrier tracking link is added, it will appear here.</div>'}
+    html+='</div>';setOrderHtml(html);
+  }
+  async function loadOrder(email){var id=++attempt;orderResult.innerHTML='';orderLoading.hidden=false;
+    if(preview){setTimeout(function(){if(id!==attempt)return;paintOrder({number:'SAMPLE-1024',status:'in_transit',tracking:{tracking_company:'Sample Carrier',tracking_number:'SAMPLE-TRACKING',tracking_url:''}})},300);return;}
+    var controller=new AbortController();var timer=setTimeout(function(){controller.abort()},12000);
+    try{var response=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email}),credentials:'same-origin',cache:'no-store',signal:controller.signal});clearTimeout(timer);if(id!==attempt)return;
+      if(response.status===404){infoState('We could not find an order yet.','Please check that you used the same email as at checkout. New orders may take a little time to appear.');return;}
+      if(!response.ok){infoState('Order tracking is not available right now.','You can still view your NervLief product guide and daily wellness tips. Please try again later or contact our support team.');return;}
+      var data=await response.json();if(data.error){infoState('We could not find your order yet.','Please check your checkout email or contact support for help.');return;}
+      var orders=Array.isArray(data.orders)?data.orders:[];
+      if(orders.length>0){orders.sort(function(a,b){return new Date(b.created_at||0)-new Date(a.created_at||0)});paintOrder(orders[0]);if(orders.length>1){var p=document.createElement('p');p.className='helper';p.textContent='Showing your most recent order. For help with earlier orders, contact support.';orderResult.appendChild(p);}return;}
+      if(!data.order&&!data.number&&!data.order_id&&!data.order_number){infoState('We could not find an order yet.','Please verify your email address and try again.');return;}
+      paintOrder(data);
+    }catch(_){clearTimeout(timer);if(id!==attempt)return;infoState('Order tracking is not available right now.','The new store tracking connection still needs to be set up. You can use the care guides while it is being connected.');}
+  }
+  function switchTab(name){document.querySelectorAll('[data-tab]').forEach(function(tab){tab.setAttribute('aria-selected',tab.dataset.tab===name?'true':'false')});['order','use','habits'].forEach(function(t){document.getElementById('panel-'+t).hidden=t!==name});}
+  document.querySelectorAll('[data-tab]').forEach(function(button){button.addEventListener('click',function(){switchTab(button.dataset.tab);});});
+  form.addEventListener('submit',function(e){e.preventDefault();var email=emailInput.value.trim();if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){emailError.textContent='Please enter a valid email address.';emailError.hidden=false;emailInput.focus();return;}emailError.hidden=true;currentEmail=email;welcome.hidden=true;document.getElementById('introBenefits').hidden=true;dashboard.hidden=false;document.getElementById('signedEmail').textContent=email;document.getElementById('demoAlert').hidden=!preview;switchTab('order');window.scrollTo({top:0,behavior:'smooth'});loadOrder(email);});
+  document.getElementById('changeEmail').addEventListener('click',function(){attempt++;currentEmail='';dashboard.hidden=true;welcome.hidden=false;document.getElementById('introBenefits').hidden=false;emailInput.value='';window.scrollTo({top:0,behavior:'smooth'});emailInput.focus();});
+})();
+</script>
+</body>
+</html>
