@@ -1,7 +1,8 @@
 # My Natural Care — automação de avisos por e-mail
 
-## Regras atuais (versão 2)
+## Regras atuais (versão 3)
 - Remetente: support@mynaturalcare.app, domínio autenticado pelo Resend.
+- **Novo: agradecimento de compra confirmada (D+0).** Enviado automaticamente a cada pedido pago elegível desde a implantação, no máximo uma vez por ID de pedido. Mensagem em inglês, com botão de acesso ao aplicativo. A checagem rápida ocorre a cada minuto na primeira página de pedidos recentes; a checagem completa a cada 30 minutos serve de contingência. O envio não é necessariamente instantâneo ao segundo.
 - **Três e-mails de cuidados são agendados automaticamente após a compra paga**, sem ação de cadastro dentro do aplicativo:
   1. **D+3** — Comece sua rotina de cuidados.
   2. **D+6** — Academia em casa e movimento leve (com avisos de segurança).
@@ -14,7 +15,7 @@
 
 ## Infraestrutura
 - Render: servidor rastreio-cartpanda; consulta interna da Cartpanda e API de status do mailer.
-- Cloudflare: Worker mnc-mailer, rota mynaturalcare.app/_mail/* e agendamento */30 * * * *.
+- Cloudflare: Worker mnc-mailer, rota mynaturalcare.app/_mail/* e agendamentos * * * * * (verificação rápida) e */30 * * * * (completa).
 - D1: mnc-customer-email-events; tabelas orders, subscriptions, dispatches e job_runs.
 - Resend: chave Sending Access restrita ao domínio, não incluir chave no GitHub.
 
@@ -27,6 +28,13 @@ No Render rastreio-cartpanda > Environment:
 - MNC_MAIL_INTERNAL_TOKEN (mesmo valor do INTERNAL_TOKEN do Worker)
 
 O Worker também usa CAMPAIGN_START, RENDER_ORIGIN e DB, configurados no deploy.
+
+## Webhook opcional para envio quase imediato
+- O Worker tem um endpoint protegido `POST https://mynaturalcare.app/_mail/cartpanda-paid?key=<token>`, para receber o evento `order.paid` da Cartpanda.
+- **A conexão direta ainda não está ativa:** é preciso configurar `WEBHOOK_TOKEN` como Secret do Worker e cadastrar o webhook de **Pedido pago** no painel Cartpanda em **Admin → Notificações → Configurar Webhooks**. A plataforma envia um JSON contendo `event: "order.paid"` e `order.id`.
+- O webhook não confia em dados externos para determinar pagamento: verifica o pedido na API interna autenticada do Render antes de disparar. Resend e D1 impedem repetição por ID de pedido.
+- Até configurar o webhook, a verificação a cada minuto funciona automaticamente para pedidos mais recentes, mantendo a verificação completa de contingência.
+- Nunca expor nem publicar o valor do `WEBHOOK_TOKEN` no GitHub; não publicar esse endpoint com um token real em documentação pública.
 NÃO publicar tokens ou chaves em arquivos nem em relatórios.
 
 ## Verificações
