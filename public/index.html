@@ -646,7 +646,7 @@ function buildCareQuestions(){
   careFields.forEach(field=>{const v=careDraft[field.key];const p=carePercentValue(v);pillars[field.key]=p;if(p!==null){sum+=p;count++}});
   pillars.capsules=capsDraft===null?null:Math.round(capsDraft/3*100);
   if(pillars.capsules!==null){sum+=pillars.capsules;count++}
-  if(!count){$('careError').hidden=false;$('careError').textContent='Select pelo menos um habit para avaliar.';return}
+  if(!count){$('careError').hidden=false;$('careError').textContent='Choose at least one care habit to include in your check-in.';return}
   data.records.unshift({at:Date.now(),pillars,score:Math.round(sum/count)});
   data.records=data.records.slice(0,40);
   if(!putCareData(data)){$('careError').hidden=false;$('careError').textContent='Unable to save on this device. Make sure your browser allows local storage.';return}
