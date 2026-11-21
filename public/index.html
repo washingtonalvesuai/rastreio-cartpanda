@@ -130,6 +130,39 @@
 .care-reset-dialog .reset-warning{font-size:14px;color:#d1dded}
 
 
+
+/* Cuidados é acompanhamento, não livro; rotina diária ampla e legível para 60+. */
+.care-routine-panel{padding:clamp(18px,3vw,26px)}
+.care-routine-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}
+.care-routine-eyebrow{font-size:12px;font-weight:900;letter-spacing:.09em;color:#1f7453}
+.care-routine-heading h2{margin:4px 0 7px;font-size:clamp(24px,3vw,29px);color:#1d4835;line-height:1.2}
+.care-routine-heading p{margin:0;color:#557362;font-size:16px;line-height:1.55}
+.care-routine-count{flex:none;background:#e7f5eb;color:#1c714f;border-radius:13px;font-weight:900;padding:9px 13px;font-size:15px;white-space:nowrap}
+.care-routine-meter{height:13px;background:#deede2;border-radius:99px;overflow:hidden;margin:0 0 19px}
+.care-routine-meter span{display:block;height:100%;width:0;background:#258b61;border-radius:99px;transition:width .25s}
+.care-routine-list{display:grid;gap:11px}
+.care-routine-item{background:#f9fcf9;border:1px solid #dde9e0;border-radius:17px;padding:16px 15px}
+.care-routine-item.is-done{background:#eef9f1;border-color:#b8dfc4}
+.care-routine-item.is-skipped{background:#f5f7f5;border-color:#dde5df}
+.care-routine-item-main{display:flex;align-items:flex-start;gap:14px}
+.care-task-check{width:53px;height:53px;min-width:53px;border-radius:14px;background:#fff;border:2px solid #a7c5b1;color:#fff;display:grid;place-items:center;font-size:27px;font-weight:900}
+.care-routine-item.is-done .care-task-check{background:#1e875e;border-color:#1e875e}
+.care-task-check span{pointer-events:none}
+.care-task-copy{flex:1;min-width:0}
+.care-task-copy strong{font-size:19px;color:#264738;display:block;line-height:1.35}
+.care-task-copy p{color:#50695b;font-size:16px;line-height:1.55;margin:5px 0 11px}
+.care-task-tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px 15px}
+.care-task-tools button{background:transparent;border:0;color:#166e4e;font-size:14px;font-weight:800;min-height:38px;text-align:left;padding:5px 0}
+.care-task-tools button[data-care-skip]{color:#5c7164;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.care-task-tools button[data-care-skip][aria-pressed=true]{color:#1a704d;text-decoration:none}
+.care-routine-feedback{font-size:16px;line-height:1.55;font-weight:800;color:#1b7552;margin:17px 0 4px}
+.care-routine-note{color:#5e7466;font-size:14px;line-height:1.6;margin:8px 0 0}
+.care-manual-link{display:flex;gap:17px;align-items:flex-start;background:#edf7ef;border-color:#d0e7d5}
+.care-manual-icon{height:57px;width:57px;min-width:57px;background:#dff0e3;border-radius:17px;display:grid;place-items:center;font-size:30px}
+.care-manual-link h2{font-size:22px;color:#205139;margin:1px 0 8px;line-height:1.3}
+.care-manual-link p{color:#506b58;font-size:16px;margin:0 0 15px;line-height:1.55}
+.care-manual-link .secondary-action{font-size:15px}
+@media(max-width:620px){.care-routine-heading{align-items:flex-start}.care-routine-count{font-size:13px;padding:8px}.care-routine-item{padding:15px 12px}.care-task-copy strong{font-size:18px}.care-task-check{width:48px;height:48px;min-width:48px}.care-task-tools button{font-size:14px}.care-manual-link{flex-direction:column}.care-manual-icon{height:51px;width:51px;min-width:51px}}
 </style>
 <link rel="stylesheet" href="/assets/light-theme.css">
 </head><body>
@@ -212,6 +245,14 @@
   <div id="carePillarScores" class="care-pillar-grid" aria-label="Pontuação de cada cuidado"></div>
   <p class="care-intro">Seu score ajuda a acompanhar a <strong>regularidade dos cuidados em casa</strong>. Cada pequeno hábito é uma oportunidade de fortalecer sua rotina e valorizar seu bem-estar.</p>
  </div>
+ <section class="care-panel care-routine-panel" aria-labelledby="careRoutineTitle">
+  <div class="care-routine-heading"><div><span class="care-routine-eyebrow">MEU ACOMPANHAMENTO DIÁRIO</span><h2 id="careRoutineTitle">Meus cuidados de hoje</h2>
+   <p>Marque os cuidados que você realizou. Cada pequeno passo conta!</p></div><span class="care-routine-count" id="careRoutineCount" aria-live="polite">0 de 5</span></div>
+  <div class="care-routine-meter" role="progressbar" id="careRoutineProgress" aria-label="Cuidados diários realizados" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0"><span id="careRoutineProgressFill"></span></div>
+  <div id="careRoutineItems" class="care-routine-list" aria-label="Lista dos seus cuidados de hoje"></div>
+  <p id="careRoutineFeedback" class="care-routine-feedback" aria-live="polite">Escolha um cuidado para começar hoje.</p>
+  <p class="care-routine-note">Suas marcações são diárias. O score geral continua sendo atualizado quando você faz a avaliação a cada três dias.</p>
+ </section>
  <div class="care-panel">
   <h2 style="font-size:23px;margin:0 0 5px">Minhas 2 cápsulas de hoje</h2>
   <p class="care-intro">Cuidar de você também é manter a rotina do produto. Registre quando tomar as 2 cápsulas conforme o rótulo; não aumente a dose para mudar a pontuação.</p>
@@ -227,11 +268,11 @@
  <div class="care-panel" id="careWaitSection" hidden><h2 style="font-size:22px;margin:0 0 8px">Parabéns por acompanhar seus cuidados! ✓</h2>
  <p class="care-intro" id="careWaitMessage">Muito bem! Continue fortalecendo sua rotina. Em 3 dias, você poderá celebrar e acompanhar seu progresso novamente.</p>
  <button class="secondary-action" type="button" data-goto="habits">Rever dicas de cuidados</button></div>
- <section class="gc-reading-section" aria-label="Livro prático de cuidados e bem-estar">
-  <div id="careGuidePreview" class="gc-preview"><div class="gc-guide-pending" role="status">
-    <h2>Seu livro ilustrado de cuidados</h2><p>Leia com calma: capítulos, ilustrações e orientações em sequência, como em um livro.</p>
-  </div></div>
-</section>
+ <div class="care-panel care-manual-link">
+   <div class="care-manual-icon" aria-hidden="true">📖</div>
+   <div><h2>Quer aprender como fazer cada cuidado?</h2><p>O livro ilustrado com todos os passos está na aba <strong>Bem-estar</strong>. Aqui você só acompanha o que fez.</p>
+   <button type="button" class="secondary-action" data-goto="habits">Abrir manual no Bem-estar <svg><use href="#ico-arrow"/></svg></button></div>
+  </div>
 
  <div class="care-panel"><h2 style="font-size:22px;margin:0 0 13px">Histórico das minhas avaliações</h2>
   <div id="careHistory" class="care-history"><p class="care-intro">Suas avaliações aparecerão aqui.</p></div>
@@ -249,7 +290,7 @@
  <div class="page-head"><button class="back-button" type="button" data-goto="home" aria-label="Voltar ao início"><svg style="transform:rotate(180deg)"><use href="#ico-chevron"/></svg></button>
  <div><h1>Seu Livro de Bem-estar</h1><p>Leitura simples, ilustrada e em sequência. É só rolar a página.</p></div></div>
  <div id="habitsGuideLibrary" class="gc-library">
-   <div class="gc-guide-pending" role="status"><h2>Preparando sua leitura...</h2><p>O livro completo aparece aqui, com 28 capítulos em sequência.</p></div>
+   <div class="gc-guide-pending" role="status"><h2>Preparando sua leitura...</h2><p>O manual completo aparece aqui, com capítulos ilustrados em sequência.</p></div>
  </div>
 </section>
 </div></main><nav class="bottom-nav" aria-label="Navegação do aplicativo"><button type="button" class="active" data-goto="home" aria-current="page"><svg><use href="#ico-home"/></svg><span>Início</span></button><button type="button" data-goto="tracking"><svg><use href="#ico-package"/></svg><span>Rastreio</span></button><button type="button" data-goto="guide"><svg><use href="#ico-book"/></svg><span>Guia</span></button><button type="button" data-goto="habits"><svg><use href="#ico-leaf"/></svg><span>Bem-estar</span></button><button type="button" data-goto="care"><svg><use href="#ico-leaf"/></svg><span>Cuidados</span></button></nav><footer class="app-footer">© 2026 My Natural Care · <a href="mailto:support@nervlief.com">Suporte ao Cliente</a><br>Conteúdo educativo; não substitui orientação médica.</footer></section>
@@ -311,7 +352,7 @@ function loadIllustratedGuide(){
   script.onerror=()=>{
    guideScriptPromise=null;
    const feedback='<div class="book-loading"><strong>Não foi possível carregar o livro agora.</strong><p>Verifique a conexão e tente novamente.</p><button type="button" data-reload-guide>Tentar novamente</button></div>';
-   for(const id of ['careGuidePreview','habitsGuideLibrary']){const box=document.getElementById(id);if(box)box.innerHTML=feedback;}
+   for(const id of ['habitsGuideLibrary']){const box=document.getElementById(id);if(box)box.innerHTML=feedback;}
    reject(new Error('Falha ao carregar a biblioteca de cuidados'));
   };
   document.head.appendChild(script);
@@ -340,6 +381,68 @@ const careFields=[
  {key:'sleep',title:'🌙 Sono e descanso',hint:'Procurei dormir e acordar em horários regulares e ter um descanso suficiente.'},
  {key:'water',title:'💧 Hidratação',hint:'Mantive a hidratação adequada às minhas necessidades e recomendações de saúde.'}
 ];
+
+// Rotina diária independente do quiz de 3 dias, alinhada ao livro de Bem-estar.
+const careDailyTasks=[
+ {key:'food',title:'🥗 Alimentação',detail:'Fiz uma refeição equilibrada, adequada às minhas necessidades.',manual:'HOME10'},
+ {key:'movement',title:'🚶 Movimento seguro',detail:'Pratiquei um movimento leve que é seguro para mim.',manual:'HOME02',allowSkip:true},
+ {key:'feet',title:'🦶 Proteção dos pés',detail:'Observei meus pés e evitei calçados que machucam.',manual:'HOME07'},
+ {key:'sleep',title:'🌙 Sono e descanso',detail:'Cuidei do descanso e da rotina para dormir melhor.',manual:'HOME13'},
+ {key:'water',title:'💧 Hidratação',detail:'Bebi líquidos conforme minha necessidade e orientação.',manual:'HOME12',allowSkip:true}
+];
+function careRoutineToday(data){
+ const all=(data.checklist&&typeof data.checklist==='object')?data.checklist:{};
+ return (all[careDayKey()]&&typeof all[careDayKey()]==='object')?all[careDayKey()]:{};
+}
+function saveCareRoutineTask(key,skip=false){
+ if(!email||!careDailyTasks.some(t=>t.key===key))return;
+ const d=getCareData();if(!d.checklist||typeof d.checklist!=='object')d.checklist={};
+ const day=careDayKey(),entry={...(d.checklist[day]||{})};
+ entry[key]=entry[key]===(skip?'skip':'done')?undefined:(skip?'skip':'done');
+ if(entry[key]===undefined)delete entry[key];
+ d.checklist[day]=entry;
+ const days=Object.keys(d.checklist).sort().reverse();
+ days.slice(35).forEach(k=>delete d.checklist[k]);
+ if(putCareData(d))renderCare();
+ else{$('careRoutineFeedback').textContent='Não foi possível salvar. Verifique se o navegador permite armazenamento local.';}
+}
+function renderCareRoutine(data){
+ const today=careRoutineToday(data);
+ const skipped=careDailyTasks.filter(x=>today[x.key]==='skip').length;
+ const total=careDailyTasks.length-skipped;
+ const done=careDailyTasks.filter(x=>today[x.key]==='done').length;
+ $('careRoutineCount').textContent=done+' de '+total+(skipped?' · '+skipped+' não se aplica':'');
+ const pct=total?Math.round(done/total*100):0;
+ $('careRoutineProgressFill').style.width=pct+'%';
+ $('careRoutineProgress').setAttribute('aria-valuemax',String(total));
+ $('careRoutineProgress').setAttribute('aria-valuenow',String(done));
+ $('careRoutineProgress').setAttribute('aria-valuetext',total?done+' de '+total+' cuidados realizados':'Todos os cuidados marcados como não aplicáveis');
+ $('careRoutineItems').innerHTML=careDailyTasks.map(task=>{
+  const state=today[task.key]||'',done=state==='done',skipped=state==='skip';
+  return '<article class="care-routine-item '+(done?'is-done':'')+(skipped?' is-skipped':'')+'"><div class="care-routine-item-main">'+
+   '<button type="button" class="care-task-check" data-care-task="'+task.key+'" aria-pressed="'+done+'" aria-label="'+(done?'Desmarcar':'Marcar como realizado')+': '+task.title+'"><span aria-hidden="true">'+(done?'✓':'')+'</span></button>'+
+   '<div class="care-task-copy"><strong>'+task.title+'</strong><p>'+task.detail+'</p><div class="care-task-tools"><button type="button" data-care-manual="'+task.manual+'">Como fazer no Bem-estar <span aria-hidden="true">→</span></button>'+
+    (task.allowSkip?'<button type="button" data-care-skip="'+task.key+'" aria-pressed="'+skipped+'">'+(skipped?'✓ Não se aplica':'Não se aplica')+'</button>':'')+
+   '</div></div></div></article>';
+ }).join('');
+ $('careRoutineFeedback').textContent=total===0?'Respeitar suas orientações de saúde também faz parte de cuidar bem de você.':
+ done===total?'Parabéns! Você registrou seus cuidados de hoje. Continue no seu ritmo!':
+ done>0?'Muito bem! Você já registrou '+done+' '+(done===1?'cuidado':'cuidados')+' hoje.':
+ 'Escolha um cuidado simples para começar. Você consegue!';
+}
+function openManualChapter(id){
+ go('habits');
+ loadIllustratedGuide().then(ok=>{if(ok&&window.MNCGuide?.openChapter)window.MNCGuide.openChapter(id)});
+}
+$('careRoutineItems').addEventListener('click',e=>{
+ const check=e.target.closest('[data-care-task]');
+ if(check){saveCareRoutineTask(check.dataset.careTask);return}
+ const skip=e.target.closest('[data-care-skip]');
+ if(skip){saveCareRoutineTask(skip.dataset.careSkip,true);return}
+ const manual=e.target.closest('[data-care-manual]');
+ if(manual){openManualChapter(manual.dataset.careManual)}
+});
+
 let careDraft={},capsDraft=undefined;
 const careStoreKey=()=> 'mnc_care_v2_'+hashCareEmail(email);
 const hashCareEmail=value=>{let h=2166136261;for(const char of String(value||'').toLowerCase()){h^=char.charCodeAt(0);h=Math.imul(h,16777619)}return (h>>>0).toString(36)};
@@ -557,6 +660,7 @@ function paintCareButtons(){
 function renderCare(){
  if(!email)return;
  const data=getCareData(),last=data.records[0]||null,now=Date.now();
+ renderCareRoutine(data);
  const due=!last||now-Number(last.at)>=CARE_INTERVAL;
  const score=last?Number(last.score):null;
  const tone=score!==null?careTone(score):null;
@@ -625,7 +729,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!app.hidd
 
 function showApp(value){email=value;signed.textContent=value;login.hidden=true;app.hidden=false;storeEmail(value);go('home');loadOrder();renderCare();}
 function signOut(){careDraft={};capsDraft=undefined;lookupSeq++;email='';lastOrder=null;carrierUrl='';result.innerHTML='';try{localStorage.removeItem(EMAIL_KEY)}catch{};$('accountMenu').hidden=true;app.hidden=true;login.hidden=false;input.value='';input.focus();window.scrollTo(0,0);}
-function go(view){if(!['home','tracking','guide','habits','care'].includes(view))return;currentView=view;$('homeView').hidden=view!=='home';$('contentViews').hidden=view==='home';['tracking','guide','habits','care'].forEach(x=>{$(x+'View').hidden=x!==view});document.querySelectorAll('.bottom-nav button').forEach(b=>{const active=b.dataset.goto===view;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});$('accountMenu').hidden=true;$('accountToggle').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'instant'});if(view==='tracking'&&!lastOrder)loadOrder();if(view==='care'||view==='home')renderCare();if(view==='care'||view==='habits')loadIllustratedGuide().then(ok=>{if(ok&&window.MNCGuide)window.MNCGuide.mount(view)});}
+function go(view){if(!['home','tracking','guide','habits','care'].includes(view))return;currentView=view;$('homeView').hidden=view!=='home';$('contentViews').hidden=view==='home';['tracking','guide','habits','care'].forEach(x=>{$(x+'View').hidden=x!==view});document.querySelectorAll('.bottom-nav button').forEach(b=>{const active=b.dataset.goto===view;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});$('accountMenu').hidden=true;$('accountToggle').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'instant'});if(view==='tracking'&&!lastOrder)loadOrder();if(view==='care'||view==='home')renderCare();if(view==='habits')loadIllustratedGuide().then(ok=>{if(ok&&window.MNCGuide)window.MNCGuide.mount('habits')});}
 function renderState(title,message){carrierUrl='';result.innerHTML=`<div class="order-state"><h2 style="font-size:22px;margin:0 0 8px">${escapeHTML(title)}</h2><p style="color:var(--muted);margin:0 0 18px">${escapeHTML(message)}</p><button type="button" id="retryLookup" class="secondary-action">${icon('reload')} Tentar Novamente</button></div>`;$('retryLookup').addEventListener('click',loadOrder);}
 function renderOrder(data){lastOrder=data;const order=data?.order||data||{},t=order.tracking||{};const number=order.number||order.order_number||order.order_id||'',company=t.tracking_company||order.tracking_company||'Ainda não informada',trackingNumber=t.tracking_number||order.tracking_number||'Em breve';carrierUrl=safeURL(t.tracking_url||order.tracking_url);const statuses={preparing:'Preparando envio',shipped:'Enviado',partially_shipped:'Enviado parcialmente',delivered:'Entregue',pending:'Preparando envio'};const status=statuses[String(order.status||'').toLowerCase()]||'Pedido confirmado';result.innerHTML=`<div class="order-state"><div class="order-top"><div><div class="order-label">Último pedido</div><div class="order-number">${number?'#'+escapeHTML(number):'Seu pedido'}</div></div><span class="status-pill">${escapeHTML(status)}</span></div><div class="detail-grid"><div class="detail"><small>Transportadora</small><strong>${escapeHTML(company)}</strong></div><div class="detail"><small>Código de rastreamento</small><strong>${escapeHTML(trackingNumber)}</strong></div></div>${carrierUrl?`<a href="${escapeHTML(carrierUrl)}" class="big-action" target="_blank" rel="noopener noreferrer">Abrir Rastreamento da Transportadora ${icon('arrow')}</a><p style="font-size:13px;color:var(--muted);margin:12px 0 0">O site oficial da transportadora será aberto em uma nova aba.</p>`:`<div class="notice">${escapeHTML(PREPARING_MESSAGE)}</div>`}</div>`;}
 async function loadOrder(){if(!email)return;const seq=++lookupSeq;loading.hidden=false;try{const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),13000);let r;try{r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',body:JSON.stringify({email}),signal:controller.signal})}finally{clearTimeout(timer)}if(seq!==lookupSeq)return;if(r.status===404){lastOrder=null;renderState('Preparando seu pedido para envio 📦',PREPARING_MESSAGE);return;}if(!r.ok){lastOrder=null;renderState('O rastreamento está temporariamente indisponível.','Tente novamente mais tarde ou entre em contato com o suporte. Seus guias continuam disponíveis.');return;}const json=await r.json();if(seq!==lookupSeq)return;if(json.error){lastOrder=null;renderState('Preparando seu pedido para envio 📦',PREPARING_MESSAGE);return;}if(json.number||json.order||json.order_id||json.order_number)renderOrder(json);else renderState('Preparando seu pedido para envio 📦',PREPARING_MESSAGE);}catch{if(seq===lookupSeq)renderState('Não foi possível atualizar o rastreamento.','Verifique sua conexão e tente novamente.');}finally{if(seq===lookupSeq)loading.hidden=true;}}
