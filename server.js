@@ -171,6 +171,7 @@ app.get("/api/internal/email-orders",async(req,res)=>{
    if(!id)return null;
    return {id,email,number:String(order.number||order.order_number||"").slice(0,75),status:statusFor(order,trackingFrom(order)),created_at:String(order.created_at||order.date_created||"").slice(0,50)};
   }).filter(Boolean);
+  console.info("[mail] snapshot page="+page+" found="+all.length+" paid="+all.filter(isPaid).length+" usable="+orders.length);
   const lastPage=Number(raw?.orders?.last_page||raw?.last_page)||null;
   const hasMore=page<MAX_SCAN_PAGES&&all.length>0&&(lastPage===null||page<lastPage);
   return res.json({orders,hasMore});
