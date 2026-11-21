@@ -1,17 +1,28 @@
 # My Natural Care — automação de avisos por e-mail
 
-## Regras atuais (versão 3)
+## Regras atuais (versão 4 — identidade NervLief em todos os e-mails)
 - Remetente: support@mynaturalcare.app, domínio autenticado pelo Resend.
+- Marca do produto: **NervLief — Advanced Nerve Support**. Todo e-mail HTML de produção possui bloco com **imagem dos frascos + nome NervLief**, em layout compartilhado, além de **NervLief no assunto, corpo HTML e texto simples**.
+- A imagem atual usa o arquivo de produto enviado pelo proprietário e hospedado em uma URL de mídia HTTPS. Se a URL mudar, atualizar `PRODUCT_IMAGE` no código e republicar o Worker; alguns clientes de e-mail podem bloquear imagens, por isso o nome do produto permanece em texto.
+- **E-mails anteriores não podem ser modificados retroativamente** e não devem ser reenviados em massa somente por ajustes visuais.
 - **Novo: agradecimento de compra confirmada (D+0).** Enviado automaticamente a cada pedido pago elegível desde a implantação, no máximo uma vez por ID de pedido. Mensagem em inglês, com botão de acesso ao aplicativo. A checagem rápida ocorre a cada minuto na primeira página de pedidos recentes; a checagem completa a cada 30 minutos serve de contingência. O envio não é necessariamente instantâneo ao segundo.
 - **Três e-mails de cuidados são agendados automaticamente após a compra paga**, sem ação de cadastro dentro do aplicativo:
-  1. **D+3** — Comece sua rotina de cuidados.
-  2. **D+6** — Academia em casa e movimento leve (com avisos de segurança).
-  3. **D+9** — Confira seu progresso, hábitos e avaliação.
+  1. **D+3** — `NervLief Care Guide: Start with one small step`.
+  2. **D+6** — `NervLief Care Guide: Gentle movement for your day`.
+  3. **D+9** — `NervLief Care Guide: Every small habit counts`.
 - O programa é de **três e-mails no total por endereço**; não repete indefinidamente.
 - Cada mensagem inclui link de descadastro; uma pessoa que cancelou não será reinscrita automaticamente se comprar novamente.
-- Somente compradores com pedidos criados a partir de 2026-11-21T20:14:00Z entram nesta campanha; não há disparo retroativo em massa.
-- O aviso de envio continua separado e é disparado uma única vez após observar a transição real de preparing para shipped ou partially_shipped. Pedidos já enviados no primeiro escaneamento não recebem alerta retroativo.
+- Compradores com pedidos a partir de 2026-11-21T20:14:00Z entram na campanha; houve **exceção explícita para pedidos reais #4 a #11 feitos em 20 e 21 de novembro de 2026**. Os pedidos #1, #2 e #3 são testes e permanecem excluídos.
+- O aviso de envio, com assunto **Your NervLief order is on its way**, continua separado e é disparado uma única vez após observar a transição real de preparing para shipped ou partially_shipped. Pedidos já enviados no primeiro escaneamento não recebem alerta retroativo.
 - Não são incluídos dados de saúde pessoais nos e-mails.
+
+
+## Modelo de verificação de endereço (Resend)
+- Alias publicado: `nervlief-contact-verification` — **My Natural Care — Please confirm your NervLief email**.
+- O template inclui a imagem e o nome NervLief, usando identidade visual próxima aos e-mails de produção.
+- É um modelo **avulso**, disponível no Resend para futuras verificações. **Não é disparado automaticamente pelo Worker**; um contato sugerido não deve ser presumido como titular da compra.
+- Não menciona número do pedido, produtos comprados, valores ou outras informações privadas até a verificação do destinatário.
+- Os e-mails de verificação enviados antes deste modelo continuarão com aparência anterior.
 
 ## Infraestrutura
 - Render: servidor rastreio-cartpanda; consulta interna da Cartpanda e API de status do mailer.
