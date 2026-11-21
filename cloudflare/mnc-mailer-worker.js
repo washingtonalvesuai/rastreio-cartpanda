@@ -113,10 +113,10 @@ async function order(env,item,now){
   return welcomeSent+1;
  }catch(e){await env.DB.prepare("UPDATE dispatches SET last_error=? WHERE delivery_key=?").bind(String(e).slice(0,160),key).run();console.error("Shipping dispatch failed",String(e).slice(0,110));return welcomeSent}
 }
-async function scanShipping(env,now,targetId=null){
+async function scanShipping(env,now,targetId=null,maxPages=20){
  const origin=String(env.RENDER_ORIGIN||"https://rastreio-cartpanda.onrender.com").replace(/\/$/,"");
  let count=0,sent=0;
- for(let pageNum=1;pageNum<=20;pageNum++){
+ for(let pageNum=1;pageNum<=maxPages;pageNum++){
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
   let response;
   try{
@@ -199,6 +199,12 @@ async function cron(env){
  await env.DB.prepare("DELETE FROM confirmations WHERE expires_at<?").bind(Date.now()).run();
  await env.DB.prepare("DELETE FROM job_runs WHERE started_at<?").bind(Date.now()-90*DAY).run();
 }
+async function quickWelcomeScan(env){
+ try{
+  const result=await scanShipping(env,Date.now(),null,1);
+  if(result.sent)console.log("Recent order scan sent "+result.sent+" transactional email(s)");
+ }catch(e){console.error("Recent order scan unavailable",String(e).slice(0,120))}
+}
 export default {
  async fetch(req,env){
   const p=new URL(req.url).pathname;
@@ -217,5 +223,5 @@ export default {
   if(p==="/_mail/unsubscribe"&&["GET","POST"].includes(req.method))return unsubscribe(req,env);
   return j({error:"Not found"},404);
  },
- scheduled(event,env,ctx){ctx.waitUntil(cron(env))}
+ scheduled(event,env,ctx){ctx.waitUntil(event.cron==='* * * * *'?quickWelcomeScan(env):cron(env))}
 };
