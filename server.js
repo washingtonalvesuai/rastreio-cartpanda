@@ -167,6 +167,8 @@ app.get("/api/internal/email-orders",async(req,res)=>{
  try{
   const raw=await cartpandaJson(API_BASE+"/orders?page="+page);
   const all=ordersList(raw);
+  // Temporary, privacy-safe diagnostics for payment flag mapping. No customer details.
+  if(page===1)console.info("[mail] payment flags="+JSON.stringify(all.slice(0,20).map(o=>({number:String(o.number??o.order_number??"").slice(0,16),paid:String(o.payment_status??""),financial:String(o.financial_status??""),test:String(o.test??""),cartx:String(o.is_cartx_test??""),isPaid:isPaid(o)}))));
   const orders=all.filter(isPaid).map(order=>{
    const email=emails(order).find(v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));
    if(!email)return null;
