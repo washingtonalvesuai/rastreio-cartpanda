@@ -4,6 +4,8 @@ import express from "express";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
 import cors from "cors";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 dotenv.config();
 const app = express();
@@ -144,6 +146,7 @@ async function findPaidOrder(email) {
   return [...candidates.values()].sort((a,b)=>
     (Date.parse(b.created_at||0)||0)-(Date.parse(a.created_at||0)||0))[0]||null;
 }
+app.use(express.static(path.join(path.dirname(fileURLToPath(import.meta.url)), "public"), { index: "index.html", maxAge: "1h" }));
 app.get("/health",(_,res)=>res.json({
   ok:true,configured:Boolean(SHOP&&TOKEN)
 }));
