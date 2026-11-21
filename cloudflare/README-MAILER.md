@@ -1,35 +1,43 @@
-# My Natural Care — automação de e-mails
+# My Natural Care — automação de avisos por e-mail
 
-## Estrutura
-O Render consulta pedidos pagos da Cartpanda. O Cloudflare Worker mnc-mailer usa o banco D1 mnc-customer-email-events para registrar envios e preferências, e roda a cada 30 minutos. O Resend está com o domínio mynaturalcare.app verificado e envia como support@mynaturalcare.app.
+## Regras atuais (versão 2)
+- Remetente: support@mynaturalcare.app, domínio autenticado pelo Resend.
+- **Três e-mails de cuidados são agendados automaticamente após a compra paga**, sem ação de cadastro dentro do aplicativo:
+  1. **D+3** — Comece sua rotina de cuidados.
+  2. **D+6** — Academia em casa e movimento leve (com avisos de segurança).
+  3. **D+9** — Confira seu progresso, hábitos e avaliação.
+- O programa é de **três e-mails no total por endereço**; não repete indefinidamente.
+- Cada mensagem inclui link de descadastro; uma pessoa que cancelou não será reinscrita automaticamente se comprar novamente.
+- Somente compradores com pedidos criados a partir de 2026-11-21T20:14:00Z entram nesta campanha; não há disparo retroativo em massa.
+- O aviso de envio continua separado e é disparado uma única vez após observar a transição real de preparing para shipped ou partially_shipped. Pedidos já enviados no primeiro escaneamento não recebem alerta retroativo.
+- Não são incluídos dados de saúde pessoais nos e-mails.
 
-## Credenciais: colocar APENAS nos dashboards (nunca no GitHub)
-1. Cloudflare > Workers & Pages > mnc-mailer > Settings > Variables and Secrets:
-   - RESEND_API_KEY = chave de Sending Access do domínio mynaturalcare.app
-   - INTERNAL_TOKEN = segredo aleatório compartilhado com o Render
-2. Render > rastreio-cartpanda > Environment:
-   - MNC_MAIL_INTERNAL_TOKEN = exatamente o mesmo valor de INTERNAL_TOKEN do Worker
-3. Configure os campos como Secret, salve e implante o Render.
+## Infraestrutura
+- Render: servidor rastreio-cartpanda; consulta interna da Cartpanda e API de status do mailer.
+- Cloudflare: Worker mnc-mailer, rota mynaturalcare.app/_mail/* e agendamento */30 * * * *.
+- D1: mnc-customer-email-events; tabelas orders, subscriptions, dispatches e job_runs.
+- Resend: chave Sending Access restrita ao domínio, não incluir chave no GitHub.
 
-## Rotina
-- O Worker é acionado a cada 30 minutos (cron: */30 * * * *).
-- O primeiro escaneamento estabelece uma linha de base de pedidos já existentes, sem envio retroativo de emails de despacho.
-- Quando um pedido monitorado passar de preparing para shipped/partially_shipped, envia notificação uma vez (com idempotência).
-- Os lembretes de autocuidado só são ativados mediante solicitação por um e-mail que possui pedido pago e confirmação no próprio endereço, por um link de uso único.
-- Os lembretes saem a cada 72 horas após a confirmação, e cada e-mail contém um link de descadastro.
-- O app oculta a adesão quando não há configuração de notificação no Render.
-- O score de cuidados e registros de quiz continuam apenas no dispositivo. E-mails de lembretes não afirmam que uma nova avaliação foi registrada.
-- O sistema escaneia até 20 páginas da Cartpanda por execução; o volume deve ser monitorado.
-- As respostas recebidas pelo endereço support@ exigem caixa postal configurada separadamente.
+## Segredos que precisam existir
+No Worker Cloudflare mnc-mailer > Settings > Variables and Secrets:
+- RESEND_API_KEY (Secret)
+- INTERNAL_TOKEN (Secret)
 
-## Endpoints
-- GET /_mail/health: verificação do Worker
-- POST /_mail/subscribe: exige segredo interno e inscrição confirmada no Render
-- GET /_mail/confirm?token=...: confirmação do destinatário
-- GET ou POST /_mail/unsubscribe?token=...: descadastro
-- GET /api/reminders/config: recurso disponível no Render
-- POST /api/reminders/subscribe: busca pedido pago antes de emitir confirmação
-- GET /api/internal/email-orders?page=1: protegido por segredo; nunca público
+No Render rastreio-cartpanda > Environment:
+- MNC_MAIL_INTERNAL_TOKEN (mesmo valor do INTERNAL_TOKEN do Worker)
 
-## Publicação
-A branch GitHub é main. O Render não usa autodeploy, então alterações exigem implantação manual. Alterações futuras no arquivo cloudflare/mnc-mailer-worker.js precisam ser enviadas também ao Worker na Cloudflare. Nunca envie tokens à conversa pública, suporte ou repositório.
+O Worker também usa CAMPAIGN_START, RENDER_ORIGIN e DB, configurados no deploy.
+NÃO publicar tokens ou chaves em arquivos nem em relatórios.
+
+## Verificações
+- GET /api/mail-status — retorna apenas se o servidor Render possui token.
+- GET /_mail/health — informa se o Worker possui os segredos exigidos, sem revelar valores.
+- Cloudflare Worker > Secrets mostra os NOMES, nunca os valores. A ausência de secrets significa que não haverá envios.
+- A execução agendada precisa conseguir consultar o endpoint /api/internal/email-orders do Render, protegido por Bearer token.
+- A data created_at de cada pedido precisa ser fornecida pela Cartpanda. Pedidos sem data válida não entram na campanha, evitando inclusão incorreta.
+- Mensagens enviadas utilizam chaves de idempotência do Resend e registros persistentes no D1.
+
+## Compliance e operação
+Mensagens de cuidados são relacionamento pós-venda, não notificações essenciais de transporte. Antes de habilitar envios a todos os compradores, certifique-se de que há base legal adequada e informação transparente no checkout/política de privacidade, respeitando oposição e descadastro conforme LGPD. O envio automático não substitui essa obrigação.
+
+O serviço de Render não usa autodeploy; cada alteração exige implantação manual. O Worker não é atualizado automaticamente pelo GitHub, portanto alterações no arquivo cloudflare/mnc-mailer-worker.js exigem publicação separada.
