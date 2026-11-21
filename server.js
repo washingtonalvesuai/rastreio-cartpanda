@@ -75,8 +75,8 @@ function isPaid(o) {
   // Cartpanda returns numeric payment_status=3 for a paid order.
   // Keep explicit text statuses for API variations; do not infer payment from fulfillment.
   const s=norm(o?.financial_status??o?.payment_status);
-  const test=String(o?.test??o?.is_cartx_test??"0");
-  return (s==="3"||s==="paid"||s==="partially_refunded")&&test!=="1";
+  const test=String(o?.test??"0")==="1"||String(o?.is_cartx_test??"0")==="1";
+  return (s==="3"||s==="paid"||s==="partially_refunded")&&!test;
 }
 function safeUrl(value) {
   try {
