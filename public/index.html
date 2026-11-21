@@ -1,6 +1,6 @@
 <!doctype html><html lang="pt-BR"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f5f8f5"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="My Natural Care">
+<meta name="theme-color" content="#080b14"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="My Natural Care">
 <meta name="description" content="O My Natural Care ajuda você a acompanhar pedidos, consultar instruções de produtos e conhecer hábitos saudáveis para o dia a dia.">
 <meta property="og:type" content="website"><meta property="og:site_name" content="My Natural Care"><meta property="og:title" content="My Natural Care — Seus cuidados em um só lugar"><meta property="og:description" content="Acompanhe seu pedido e consulte guias úteis sobre o produto e bem-estar."><meta property="og:image" content="https://mynaturalcare.app/assets/whatsapp-logo.png"><meta property="og:url" content="https://mynaturalcare.app/"><meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/assets/icon-192.png"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest"><title>My Natural Care | Seu Aplicativo de Cuidados</title>
@@ -131,40 +131,39 @@
 
 
 
-/* Cuidados é acompanhamento, não livro; rotina diária ampla e legível para 60+. */
+/* Acompanhamento diário em cores escuras originais com alto contraste. */
 .care-routine-panel{padding:clamp(18px,3vw,26px)}
 .care-routine-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}
-.care-routine-eyebrow{font-size:12px;font-weight:900;letter-spacing:.09em;color:#1f7453}
-.care-routine-heading h2{margin:4px 0 7px;font-size:clamp(24px,3vw,29px);color:#1d4835;line-height:1.2}
-.care-routine-heading p{margin:0;color:#557362;font-size:16px;line-height:1.55}
-.care-routine-count{flex:none;background:#e7f5eb;color:#1c714f;border-radius:13px;font-weight:900;padding:9px 13px;font-size:15px;white-space:nowrap}
-.care-routine-meter{height:13px;background:#deede2;border-radius:99px;overflow:hidden;margin:0 0 19px}
-.care-routine-meter span{display:block;height:100%;width:0;background:#258b61;border-radius:99px;transition:width .25s}
+.care-routine-eyebrow{font-size:12px;font-weight:900;letter-spacing:.09em;color:#88edc0}
+.care-routine-heading h2{margin:4px 0 7px;font-size:clamp(24px,3vw,29px);color:#f1fff8;line-height:1.2}
+.care-routine-heading p{margin:0;color:#b8d1c7;font-size:16px;line-height:1.55}
+.care-routine-count{flex:none;background:#1d4138;color:#9ef8cb;border:1px solid #326957;border-radius:13px;font-weight:900;padding:9px 13px;font-size:15px;white-space:nowrap}
+.care-routine-meter{height:13px;background:#2a3b43;border-radius:99px;overflow:hidden;margin:0 0 19px}
+.care-routine-meter span{display:block;height:100%;width:0;background:#55d8a3;border-radius:99px;transition:width .25s}
 .care-routine-list{display:grid;gap:11px}
-.care-routine-item{background:#f9fcf9;border:1px solid #dde9e0;border-radius:17px;padding:16px 15px}
-.care-routine-item.is-done{background:#eef9f1;border-color:#b8dfc4}
-.care-routine-item.is-skipped{background:#f5f7f5;border-color:#dde5df}
+.care-routine-item{background:#182433;border:1px solid #344655;border-radius:17px;padding:16px 15px}
+.care-routine-item.is-done{background:#193a34;border-color:#347e63}
+.care-routine-item.is-skipped{background:#202936;border-color:#3a4a55}
 .care-routine-item-main{display:flex;align-items:flex-start;gap:14px}
-.care-task-check{width:53px;height:53px;min-width:53px;border-radius:14px;background:#fff;border:2px solid #a7c5b1;color:#fff;display:grid;place-items:center;font-size:27px;font-weight:900}
-.care-routine-item.is-done .care-task-check{background:#1e875e;border-color:#1e875e}
+.care-task-check{width:53px;height:53px;min-width:53px;border-radius:14px;background:#233142;border:2px solid #658d7d;color:#10291e;display:grid;place-items:center;font-size:27px;font-weight:900}
+.care-routine-item.is-done .care-task-check{background:#73efb9;border-color:#73efb9}
 .care-task-check span{pointer-events:none}
 .care-task-copy{flex:1;min-width:0}
-.care-task-copy strong{font-size:19px;color:#264738;display:block;line-height:1.35}
-.care-task-copy p{color:#50695b;font-size:16px;line-height:1.55;margin:5px 0 11px}
+.care-task-copy strong{font-size:19px;color:#edf9f2;display:block;line-height:1.35}
+.care-task-copy p{color:#c2d3de;font-size:16px;line-height:1.55;margin:5px 0 11px}
 .care-task-tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px 15px}
-.care-task-tools button{background:transparent;border:0;color:#166e4e;font-size:14px;font-weight:800;min-height:38px;text-align:left;padding:5px 0}
-.care-task-tools button[data-care-skip]{color:#5c7164;font-weight:700;text-decoration:underline;text-underline-offset:3px}
-.care-task-tools button[data-care-skip][aria-pressed=true]{color:#1a704d;text-decoration:none}
-.care-routine-feedback{font-size:16px;line-height:1.55;font-weight:800;color:#1b7552;margin:17px 0 4px}
-.care-routine-note{color:#5e7466;font-size:14px;line-height:1.6;margin:8px 0 0}
-.care-manual-link{display:flex;gap:17px;align-items:flex-start;background:#edf7ef;border-color:#d0e7d5}
-.care-manual-icon{height:57px;width:57px;min-width:57px;background:#dff0e3;border-radius:17px;display:grid;place-items:center;font-size:30px}
-.care-manual-link h2{font-size:22px;color:#205139;margin:1px 0 8px;line-height:1.3}
-.care-manual-link p{color:#506b58;font-size:16px;margin:0 0 15px;line-height:1.55}
+.care-task-tools button{background:transparent;border:0;color:#92f6c9;font-size:14px;font-weight:800;min-height:38px;text-align:left;padding:5px 0}
+.care-task-tools button[data-care-skip]{color:#b0c3cc;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.care-task-tools button[data-care-skip][aria-pressed=true]{color:#99eabd;text-decoration:none}
+.care-routine-feedback{font-size:16px;line-height:1.55;font-weight:800;color:#94f4c6;margin:17px 0 4px}
+.care-routine-note{color:#b6c8cf;font-size:14px;line-height:1.6;margin:8px 0 0}
+.care-manual-link{display:flex;gap:17px;align-items:flex-start;background:#172e30;border-color:#2f5753}
+.care-manual-icon{height:57px;width:57px;min-width:57px;background:#25443d;border-radius:17px;display:grid;place-items:center;font-size:30px}
+.care-manual-link h2{font-size:22px;color:#eafff3;margin:1px 0 8px;line-height:1.3}
+.care-manual-link p{color:#c4d8d4;font-size:16px;margin:0 0 15px;line-height:1.55}
 .care-manual-link .secondary-action{font-size:15px}
 @media(max-width:620px){.care-routine-heading{align-items:flex-start}.care-routine-count{font-size:13px;padding:8px}.care-routine-item{padding:15px 12px}.care-task-copy strong{font-size:18px}.care-task-check{width:48px;height:48px;min-width:48px}.care-task-tools button{font-size:14px}.care-manual-link{flex-direction:column}.care-manual-icon{height:51px;width:51px;min-width:51px}}
 </style>
-<link rel="stylesheet" href="/assets/light-theme.css">
 </head><body>
 <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs>
 <symbol id="ico-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></symbol>
