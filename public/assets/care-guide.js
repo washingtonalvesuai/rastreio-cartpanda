@@ -1,4 +1,4 @@
-/* My Natural Care — Livro ilustrado: leitura linear e progressiva para todas as idades. */
+/* My Natural Care — illustrated, accessible scrolling wellness guide. */
 (function () {
   'use strict';
   const DATA_URL='/assets/neuropathy-guide-en-v3.json';
@@ -10,7 +10,7 @@
   const escapeHTML=x=>String(x==null?'':x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const illustrated=x=>/^\/assets\/care-icons\/[a-z-]+\.svg$/.test(String(x||''));
   const img=x=>illustrated(x.image)?x.image:'/assets/care-icons/hospital.svg';
-  const safeTitle=x=>escapeHTML(String(x||'').toLocaleLowerCase('en-US').replace(/^./,v=>v.toLocaleUpperCase('en-US')));
+  const safeTitle=x=>escapeHTML(String(x||'').toLowerCase().replace(/^./,v=>v.toUpperCase()));
   const groupsOf=(source)=>{
     const rows=String(source||'').replace(/\r/g,'').split('\n');
     const groups=[{title:'',lines:[]}];
@@ -77,7 +77,7 @@
       '<div class="book-cover-layout"><div><h2>One small step at a time.<br><em>A healthier routine, every day.</em></h2>'+
       '<p>An illustrated guide to easy daily routines and practical self-care at home.</p>'+
       '<div class="book-cover-tip">Scroll to explore the guide. All chapters appear in order on one easy-to-read page.</div></div>'+
-      '<div class="book-cover-art"><img src="/assets/care-icons/foot.svg" width="122" height="122" alt="Illustration: cuidados e proteção dos pés" decoding="async"></div></div>'+
+      '<div class="book-cover-art"><img src="/assets/care-icons/foot.svg" width="122" height="122" alt="Foot protection and daily care illustration" decoding="async"></div></div>'+
       '</header><div class="book-pages" id="mncBookPages"></div>'+
       '<div class="book-next" id="mncBookNext" aria-live="off"><span class="book-next-symbol" aria-hidden="true">✦</span><p id="mncBookLoadedCount">Preparing your guide...</p></div>'+
       '<footer class="book-ending"><strong>Take care of yourself, one step at a time.</strong><p>Your well-being matters. Follow your care plan, adapt activities to your needs, and celebrate safe steps forward.</p>'+
@@ -91,7 +91,7 @@
       },{root:null,rootMargin:'1100px 0px',threshold:0});
       observer.observe(sentinel);
     }else{
-      // Fallback de compatibilidade: leitura completa sem botões ou interações extras.
+      // Compatibility fallback: read the full guide without extra controls.
       const fill=()=>{if(next<guide.chapters.length){renderMore();setTimeout(fill,0)}};
       setTimeout(fill,0);
     }
