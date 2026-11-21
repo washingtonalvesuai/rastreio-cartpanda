@@ -175,4 +175,28 @@ app.post("/api/order-by-email",rateLimit,async(req,res)=>{
   }
 });
 app.use((req,res)=>res.status(404).json({error:"Not found."}));
-app.listen(PORT,()=>console.log("NervLief Customer Care API on port "+PORT));
+async function checkCartpandaAuthOnStart() {
+  if (!SHOP || !TOKEN) {
+    console.error("[startup] Cartpanda configuration missing.");
+    return;
+  }
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 12000);
+  try {
+    // Validate authorization only. Do not log order content or credentials.
+    const r = await fetch(API_BASE + "/orders?page=1", {
+      headers: { Authorization: "Bearer " + TOKEN, Accept: "application/json" },
+      signal: controller.signal
+    });
+    if (r.ok) console.log("[startup] Cartpanda orders API access confirmed for " + SHOP);
+    else console.error("[startup] Cartpanda orders API access rejected: HTTP " + r.status);
+  } catch (e) {
+    console.error("[startup] Cartpanda connectivity check failed:", e.message);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+app.listen(PORT, () => {
+  console.log("My Natural Care API listening on port " + PORT);
+  void checkCartpandaAuthOnStart();
+});
