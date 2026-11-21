@@ -117,6 +117,18 @@
 
 
 .care-home-action{margin:4px 0 15px!important;padding:12px 14px;border-radius:13px;border:1px solid rgba(113,237,189,.23);background:rgba(113,237,189,.08);color:#d5f3e6!important;font-size:14px!important;line-height:1.5}
+
+/* Reset de dados de cuidados locais com confirmação explícita. */
+.care-reset-area{margin-top:20px;padding:17px;border:1px solid rgba(255,255,255,.10);border-radius:16px;background:rgba(255,255,255,.025)}
+.care-reset-area strong{font-size:16px;display:block;margin-bottom:5px}
+.care-reset-area p{font-size:14px;line-height:1.5;color:#b4c5d5;margin:0 0 13px}
+.care-reset-button{border:1px solid rgba(255,174,157,.40);background:rgba(197,82,75,.10);color:#ffd9cd;border-radius:13px;padding:12px 15px;font-size:15px;font-weight:800;min-height:49px}
+.care-reset-button:hover{background:rgba(197,82,75,.19)}
+.care-reset-dialog .reset-email{display:block;overflow-wrap:anywhere;font-weight:800;color:#d9f7e9;background:rgba(113,237,189,.08);border:1px solid rgba(113,237,189,.20);border-radius:12px;padding:10px 12px;margin:12px 0}
+.care-reset-dialog .reset-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.care-reset-dialog .reset-actions button{flex:1;min-width:165px}
+.care-reset-dialog .reset-warning{font-size:14px;color:#d1dded}
+
 </style>
 </head><body>
 <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs>
@@ -216,6 +228,12 @@
  <div class="care-panel"><h2 style="font-size:22px;margin:0 0 13px">Histórico das minhas avaliações</h2>
   <div id="careHistory" class="care-history"><p class="care-intro">Suas avaliações aparecerão aqui.</p></div>
   <p style="font-size:13px;color:var(--muted);margin:14px 0 0">Os registros ficam somente neste navegador/aplicativo, neste aparelho. Se os dados do navegador forem apagados ou você trocar de celular, o histórico não será transferido automaticamente.</p>
+
+  <div class="care-reset-area">
+   <strong>Precisa recomeçar sua avaliação?</strong>
+   <p>Você pode limpar os registros de cuidados salvos neste aparelho e preencher o quiz novamente. Seus pedidos e seu acesso ao aplicativo continuam normalmente.</p>
+   <button type="button" class="care-reset-button" id="careResetOpen">Limpar meus registros de cuidados</button>
+  </div>
  </div>
 </section>
 
@@ -288,6 +306,17 @@
  </section>
 </div>
 
+
+<div class="dialog-backdrop" id="careResetDialog" hidden>
+ <section class="dialog care-reset-dialog" role="dialog" aria-modal="true" aria-labelledby="careResetTitle" aria-describedby="careResetDescription">
+  <div class="dialog-head"><h2 id="careResetTitle">Limpar registros de cuidados?</h2><button type="button" class="dialog-close" id="careResetClose" aria-label="Fechar">×</button></div>
+  <p id="careResetDescription">Essa ação apaga <strong>notas, scores, histórico, marcações das cápsulas e lembretes</strong> salvos neste aparelho para o e-mail:</p>
+  <span id="careResetEmail" class="reset-email"></span>
+  <p class="reset-warning">A compra, o pedido, o rastreamento e seu acesso por e-mail <strong>não serão alterados</strong>. Os registros de cuidados apagados não poderão ser recuperados.</p>
+  <p class="care-error" id="careResetError" role="alert" hidden></p>
+  <div class="reset-actions"><button type="button" class="secondary-action" id="careResetCancel">Cancelar</button><button type="button" class="care-reset-button" id="careResetConfirm">Sim, limpar e refazer o quiz</button></div>
+ </section>
+</div>
 <script>
 (()=>{
 'use strict';
@@ -330,6 +359,50 @@ function pillDaysFromDaily(){
  for(let i=0;i<3;i++){const date=new Date(now.getFullYear(),now.getMonth(),now.getDate()-i);if(d.daily[careDayKey(date)]===true)n++}
  return n;
 }
+
+
+// Limpa SOMENTE os dados locais de autocuidado do e-mail que está aberto neste dispositivo.
+function openCareReset(){
+ if(!email)return;
+ $('careResetEmail').textContent=email;
+ $('careResetError').hidden=true;
+ $('careResetDialog').hidden=false;
+ document.body.style.overflow='hidden';
+ $('careResetCancel').focus();
+}
+function closeCareReset(){
+ $('careResetDialog').hidden=true;
+ if(!careQuizOpen)document.body.style.overflow='';
+}
+function confirmCareReset(){
+ if(!email)return;
+ try{
+  // Não limpar e-mail lembrado, rastreamento nem os dados da Cartpanda.
+  localStorage.removeItem(careStoreKey());
+  localStorage.removeItem('mnc_care_later_'+hashCareEmail(email));
+ }catch(e){
+  $('careResetError').textContent='Não foi possível apagar os registros neste aparelho. Verifique as configurações de armazenamento do navegador.';
+  $('careResetError').hidden=false;
+  return;
+ }
+ careDraft={};
+ capsDraft=undefined;
+ careQuizStep=0;
+ closeCareReset();
+ renderCare();
+ go('care');
+ openCareQuiz();
+}
+$('careResetOpen').addEventListener('click',openCareReset);
+$('careResetClose').addEventListener('click',closeCareReset);
+$('careResetCancel').addEventListener('click',closeCareReset);
+$('careResetConfirm').addEventListener('click',confirmCareReset);
+$('careResetDialog').addEventListener('click',e=>{
+ if(e.target===$('careResetDialog'))closeCareReset();
+});
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape'&&!$('careResetDialog').hidden)closeCareReset();
+});
 
 function getCareDismissedToday(){
  try{return localStorage.getItem('mnc_care_later_'+hashCareEmail(email))===careDayKey()}catch{return false}
