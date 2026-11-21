@@ -138,7 +138,7 @@ async function scanReminders(env,now){
   const url=BASE+"/_mail/unsubscribe?token="+token;
   await env.DB.prepare("INSERT OR IGNORE INTO dispatches(delivery_key,email,kind,state,created_at) VALUES(?,?,'care','pending',?)").bind(key,email,now).run();
   try{
-   await send(env,email,details.subject,details.body,details.text+"\n\nCancelar estes lembretes: "+url,"care",key,details.action,BASE,
+   await send(env,email,details.subject,details.body,details.text+"\n\nUnsubscribe from wellness emails: "+url,"care",key,details.action,BASE,
     'This is part of the three-email wellness series following your order. <a href="'+esc(url)+'" style="color:#176b50;text-decoration:underline">Unsubscribe from wellness emails</a>.',
     {"List-Unsubscribe":"<"+url+">","List-Unsubscribe-Post":"List-Unsubscribe=One-Click"});
    await env.DB.prepare("UPDATE dispatches SET state='sent',sent_at=?,last_error=NULL WHERE delivery_key=?").bind(now,key).run();
