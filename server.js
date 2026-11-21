@@ -4,6 +4,7 @@ import express from "express";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
 import cors from "cors";
+import crypto from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -146,6 +147,62 @@ async function findPaidOrder(email) {
   return [...candidates.values()].sort((a,b)=>
     (Date.parse(b.created_at||0)||0)-(Date.parse(a.created_at||0)||0))[0]||null;
 }
+
+// Internal snapshot for the private scheduled email Worker. Never expose this to browsers.
+const MAIL_TOKEN=String(process.env.MNC_MAIL_INTERNAL_TOKEN||"");
+function authorizedMailer(req){
+ const provided=String(req.get("Authorization")||"").replace(/^Bearer\s+/i,"");
+ if(!MAIL_TOKEN||provided.length!==MAIL_TOKEN.length)return false;
+ return crypto.timingSafeEqual(Buffer.from(provided),Buffer.from(MAIL_TOKEN));
+}
+app.get("/api/internal/email-orders",async(req,res)=>{
+ if(!authorizedMailer(req))return res.status(401).json({error:"Unauthorized"});
+ if(!SHOP||!TOKEN)return res.status(503).json({error:"Orders API is not configured"});
+ const page=Math.min(MAX_SCAN_PAGES,Math.max(1,Math.floor(Number(req.query.page)||1)));
+ try{
+  const raw=await cartpandaJson(API_BASE+"/orders?page="+page);
+  const all=ordersList(raw);
+  const orders=all.filter(isPaid).map(order=>{
+   const email=emails(order).find(v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));
+   if(!email)return null;
+   const id=String(order.id||order.order_id||"").slice(0,90);
+   if(!id)return null;
+   return {id,email,number:String(order.number||order.order_number||"").slice(0,75),status:statusFor(order,trackingFrom(order))};
+  }).filter(Boolean);
+  const lastPage=Number(raw?.orders?.last_page||raw?.last_page)||null;
+  const hasMore=page<MAX_SCAN_PAGES&&all.length>0&&(lastPage===null||page<lastPage);
+  return res.json({orders,hasMore});
+ }catch(e){
+  console.error("[mail] Cartpanda snapshot failed",e.message);
+  return res.status(503).json({error:"Shipping status snapshot unavailable"});
+ }
+});
+
+// Requests for recurring reminders are verified against a paid order, then
+// a confirmation link must be opened by the actual email owner.
+app.post("/api/reminders/subscribe",rateLimit,async(req,res)=>{
+ const email=norm(req.body?.email);
+ if(!email||email.length>254||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+  return res.status(400).json({error:"Informe um e-mail válido."});
+ if(!MAIL_TOKEN)return res.status(503).json({error:"E-mails de cuidados ainda não estão disponíveis."});
+ try{
+  const order=await findPaidOrder(email);
+  if(!order)return res.json({ok:true,message:"Se este e-mail possui uma compra confirmada, enviaremos um link de ativação."});
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),11000);
+  try{
+   const response=await fetch("https://mynaturalcare.app/_mail/subscribe",{
+    method:"POST",headers:{"Authorization":"Bearer "+MAIL_TOKEN,"Content-Type":"application/json"},
+    body:JSON.stringify({email}),signal:controller.signal
+   });
+   if(!response.ok)throw new Error("Notification service HTTP "+response.status);
+  }finally{clearTimeout(timer)}
+  return res.json({ok:true,message:"Confira sua caixa de entrada para confirmar os lembretes. Se não encontrar, veja também o spam."});
+ }catch(e){
+  console.error("[mail] Reminder request failed",e.message);
+  return res.status(503).json({error:"Não conseguimos solicitar o lembrete agora. Tente novamente mais tarde."});
+ }
+});
+
 app.use(express.static(path.join(path.dirname(fileURLToPath(import.meta.url)), "public"), { index: "index.html", maxAge: "1h" }));
 app.get("/health",(_,res)=>res.json({
   ok:true,configured:Boolean(SHOP&&TOKEN)
