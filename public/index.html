@@ -278,7 +278,7 @@
  <p class="care-intro" id="careWaitMessage">Muito bem! Continue fortalecendo sua rotina. Em 3 dias, você poderá celebrar e acompanhar seu progresso novamente.</p>
  <button class="secondary-action" type="button" data-goto="habits">Rever dicas de cuidados</button></div>
 
- <section class="care-panel care-mail-panel" aria-labelledby="careMailTitle">
+ <section class="care-panel care-mail-panel" id="careMailPanel" aria-labelledby="careMailTitle" hidden>
   <span class="care-mail-kicker">LEMBRETES DE BEM-ESTAR</span>
   <h2 id="careMailTitle">Receba seus cuidados por e-mail 💚</h2>
   <p>Quer receber um lembrete a cada 3 dias para acessar o aplicativo, marcar seus cuidados e atualizar sua avaliação quando estiver disponível?</p>
@@ -382,6 +382,15 @@ document.addEventListener('click',e=>{
 });
 
 
+
+async function checkCareMailAvailability(){
+ try{
+  const res=await fetch('/api/reminders/config',{cache:'no-store'});
+  const data=await res.json();
+  const panel=document.getElementById('careMailPanel');
+  if(panel)panel.hidden=!(res.ok&&data.available===true);
+ }catch{const panel=document.getElementById('careMailPanel');if(panel)panel.hidden=true;}
+}
 document.getElementById('careMailSubscribe')?.addEventListener('click',async()=>{
  const btn=document.getElementById('careMailSubscribe'),status=document.getElementById('careMailStatus');
  const currentEmail=String(document.getElementById('signedEmail')?.textContent||'').trim();
@@ -761,7 +770,7 @@ function renderCare(){
 buildCareQuestions();
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!app.hidden)renderCare()});
 
-function showApp(value){email=value;signed.textContent=value;login.hidden=true;app.hidden=false;storeEmail(value);go('home');loadOrder();renderCare();}
+function showApp(value){email=value;signed.textContent=value;login.hidden=true;app.hidden=false;storeEmail(value);go('home');loadOrder();renderCare();void checkCareMailAvailability();}
 function signOut(){careDraft={};capsDraft=undefined;lookupSeq++;email='';lastOrder=null;carrierUrl='';result.innerHTML='';try{localStorage.removeItem(EMAIL_KEY)}catch{};$('accountMenu').hidden=true;app.hidden=true;login.hidden=false;input.value='';input.focus();window.scrollTo(0,0);}
 function go(view){if(!['home','tracking','guide','habits','care'].includes(view))return;currentView=view;$('homeView').hidden=view!=='home';$('contentViews').hidden=view==='home';['tracking','guide','habits','care'].forEach(x=>{$(x+'View').hidden=x!==view});document.querySelectorAll('.bottom-nav button').forEach(b=>{const active=b.dataset.goto===view;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});$('accountMenu').hidden=true;$('accountToggle').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'instant'});if(view==='tracking'&&!lastOrder)loadOrder();if(view==='care'||view==='home')renderCare();if(view==='habits')loadIllustratedGuide().then(ok=>{if(ok&&window.MNCGuide)window.MNCGuide.mount('habits')});}
 function renderState(title,message){carrierUrl='';result.innerHTML=`<div class="order-state"><h2 style="font-size:22px;margin:0 0 8px">${escapeHTML(title)}</h2><p style="color:var(--muted);margin:0 0 18px">${escapeHTML(message)}</p><button type="button" id="retryLookup" class="secondary-action">${icon('reload')} Tentar Novamente</button></div>`;$('retryLookup').addEventListener('click',loadOrder);}
