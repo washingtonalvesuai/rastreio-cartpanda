@@ -22,6 +22,51 @@
 @media(max-width:850px){.tile-track{grid-template-columns:repeat(3,minmax(210px,1fr));overflow-x:auto;scroll-snap-type:x mandatory;padding:0 1px 9px}.content-tile{scroll-snap-align:start}.promo-deco{right:5%;opacity:.68}.tracking-layout{grid-template-columns:1fr}.list-grid{grid-template-columns:1fr}}
 @media(max-width:620px){body{font-size:16px}.app-container{padding:0 15px}.app-header-in{padding:10px 14px;min-height:65px}.app-brand img{width:39px;height:39px}.app-brand strong{font-size:17px}.app-brand small{font-size:10px}.icon-button{width:40px;height:40px}.hello{margin-bottom:16px}.tiny-email{display:none}.hello h1{font-size:26px}.promo-banner{height:310px;padding:23px}.promo-banner h2{font-size:29px;max-width:255px}.promo-banner p{font-size:15px;max-width:260px}.promo-deco{right:-16%;top:37%;opacity:.3}.slider-arrow{display:none}.section-heading h2{font-size:20px}.tile-track{grid-template-columns:none;display:flex;gap:12px;margin-right:0;padding-right:14px;max-width:100%}.content-tile{flex:0 0 210px}.tile-art{height:120px}.tile-art svg{width:69px;height:69px}.tile-copy{padding:15px}.tile-copy strong{font-size:17px}.tile-copy p{font-size:13px}.home-note{margin-top:14px}.bottom-nav{left:0;right:0;bottom:0;transform:none;width:100%;border-radius:19px 19px 0 0;padding:8px 6px max(8px,env(safe-area-inset-bottom));border-left:0;border-right:0;border-bottom:0}.bottom-nav button{min-height:57px;font-size:11px}.bottom-nav button svg{width:22px;height:22px}#appShell{padding-bottom:100px}#contentViews{padding-top:21px}.page-head h1{font-size:26px}.detail-grid{grid-template-columns:1fr}.routine-grid{grid-template-columns:1fr}.order-state,.side-help{padding:18px}.install-grid{grid-template-columns:1fr}.dialog{padding:19px}.auth-wrap{width:min(100%,410px)}.auth-form{padding:19px}.auth-logo{height:83px;width:83px}.auth-sub{font-size:16px}.auth-wrap h1{font-size:33px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.spinner{animation:none}.banner-track{scroll-behavior:auto}}
+
+/* 2026-11 • Painel de autocuidados: escala simples e legível para pessoas 60+ */
+.bottom-nav{grid-template-columns:repeat(5,minmax(0,1fr))}
+.care-panel{background:#191f2c;border:1px solid rgba(255,255,255,.10);border-radius:23px;padding:22px;margin:0 0 19px}
+.care-intro{margin:0 0 18px;color:#bdced9;font-size:16px}
+.care-home-card{margin:20px 0 14px;padding:21px;border-radius:23px;background:linear-gradient(125deg,#153a34,#142a37);border:1px solid rgba(113,237,189,.22);display:flex;justify-content:space-between;gap:18px;align-items:center;flex-wrap:wrap}
+.care-home-card h2{margin:4px 0 7px;font-size:24px;line-height:1.2;letter-spacing:-.5px}
+.care-home-card p{margin:0 0 12px;color:#d4e6df;font-size:15px}
+.care-home-chip{background:rgba(113,237,189,.14);border-radius:999px;color:#9cf1d3;padding:6px 12px;font-size:13px;font-weight:800}
+.care-hero-metrics{display:grid;grid-template-columns:155px 1fr;gap:20px;align-items:center}
+.care-score-ring{--pct:0;--ring:#85b6b0;width:148px;height:148px;border-radius:50%;background:conic-gradient(var(--ring) calc(var(--pct)*1%),rgba(255,255,255,.09) 0);padding:10px;display:grid;place-items:center}
+.care-score-inner{width:100%;height:100%;background:#111b2a;border-radius:50%;display:grid;align-content:center;text-align:center}
+.care-score-inner strong{font-size:37px;line-height:1.1;letter-spacing:-1px}
+.care-score-inner span{color:#c2cedb;font-size:13px}
+.care-score-copy h3{font-size:23px;line-height:1.2;margin:0 0 9px}
+.care-score-copy p{font-size:15px;color:#bccddb;margin:0 0 10px}
+.care-hint{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);padding:13px 15px;border-radius:14px;color:#d2e0ee;font-size:15px}
+.care-pillar-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
+.care-pillar{border:1px solid rgba(255,255,255,.09);background:#1b2634;border-radius:17px;padding:15px;min-width:0}
+.care-pillar-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.care-pillar-head strong{font-size:16px}.care-pillar-head span{font-size:14px;font-weight:850}
+.care-meter{height:10px;border-radius:999px;background:rgba(255,255,255,.09);overflow:hidden}
+.care-meter i{display:block;height:100%;border-radius:999px;width:0;background:#85b6b0;transition:width .25s ease}
+.care-pillar small{display:block;color:#aabdcf;margin-top:7px;font-size:12px}
+.care-tone-green{color:#89edbd}.care-tone-yellow{color:#f3d58a}.care-tone-red{color:#ff9e99}
+.care-checkin-form{display:grid;gap:15px;margin-top:18px}
+.care-question{padding:17px;border-radius:18px;background:#222b3b;border:1px solid rgba(255,255,255,.1)}
+.care-question h3{font-size:18px;margin:0 0 6px}.care-question p{font-size:14px;color:#bbcddc;margin:0 0 12px}
+.care-rate{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.care-rate button,.care-caps-buttons button{min-height:49px;border:1px solid rgba(255,255,255,.15);border-radius:12px;background:#111b2b;color:#fff;font-weight:850;font-size:17px}
+.care-rate button[aria-pressed="true"],.care-caps-buttons button[aria-pressed="true"]{background:linear-gradient(120deg,#77e9bc,#43b5c1);color:#0e2630;border-color:transparent}
+.care-not-applicable{display:inline-block;margin-top:10px;border:1px solid rgba(255,255,255,.18);background:transparent;color:#c8d7e5;border-radius:12px;font-size:14px;padding:8px 14px}
+.care-not-applicable[aria-pressed="true"]{background:#394556;color:#fff}
+.care-caps-buttons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.care-actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px}
+.care-error{color:#ffb9aa;font-size:15px;font-weight:700;margin:0}
+.care-daily{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;background:rgba(113,237,189,.055);border:1px solid rgba(113,237,189,.2);border-radius:18px;padding:17px;margin:16px 0}
+.care-daily strong{font-size:17px}.care-daily p{color:#b8cbd9;font-size:14px;margin:4px 0 0}
+.care-daily button{min-height:51px;white-space:normal}
+.care-history{display:grid;gap:10px}.care-history-row{display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px solid rgba(255,255,255,.09);padding:12px 15px;border-radius:14px;background:rgba(255,255,255,.035);font-size:15px}
+.care-guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:15px}
+.care-guide-card{background:#1b2431;border:1px solid rgba(255,255,255,.09);border-radius:17px;padding:19px}
+.care-guide-card h3{font-size:18px;margin:0 0 9px}.care-guide-card p{color:#bfcfdc;font-size:15px;margin:0 0 8px}.care-guide-card ul{padding-left:20px;color:#cad8e1;font-size:15px;margin:7px 0}.care-guide-card li+li{margin-top:6px}
+@media(max-width:700px){.care-hero-metrics{grid-template-columns:1fr}.care-score-ring{margin:auto}.care-pillar-grid,.care-guide-grid{grid-template-columns:1fr}.care-home-card{padding:18px}.care-panel{padding:17px}.care-rate{gap:6px}.bottom-nav{width:min(610px,calc(100% - 12px));padding:6px;bottom:7px}.bottom-nav button{font-size:11px;min-height:56px;padding:4px 2px}.bottom-nav button svg{width:21px;height:21px}}
+
 </style>
 </head><body>
 <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs>
@@ -46,6 +91,13 @@
 <article class="promo-banner guide-banner"><div class="promo-content"><div class="promo-kicker">GUIA DE USO DO PRODUTO</div><h2>Tudo o que você precisa saber.</h2><p>Instruções simples para usar seu produto, sempre à mão.</p><button class="white-button" data-goto="guide">Ver Meu Guia <svg><use href="#ico-arrow"/></svg></button></div><div class="promo-deco"><svg><use href="#ico-book"/></svg></div></article>
 <article class="promo-banner habits-banner"><div class="promo-content"><div class="promo-kicker">VIVA BEM NATURALMENTE</div><h2>Pequenos hábitos para dias melhores.</h2><p>Conheça alimentos, rotinas e hábitos saudáveis que favorecem o bem-estar.</p><button class="white-button" data-goto="habits">Explorar Hábitos Saudáveis <svg><use href="#ico-arrow"/></svg></button></div><div class="promo-deco"><svg><use href="#ico-leaf"/></svg></div></article>
 </div><button type="button" class="slider-arrow prev" id="bannerPrev" aria-label="Banner anterior"><svg style="transform:rotate(180deg)"><use href="#ico-chevron"/></svg></button><button type="button" class="slider-arrow next" id="bannerNext" aria-label="Próximo banner"><svg><use href="#ico-chevron"/></svg></button><div class="slider-dots" id="sliderDots"><button class="active" aria-label="Banner 1" data-slide="0"></button><button aria-label="Banner 2" data-slide="1"></button><button aria-label="Banner 3" data-slide="2"></button></div></div>
+
+<section class="care-home-card" aria-labelledby="careHomeTitle">
+ <div><span class="care-home-chip">Meu acompanhamento</span><h2 id="careHomeTitle">Seus cuidados, no seu ritmo</h2>
+ <p id="careHomeMessage">Avalie seus hábitos a cada 3 dias e acompanhe sua constância, sem pressão.</p>
+ <button type="button" class="white-button" data-goto="care">Abrir meus cuidados <svg><use href="#ico-arrow"/></svg></button></div>
+ <div class="care-home-chip" id="careHomeScore">Ainda sem avaliação</div>
+</section>
 <div class="section-heading"><h2>Explore sua central de cuidados</h2><small>Tudo em um único aplicativo</small></div><div class="tile-track">
 <button type="button" data-goto="tracking" class="content-tile"><div class="tile-art"><svg><use href="#ico-package"/></svg></div><div class="tile-copy"><strong>Rastreamento de Pedidos</strong><p>Consulte os detalhes da sua entrega.</p><div class="tile-action">Abrir Rastreamento <svg><use href="#ico-arrow"/></svg></div></div></button>
 <button type="button" data-goto="guide" class="content-tile"><div class="tile-art"><svg><use href="#ico-book"/></svg></div><div class="tile-copy"><strong>Guia do Produto</strong><p>Saiba como usar seu produto.</p><div class="tile-action">Ver Guia <svg><use href="#ico-arrow"/></svg></div></div></button>
@@ -59,7 +111,7 @@
 <div class="list-grid">
 <article class="topic-card">
 <h3>1. Siga as orientações do rótulo</h3>
-<p>Se você comprou NervLief, o guia anterior indica <strong>2 cápsulas por dia</strong>. Confira as instruções no rótulo do frasco atual e não exceda a quantidade recomendada.</p>
+<p>Se você comprou NervLief, a orientação de uso é de <strong>2 cápsulas por dia</strong>. Siga as instruções do rótulo do frasco e não ultrapasse 2 cápsulas por dia. Não tome doses extras.</p>
 </article>
 <article class="topic-card">
 <h3>2. Crie uma rotina consistente</h3>
@@ -79,6 +131,49 @@
             Estas orientações têm finalidade educativa e não substituem orientação médica, diagnóstico ou tratamento. Quem possui alguma condição de saúde, utiliza medicamentos ou apresenta piora dos sintomas deve procurar um profissional de saúde.
           </div>
 </div></section>
+
+<section id="careView" class="view-content" hidden>
+ <div class="page-head"><button class="back-button" type="button" data-goto="home" aria-label="Voltar ao início"><svg style="transform:rotate(180deg)"><use href="#ico-chevron"/></svg></button>
+ <div><h1>Meu Plano de Cuidados</h1><p>Pequenos hábitos, acompanhados a cada 3 dias.</p></div></div>
+ <div class="care-panel">
+  <div class="care-hero-metrics">
+   <div class="care-score-ring" id="careRing"><div class="care-score-inner"><strong id="careTotal">—</strong><span>de 100 pontos</span></div></div>
+   <div class="care-score-copy"><h3 id="careStatusTitle">Comece com uma avaliação</h3>
+    <p id="careStatusText">Você pode dar notas simples aos seus hábitos e acompanhar sua evolução de autocuidado.</p>
+    <div class="care-hint" id="careDueText">Sua primeira avaliação está disponível.</div></div>
+  </div>
+  <div id="carePillarScores" class="care-pillar-grid" aria-label="Pontuação de cada cuidado"></div>
+  <p class="care-intro">As notas mostram a <strong>regularidade dos cuidados em casa</strong>, não a gravidade ou melhora da neuropatia. Qualquer resultado pode melhorar no seu próprio ritmo.</p>
+ </div>
+ <div class="care-panel">
+  <h2 style="font-size:23px;margin:0 0 5px">Minhas 2 cápsulas de hoje</h2>
+  <p class="care-intro">Marque apenas depois de tomar as 2 cápsulas conforme o rótulo. Nunca tome uma dose extra para aumentar sua pontuação.</p>
+  <div class="care-daily"><div><strong id="careDailyLabel">Hoje: ainda não marcado</strong><p>Um toque por dia. Salvo neste aparelho.</p></div>
+   <button type="button" class="big-action" id="careDailyButton" aria-pressed="false">Marcar como tomado hoje</button></div>
+  <p style="font-size:13px;color:var(--muted);margin:0">Se você ainda não recebeu o frasco ou foi orientado a não usar, deixe sem marcar.</p>
+ </div>
+ <div class="care-panel" id="careFormSection">
+  <h2 style="font-size:23px;margin:0 0 7px">Minha avaliação de 3 dias</h2>
+  <p class="care-intro">Pense nos últimos 3 dias. Para cada cuidado, escolha de 1 (quase não fiz) a 5 (fiz com frequência). Se algum cuidado não for adequado para você, escolha “Não se aplica”.</p>
+  <form id="careCheckinForm" class="care-checkin-form" novalidate>
+   <div id="careQuestions"></div>
+   <div class="care-question"><h3>💊 Uso das 2 cápsulas</h3><p>Em quantos dos últimos 3 dias você tomou as 2 cápsulas conforme o rótulo?</p>
+    <div id="careCapsChoices" class="care-caps-buttons" role="group" aria-label="Dias com as 2 cápsulas"><button type="button" data-caps="0" aria-pressed="false">0 dias</button><button type="button" data-caps="1" aria-pressed="false">1 dia</button><button type="button" data-caps="2" aria-pressed="false">2 dias</button><button type="button" data-caps="3" aria-pressed="false">3 dias</button></div>
+    <button type="button" class="care-not-applicable" id="careCapsNA" aria-pressed="false">Ainda não recebi / não se aplica</button>
+   </div>
+   <p id="careError" class="care-error" role="alert" hidden>Escolha uma nota (ou “Não se aplica”) para cada cuidado.</p>
+   <div class="care-actions"><button type="submit" class="big-action">Salvar minha avaliação</button><span style="font-size:14px;color:var(--muted)">O próximo convite aparece em 3 dias.</span></div>
+  </form>
+ </div>
+ <div class="care-panel" id="careWaitSection" hidden><h2 style="font-size:22px;margin:0 0 8px">Avaliação registrada ✓</h2>
+ <p class="care-intro" id="careWaitMessage">Continue seus cuidados diariamente. A próxima avaliação aparecerá após 3 dias.</p>
+ <button class="secondary-action" type="button" data-goto="habits">Rever dicas de cuidados</button></div>
+ <div class="care-panel"><h2 style="font-size:22px;margin:0 0 13px">Histórico das minhas avaliações</h2>
+  <div id="careHistory" class="care-history"><p class="care-intro">Suas avaliações aparecerão aqui.</p></div>
+  <p style="font-size:13px;color:var(--muted);margin:14px 0 0">Os registros ficam somente neste navegador/aplicativo, neste aparelho. Se os dados do navegador forem apagados ou você trocar de celular, o histórico não será transferido automaticamente.</p>
+ </div>
+</section>
+
 <section id="habitsView" class="view-content" hidden><div class="page-head"><button class="back-button" type="button" data-goto="home" aria-label="Voltar ao início"><svg style="transform:rotate(180deg)"><use href="#ico-chevron"/></svg></button><div><h1>Hábitos Saudáveis</h1><p>Maneiras naturais de cuidar do seu bem-estar no dia a dia.</p></div></div><div class="content-panel">
 
 
@@ -100,6 +195,18 @@
 <p>Dormir bem e manter uma hidratação adequada contribuem para o bem-estar geral. Siga as orientações médicas caso precise limitar a ingestão de líquidos.</p>
 </article>
 </div>
+
+<h3 style="font-size:24px;letter-spacing:-.03em;margin:27px 0 10px">Cuidados que merecem atenção especial</h3>
+<div class="care-guide-grid">
+ <article class="care-guide-card"><h3>🦶 Observe e proteja os pés</h3><ul><li>Examine a sola, os dedos e entre os dedos todos os dias; peça ajuda ou use um espelho se necessário.</li><li>Prefira calçados confortáveis e evite andar descalço se há perda de sensibilidade.</li><li>Não use água muito quente, bolsa térmica ou aquecedor diretamente nos pés dormentes: podem causar queimaduras sem você perceber.</li></ul></article>
+ <article class="care-guide-card"><h3>🥗 Monte refeições equilibradas</h3><ul><li>Inclua legumes, verduras, frutas e fontes de proteína ao longo do dia.</li><li>Se você tem diabetes, siga seu plano alimentar e monitore a glicemia conforme orientação clínica.</li><li>Evite promessas de alimentos que “curam” os nervos; uma boa alimentação complementa o cuidado de saúde.</li></ul></article>
+ <article class="care-guide-card"><h3>🚶 Movimente-se com segurança</h3><ul><li>Escolha movimentos leves e adaptados à sua mobilidade: caminhada curta, exercícios sentado ou alongamento orientado.</li><li>Se você tem dificuldade de equilíbrio ou feridas nos pés, peça orientação antes de começar atividades.</li><li>Não ultrapasse seus limites para obter nota maior: segurança vem primeiro.</li></ul></article>
+ <article class="care-guide-card"><h3>🌙 Tenha rotina de descanso</h3><ul><li>Procure horários regulares para dormir e acordar.</li><li>Reduza estímulos antes de dormir; se a dor estiver atrapalhando o sono, avise seu profissional de saúde.</li><li>Hidrate-se conforme sua orientação médica, especialmente se houver problemas renais ou cardíacos.</li></ul></article>
+ <article class="care-guide-card"><h3>❤️ Cuide das causas e fatores associados</h3><ul><li>Mantenha seu acompanhamento médico e o controle de condições como diabetes.</li><li>Evite fumar e converse com seu profissional de saúde sobre consumo de álcool.</li><li>Procure avaliação para dormência, fraqueza ou feridas novas ou que pioram.</li></ul></article>
+ <article class="care-guide-card"><h3>💊 Suplementos com atenção</h3><ul><li>Use as 2 cápsulas por dia conforme o rótulo do seu produto.</li><li>Não duplique doses esquecidas e não combine suplementos sem conferir os ingredientes com um profissional.</li><li>Altas quantidades de vitamina B6 de suplementos podem causar lesão nervosa.</li></ul></article>
+</div>
+<div class="resource-box"><strong>Quando procurar ajuda:</strong> ferida no pé, vermelhidão intensa, inchaço, suspeita de infecção, perda súbita de força ou piora dos sintomas precisam de avaliação profissional. As orientações acima apoiam o autocuidado, mas não comprovam recuperação dos nervos. </div>
+
 <h3 style="font-size:24px;letter-spacing:-.03em;margin:26px 0 12px">Rotina diária simples</h3>
 <div class="routine-grid">
 <div class="routine-card"><strong>Manhã</strong>Tome um café da manhã equilibrado, beba água, siga o rótulo do produto e observe os pés caso tenha sensibilidade reduzida.</div>
@@ -110,7 +217,7 @@
             Referências úteis: <a href="https://www.niddk.nih.gov/health-information/diabetes/overview/preventing-problems/foot-problems" rel="noopener noreferrer" target="_blank">NIDDK — Cuidados com os Pés</a> · <a href="https://www.nhs.uk/conditions/peripheral-neuropathy/treatment/" rel="noopener noreferrer" target="_blank">NHS — Neuropatia Periférica</a> · <a href="https://ods.od.nih.gov/factsheets/VitaminB6-Consumer/" rel="noopener noreferrer" target="_blank">NIH — Vitamina B6</a>
 </div>
 </div></section>
-</div></main><nav class="bottom-nav" aria-label="Navegação do aplicativo"><button type="button" class="active" data-goto="home" aria-current="page"><svg><use href="#ico-home"/></svg><span>Início</span></button><button type="button" data-goto="tracking"><svg><use href="#ico-package"/></svg><span>Rastreio</span></button><button type="button" data-goto="guide"><svg><use href="#ico-book"/></svg><span>Guia</span></button><button type="button" data-goto="habits"><svg><use href="#ico-leaf"/></svg><span>Bem-estar</span></button></nav><footer class="app-footer">© 2026 My Natural Care · <a href="mailto:support@nervlief.com">Suporte ao Cliente</a><br>Conteúdo educativo; não substitui orientação médica.</footer></section>
+</div></main><nav class="bottom-nav" aria-label="Navegação do aplicativo"><button type="button" class="active" data-goto="home" aria-current="page"><svg><use href="#ico-home"/></svg><span>Início</span></button><button type="button" data-goto="tracking"><svg><use href="#ico-package"/></svg><span>Rastreio</span></button><button type="button" data-goto="guide"><svg><use href="#ico-book"/></svg><span>Guia</span></button><button type="button" data-goto="habits"><svg><use href="#ico-leaf"/></svg><span>Bem-estar</span></button><button type="button" data-goto="care"><svg><use href="#ico-leaf"/></svg><span>Cuidados</span></button></nav><footer class="app-footer">© 2026 My Natural Care · <a href="mailto:support@nervlief.com">Suporte ao Cliente</a><br>Conteúdo educativo; não substitui orientação médica.</footer></section>
 <div class="dialog-backdrop" id="installDialog" hidden><section role="dialog" aria-modal="true" aria-labelledby="installTitle" class="dialog"><div class="dialog-head"><h2 id="installTitle">Instalar o My Natural Care</h2><button type="button" class="dialog-close" id="closeInstall" aria-label="Fechar"><svg><use href="#ico-close"/></svg></button></div><p>Adicione o aplicativo à tela inicial do celular para acessá-lo sempre com facilidade.</p><div class="install-grid"><div class="install-step"><h3>🍎 iPhone / iPad</h3><ol><li>Abra <b>mynaturalcare.app</b> no Safari.</li><li>Toque no botão <b>Compartilhar</b>.</li><li>Escolha <b>Adicionar à Tela de Início</b> e depois toque em <b>Adicionar</b>.</li></ol></div><div class="install-step"><h3>📱 Android</h3><ol><li>Abra <b>mynaturalcare.app</b> no Chrome.</li><li>Toque no menu <b>⋮</b> ou em <b>Instalar</b>.</li><li>Escolha <b>Instalar aplicativo</b> ou <b>Adicionar à tela inicial</b>.</li></ol></div></div><button type="button" id="installNow" class="main-button" hidden>Instalar Aplicativo</button><p style="font-size:13px;margin-top:12px">Depois de instalar, abra diretamente pela tela inicial do celular. Seu e-mail ficará salvo neste aparelho.</p></section></div>
 <script>
 (()=>{
