@@ -23,7 +23,7 @@
 @media(max-width:620px){body{font-size:16px}.app-container{padding:0 15px}.app-header-in{padding:10px 14px;min-height:65px}.app-brand img{width:39px;height:39px}.app-brand strong{font-size:17px}.app-brand small{font-size:10px}.icon-button{width:40px;height:40px}.hello{margin-bottom:16px}.tiny-email{display:none}.hello h1{font-size:26px}.promo-banner{height:310px;padding:23px}.promo-banner h2{font-size:29px;max-width:255px}.promo-banner p{font-size:15px;max-width:260px}.promo-deco{right:-16%;top:37%;opacity:.3}.slider-arrow{display:none}.section-heading h2{font-size:20px}.tile-track{grid-template-columns:none;display:flex;gap:12px;margin-right:0;padding-right:14px;max-width:100%}.content-tile{flex:0 0 210px}.tile-art{height:120px}.tile-art svg{width:69px;height:69px}.tile-copy{padding:15px}.tile-copy strong{font-size:17px}.tile-copy p{font-size:13px}.home-note{margin-top:14px}.bottom-nav{left:0;right:0;bottom:0;transform:none;width:100%;border-radius:19px 19px 0 0;padding:8px 6px max(8px,env(safe-area-inset-bottom));border-left:0;border-right:0;border-bottom:0}.bottom-nav button{min-height:57px;font-size:11px}.bottom-nav button svg{width:22px;height:22px}#appShell{padding-bottom:100px}#contentViews{padding-top:21px}.page-head h1{font-size:26px}.detail-grid{grid-template-columns:1fr}.routine-grid{grid-template-columns:1fr}.order-state,.side-help{padding:18px}.install-grid{grid-template-columns:1fr}.dialog{padding:19px}.auth-wrap{width:min(100%,410px)}.auth-form{padding:19px}.auth-logo{height:83px;width:83px}.auth-sub{font-size:16px}.auth-wrap h1{font-size:33px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.spinner{animation:none}.banner-track{scroll-behavior:auto}}
 
-/* 2026-11 • Painel de autocuidados: escala simples e legível para pessoas 60+ */
+/* 2026-11 • Painel de autohabits: escala simples e legível para pessoas 60+ */
 .bottom-nav{grid-template-columns:repeat(5,minmax(0,1fr))}
 .care-panel{background:#191f2c;border:1px solid rgba(255,255,255,.10);border-radius:23px;padding:22px;margin:0 0 19px}
 .care-intro{margin:0 0 18px;color:#bdced9;font-size:16px}
@@ -118,7 +118,7 @@
 
 .care-home-action{margin:4px 0 15px!important;padding:12px 14px;border-radius:13px;border:1px solid rgba(113,237,189,.23);background:rgba(113,237,189,.08);color:#d5f3e6!important;font-size:14px!important;line-height:1.5}
 
-/* Reset de dados de cuidados locais com confirmação explícita. */
+/* Reset de dados de habits locais com confirmação explícita. */
 .care-reset-area{margin-top:20px;padding:17px;border:1px solid rgba(255,255,255,.10);border-radius:16px;background:rgba(255,255,255,.025)}
 .care-reset-area strong{font-size:16px;display:block;margin-bottom:5px}
 .care-reset-area p{font-size:14px;line-height:1.5;color:#b4c5d5;margin:0 0 13px}
@@ -180,13 +180,13 @@
 <symbol id="ico-reload" viewBox="0 0 24 24"><path d="M20 6v6h-6M4 18v-6h6M5 8a8 8 0 0 1 14-2l1 6M4 12l1 6a8 8 0 0 0 14-2"/></symbol>
 <symbol id="ico-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.8 9.5A2.5 2.5 0 1 1 13 12c-1 .6-1 1.2-1 2M12 17.5v.1"/></symbol>
 </defs></svg>
-<section id="loginScreen" aria-labelledby="loginTitle"><div class="auth-wrap"><img class="auth-logo" src="/assets/icon-192.png" alt="Ícone do aplicativo My Natural Care"><div class="auth-brand">My Natural Care</div><h1 id="loginTitle">Welcome to your<br>personal care space.</h1><p class="auth-sub">Track your order and discover everyday wellness guidance in one easy-to-use app.</p><form id="accessForm" class="auth-form" novalidate><label for="customerEmail">Email address used at checkout</label><input class="email-field" id="customerEmail" type="email" inputmode="email" autocomplete="email" required placeholder="seu@email.com"><button class="main-button" type="submit">Open My App <svg><use href="#ico-arrow"/></svg></button><div class="auth-error" id="emailError" hidden>Please enter a valid email address.</div><div class="auth-help"><svg><use href="#ico-lock"/></svg>No password or verification code required</div></form><div class="login-extras"><button type="button" class="text-link" data-open-install>How to install the app</button><span style="color:#6e8292">•</span><a class="text-link" href="mailto:support@nervlief.com">Need help?</a></div><p class="login-footer">© 2026 My Natural Care · Simple access for all ages</p></div></section>
-<section id="appShell" hidden><header class="app-header"><div class="app-header-in"><div class="app-brand"><img src="/assets/icon-192.png" alt="My Natural Care"><div><strong>My Natural Care</strong><small>Your personal wellness hub</small></div></div><div class="header-actions"><button type="button" class="icon-button" title="Install App" aria-label="Install App" data-open-install><svg><use href="#ico-download"/></svg></button><button type="button" class="icon-button" id="accountToggle" title="Conta" aria-label="Menu da conta" aria-expanded="false"><svg><use href="#ico-user"/></svg></button></div></div><div id="accountMenu" class="top-menu" hidden><button id="changeEmail" type="button"><svg><use href="#ico-user"/></svg>Switch email</button><button type="button" data-open-install><svg><use href="#ico-download"/></svg>Install App</button><a style="display:flex;gap:10px;padding:12px 14px;align-items:center;font-size:15px" href="mailto:support@nervlief.com"><svg><use href="#ico-help"/></svg>Customer Support</a></div></header>
+<section id="loginScreen" aria-labelledby="loginTitle"><div class="auth-wrap"><img class="auth-logo" src="/assets/icon-192.png" alt="My Natural Care app icon"><div class="auth-brand">My Natural Care</div><h1 id="loginTitle">Welcome to your<br>personal care space.</h1><p class="auth-sub">Track your order and discover everyday wellness guidance in one easy-to-use app.</p><form id="accessForm" class="auth-form" novalidate><label for="customerEmail">Email address used at checkout</label><input class="email-field" id="customerEmail" type="email" inputmode="email" autocomplete="email" required placeholder="you@example.com"><button class="main-button" type="submit">Open My App <svg><use href="#ico-arrow"/></svg></button><div class="auth-error" id="emailError" hidden>Please enter a valid email address.</div><div class="auth-help"><svg><use href="#ico-lock"/></svg>No password or verification code required</div></form><div class="login-extras"><button type="button" class="text-link" data-open-install>How to install the app</button><span style="color:#6e8292">•</span><a class="text-link" href="mailto:support@mynaturalcare.app">Need help?</a></div><p class="login-footer">© 2026 My Natural Care · Simple access for all ages</p></div></section>
+<section id="appShell" hidden><header class="app-header"><div class="app-header-in"><div class="app-brand"><img src="/assets/icon-192.png" alt="My Natural Care"><div><strong>My Natural Care</strong><small>Your personal wellness hub</small></div></div><div class="header-actions"><button type="button" class="icon-button" title="Install App" aria-label="Install App" data-open-install><svg><use href="#ico-download"/></svg></button><button type="button" class="icon-button" id="accountToggle" title="Account" aria-label="Account menu" aria-expanded="false"><svg><use href="#ico-user"/></svg></button></div></div><div id="accountMenu" class="top-menu" hidden><button id="changeEmail" type="button"><svg><use href="#ico-user"/></svg>Switch email</button><button type="button" data-open-install><svg><use href="#ico-download"/></svg>Install App</button><a style="display:flex;gap:10px;padding:12px 14px;align-items:center;font-size:15px" href="mailto:support@mynaturalcare.app"><svg><use href="#ico-help"/></svg>Customer Support</a></div></header>
 <main class="app-container"><section id="homeView"><div class="hello"><div><h1>Welcome to your wellness hub</h1><p>Your order and wellness guidance, all in one place.</p></div><span class="tiny-email" id="signedEmail"> </span></div>
 <section class="care-home-card" aria-labelledby="careHomeTitle">
  <div><span class="care-home-chip">My Care Check-in</span><h2 id="careHomeTitle">Your care, at your pace</h2>
  <p id="careHomeMessage">Track your habits and celebrate the small steps you take each day.</p>
- <div class="care-home-progress"><div class="care-home-progress-top"><span>Overall Care Score</span><strong id="careHomeScoreValue">Not rated yet</strong></div><div class="care-home-progress-track" role="progressbar" id="careHomeProgress" aria-label="Regularidade geral dos autocuidados" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="careHomeBar"></span></div><span class="care-progress-caption" id="careHomeBarCaption">Track your consistency and celebrate your progress.</span></div><p id="careHomeAction" class="care-home-action" aria-live="polite">Start with a check-in and choose one small care habit for today.</p>
+ <div class="care-home-progress"><div class="care-home-progress-top"><span>Overall Care Score</span><strong id="careHomeScoreValue">Not rated yet</strong></div><div class="care-home-progress-track" role="progressbar" id="careHomeProgress" aria-label="Overall care habit consistency" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="careHomeBar"></span></div><span class="care-progress-caption" id="careHomeBarCaption">Track your consistency and celebrate your progress.</span></div><p id="careHomeAction" class="care-home-action" aria-live="polite">Start with a check-in and choose one small care habit for today.</p>
  <div class="care-home-buttons"><button type="button" class="white-button" data-goto="care">View My Care <svg><use href="#ico-arrow"/></svg></button><button type="button" id="careHomeStart" class="big-action" data-open-care-quiz>Start My Check-in</button></div></div>
  <div class="care-home-chip" id="careHomeScore">No check-in yet</div>
 </section>
@@ -195,7 +195,7 @@
 <article class="promo-banner"><div class="promo-content"><div class="promo-kicker">ORDER TRACKING MADE SIMPLE</div><h2>Your delivery, made easy.</h2><p>Check your order status and open carrier tracking whenever you need it.</p><button class="white-button" data-goto="tracking">Track My Order <svg><use href="#ico-arrow"/></svg></button></div><div class="promo-deco"><svg><use href="#ico-package"/></svg></div></article>
 <article class="promo-banner guide-banner"><div class="promo-content"><div class="promo-kicker">PRODUCT USE GUIDE</div><h2>Everything you need to know.</h2><p>Simple product directions, always within reach.</p><button class="white-button" data-goto="guide">View My Guide <svg><use href="#ico-arrow"/></svg></button></div><div class="promo-deco"><svg><use href="#ico-book"/></svg></div></article>
 <article class="promo-banner habits-banner"><div class="promo-content"><div class="promo-kicker">LIVE WELL, NATURALLY</div><h2>Small habits. Better days.</h2><p>Explore nutritious meals, gentle routines, and healthy everyday habits.</p><button class="white-button" data-goto="habits">Explore Healthy Habits <svg><use href="#ico-arrow"/></svg></button></div><div class="promo-deco"><svg><use href="#ico-leaf"/></svg></div></article>
-</div><button type="button" class="slider-arrow prev" id="bannerPrev" aria-label="Banner anterior"><svg style="transform:rotate(180deg)"><use href="#ico-chevron"/></svg></button><button type="button" class="slider-arrow next" id="bannerNext" aria-label="Próximo banner"><svg><use href="#ico-chevron"/></svg></button><div class="slider-dots" id="sliderDots"><button class="active" aria-label="Banner 1" data-slide="0"></button><button aria-label="Banner 2" data-slide="1"></button><button aria-label="Banner 3" data-slide="2"></button></div></div>
+</div><button type="button" class="slider-arrow prev" id="bannerPrev" aria-label="Previous banner"><svg style="transform:rotate(180deg)"><use href="#ico-chevron"/></svg></button><button type="button" class="slider-arrow next" id="bannerNext" aria-label="Next banner"><svg><use href="#ico-chevron"/></svg></button><div class="slider-dots" id="sliderDots"><button class="active" aria-label="Banner 1" data-slide="0"></button><button aria-label="Banner 2" data-slide="1"></button><button aria-label="Banner 3" data-slide="2"></button></div></div>
 
 
 <div class="section-heading"><h2>Explore Your Wellness Hub</h2><small>Everything in one simple app</small></div><div class="tile-track">
@@ -204,8 +204,8 @@
 <button type="button" data-goto="habits" class="content-tile"><div class="tile-art"><svg><use href="#ico-leaf"/></svg></div><div class="tile-copy"><strong>Healthy Habits</strong><p>Simple tips for everyday well-being.</p><div class="tile-action">View Tips <svg><use href="#ico-arrow"/></svg></div></div></button></div>
 <div class="home-note"><div class="home-note-icon"><svg><use href="#ico-lock"/></svg></div><div><strong>Your app remembers you</strong><p>You will not need to enter your email again on this device. Choose a section above to get started.</p></div></div>
 </section><div id="contentViews" hidden>
-<section id="trackingView" class="view-content"><div class="page-head"><button class="back-button" type="button" data-goto="home" aria-label="Voltar ao início"><svg style="transform:rotate(180deg)"><use href="#ico-chevron"/></svg></button><div><h1>Order Tracking</h1><p>Track your delivery without entering your email again.</p></div></div><div class="tracking-layout"><div><div id="orderLoading" class="loading" hidden><span class="spinner"></span><span>Checking your latest order...</span></div><div id="orderResult" aria-live="polite"></div></div><aside class="side-help"><h3>Want to check again?</h3><p>Tracking details may change while your package is in transit.</p><button type="button" id="refreshOrder" class="secondary-action"><svg><use href="#ico-reload"/></svg> Refresh Tracking</button><button type="button" class="secondary-action" data-goto="guide"><svg><use href="#ico-book"/></svg> Product Instructions</button><a href="mailto:support@nervlief.com" class="secondary-action"><svg><use href="#ico-help"/></svg> Contact Support</a></aside></div></section>
-<section id="guideView" class="view-content" hidden><div class="page-head"><button class="back-button" type="button" data-goto="home" aria-label="Voltar ao início"><svg style="transform:rotate(180deg)"><use href="#ico-chevron"/></svg></button><div><h1>Product Guide</h1><p>Clear guidance for the product you purchased.</p></div></div><div class="content-panel">
+<section id="trackingView" class="view-content"><div class="page-head"><button class="back-button" type="button" data-goto="home" aria-label="Back to home"><svg style="transform:rotate(180deg)"><use href="#ico-chevron"/></svg></button><div><h1>Order Tracking</h1><p>Track your delivery without entering your email again.</p></div></div><div class="tracking-layout"><div><div id="orderLoading" class="loading" hidden><span class="spinner"></span><span>Checking your latest order...</span></div><div id="orderResult" aria-live="polite"></div></div><aside class="side-help"><h3>Want to check again?</h3><p>Tracking details may change while your package is in transit.</p><button type="button" id="refreshOrder" class="secondary-action"><svg><use href="#ico-reload"/></svg> Refresh Tracking</button><button type="button" class="secondary-action" data-goto="guide"><svg><use href="#ico-book"/></svg> Product Instructions</button><a href="mailto:support@mynaturalcare.app" class="secondary-action"><svg><use href="#ico-help"/></svg> Accountct Support</a></aside></div></section>
+<section id="guideView" class="view-content" hidden><div class="page-head"><button class="back-button" type="button" data-goto="home" aria-label="Back to home"><svg style="transform:rotate(180deg)"><use href="#ico-chevron"/></svg></button><div><h1>Product Guide</h1><p>Clear guidance for the product you purchased.</p></div></div><div class="content-panel">
 
 
 <div class="list-grid">
@@ -233,7 +233,7 @@
 </div></section>
 
 <section id="careView" class="view-content" hidden>
- <div class="page-head"><button class="back-button" type="button" data-goto="home" aria-label="Voltar ao início"><svg style="transform:rotate(180deg)"><use href="#ico-chevron"/></svg></button>
+ <div class="page-head"><button class="back-button" type="button" data-goto="home" aria-label="Back to home"><svg style="transform:rotate(180deg)"><use href="#ico-chevron"/></svg></button>
  <div><h1>My Care Plan</h1><p>One step at a time toward healthier everyday habits.</p></div></div>
  <div class="care-panel">
   <div class="care-hero-metrics">
@@ -242,14 +242,14 @@
     <p id="careStatusText">Review your habits, recognize your efforts, and discover small ways to care for yourself.</p>
     <div class="care-hint" id="careDueText">Your first check-in is ready.</div></div>
   </div>
-  <div id="carePillarScores" class="care-pillar-grid" aria-label="Pontuação de cada cuidado"></div>
+  <div id="carePillarScores" class="care-pillar-grid" aria-label="Score for each care habit"></div>
   <p class="care-intro">Your score helps you track <strong>your consistency with care at home</strong>. Every small habit can help you build a steadier routine.</p>
  </div>
  <section class="care-panel care-routine-panel" aria-labelledby="careRoutineTitle">
   <div class="care-routine-heading"><div><span class="care-routine-eyebrow">DAILY CARE TRACKER</span><h2 id="careRoutineTitle">My Care Today</h2>
    <p>Check off the care habits you completed. Every small step counts.</p></div><span class="care-routine-count" id="careRoutineCount" aria-live="polite">0 of 5</span></div>
   <div class="care-routine-meter" role="progressbar" id="careRoutineProgress" aria-label="Care diários realizados" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0"><span id="careRoutineProgressFill"></span></div>
-  <div id="careRoutineItems" class="care-routine-list" aria-label="Lista dos seus cuidados de hoje"></div>
+  <div id="careRoutineItems" class="care-routine-list" aria-label="Your daily care checklist"></div>
   <p id="careRoutineFeedback" class="care-routine-feedback" aria-live="polite">Choose one small care habit to begin today.</p>
   <p class="care-routine-note">Your checklist resets daily. Your overall care score updates when you complete the three-day check-in.</p>
  </section>
@@ -288,17 +288,17 @@
 </section>
 
 <section id="habitsView" class="view-content" hidden>
- <div class="page-head"><button class="back-button" type="button" data-goto="home" aria-label="Voltar ao início"><svg style="transform:rotate(180deg)"><use href="#ico-chevron"/></svg></button>
+ <div class="page-head"><button class="back-button" type="button" data-goto="home" aria-label="Back to home"><svg style="transform:rotate(180deg)"><use href="#ico-chevron"/></svg></button>
  <div><h1>Your Wellness Guide</h1><p>An easy illustrated guide. Just scroll to explore.</p></div></div>
  <div id="habitsGuideLibrary" class="gc-library">
    <div class="gc-guide-pending" role="status"><h2>Preparing your guide...</h2><p>Your full illustrated guide will appear here, chapter by chapter.</p></div>
  </div>
 </section>
-</div></main><nav class="bottom-nav" aria-label="Navegação do aplicativo"><button type="button" class="active" data-goto="home" aria-current="page"><svg><use href="#ico-home"/></svg><span>Home</span></button><button type="button" data-goto="tracking"><svg><use href="#ico-package"/></svg><span>Tracking</span></button><button type="button" data-goto="guide"><svg><use href="#ico-book"/></svg><span>Guide</span></button><button type="button" data-goto="habits"><svg><use href="#ico-leaf"/></svg><span>Wellness</span></button><button type="button" data-goto="care"><svg><use href="#ico-checklist"/></svg><span>Care</span></button></nav><footer class="app-footer">© 2026 My Natural Care · <a href="mailto:support@nervlief.com">Customer Support</a><br>Educational content. Not a substitute for medical advice.</footer></section>
-<div class="dialog-backdrop" id="installDialog" hidden><section role="dialog" aria-modal="true" aria-labelledby="installTitle" class="dialog"><div class="dialog-head"><h2 id="installTitle">Install My Natural Care</h2><button type="button" class="dialog-close" id="closeInstall" aria-label="Fechar"><svg><use href="#ico-close"/></svg></button></div><p>Add this app to your phone home screen for easy access.</p><div class="install-grid"><div class="install-step"><h3>🍎 iPhone / iPad</h3><ol><li>Open <b>mynaturalcare.app</b> in Safari.</li><li>Tap the <b>Share</b>.</li><li>Select <b>Add to Home Screen</b> and then tap <b>Add</b>.</li></ol></div><div class="install-step"><h3>📱 Android</h3><ol><li>Open <b>mynaturalcare.app</b> in Chrome.</li><li>Tap the menu <b>⋮</b> or <b>Install</b>.</li><li>Select <b>Install App</b> ou <b>Add to Home Screen</b>.</li></ol></div></div><button type="button" id="installNow" class="main-button" hidden>Install App</button><p style="font-size:13px;margin-top:12px">Once installed, open it from your home screen. Your email will stay saved on this device.</p></section></div>
+</div></main><nav class="bottom-nav" aria-label="App navigation"><button type="button" class="active" data-goto="home" aria-current="page"><svg><use href="#ico-home"/></svg><span>Home</span></button><button type="button" data-goto="tracking"><svg><use href="#ico-package"/></svg><span>Tracking</span></button><button type="button" data-goto="guide"><svg><use href="#ico-book"/></svg><span>Guide</span></button><button type="button" data-goto="habits"><svg><use href="#ico-leaf"/></svg><span>Wellness</span></button><button type="button" data-goto="care"><svg><use href="#ico-checklist"/></svg><span>Care</span></button></nav><footer class="app-footer">© 2026 My Natural Care · <a href="mailto:support@mynaturalcare.app">Customer Support</a><br>Educational content. Not a substitute for medical advice.</footer></section>
+<div class="dialog-backdrop" id="installDialog" hidden><section role="dialog" aria-modal="true" aria-labelledby="installTitle" class="dialog"><div class="dialog-head"><h2 id="installTitle">Install My Natural Care</h2><button type="button" class="dialog-close" id="closeInstall" aria-label="Close"><svg><use href="#ico-close"/></svg></button></div><p>Add this app to your phone home screen for easy access.</p><div class="install-grid"><div class="install-step"><h3>🍎 iPhone / iPad</h3><ol><li>Open <b>mynaturalcare.app</b> in Safari.</li><li>Tap the <b>Share</b>.</li><li>Select <b>Add to Home Screen</b> and then tap <b>Add</b>.</li></ol></div><div class="install-step"><h3>📱 Android</h3><ol><li>Open <b>mynaturalcare.app</b> in Chrome.</li><li>Tap the menu <b>⋮</b> or <b>Install</b>.</li><li>Select <b>Install App</b> ou <b>Add to Home Screen</b>.</li></ol></div></div><button type="button" id="installNow" class="main-button" hidden>Install App</button><p style="font-size:13px;margin-top:12px">Once installed, open it from your home screen. Your email will stay saved on this device.</p></section></div>
 <div id="careQuizOverlay" class="dialog-backdrop care-quiz-overlay" hidden>
  <section class="care-quiz-dialog" role="dialog" aria-modal="true" aria-labelledby="careQuizHeading" aria-describedby="careQuizDesc">
-  <div class="care-quiz-top"><span>My Natural Care · Self-Care</span><button type="button" id="careQuizClose" class="care-quiz-close" aria-label="Fechar a avaliação">×</button></div>
+  <div class="care-quiz-top"><span>My Natural Care · Self-Care</span><button type="button" id="careQuizClose" class="care-quiz-close" aria-label="Close check-in">×</button></div>
   <div id="careQuizActive">
    <div class="care-quiz-progress-head"><span id="careQuizCount">Question 1 of 6</span><span>My Check-in</span></div>
    <div class="care-quiz-progress"><span id="careQuizProgressBar"></span></div>
@@ -323,7 +323,7 @@
 
 <div class="dialog-backdrop" id="careResetDialog" hidden>
  <section class="dialog care-reset-dialog" role="dialog" aria-modal="true" aria-labelledby="careResetTitle" aria-describedby="careResetDescription">
-  <div class="dialog-head"><h2 id="careResetTitle">Clear Care Records?</h2><button type="button" class="dialog-close" id="careResetClose" aria-label="Fechar">×</button></div>
+  <div class="dialog-head"><h2 id="careResetTitle">Clear Care Records?</h2><button type="button" class="dialog-close" id="careResetClose" aria-label="Close">×</button></div>
   <p id="careResetDescription">This action removes <strong>scores, history, capsule logs, and reminders</strong> stored on this device for:</p>
   <span id="careResetEmail" class="reset-email"></span>
   <p class="reset-warning">Your purchase, order, tracking, and email access <strong>will not change</strong>. Deleted care records cannot be recovered.</p>
@@ -352,9 +352,9 @@ function loadIllustratedGuide(){
   script.onload=()=>resolve(true);
   script.onerror=()=>{
    guideScriptPromise=null;
-   const feedback='<div class="book-loading"><strong>Não foi possível carregar o livro agora.</strong><p>Verifique a conexão e tente novamente.</p><button type="button" data-reload-guide>Tentar novamente</button></div>';
+   const feedback='<div class="book-loading"><strong>The guide could not be loaded right now.</strong><p>Check your connection and try again.</p><button type="button" data-reload-guide>Try again</button></div>';
    for(const id of ['habitsGuideLibrary']){const box=document.getElementById(id);if(box)box.innerHTML=feedback;}
-   reject(new Error('Falha ao carregar a biblioteca de cuidados'));
+   reject(new Error('Failed to load wellness guide'));
   };
   document.head.appendChild(script);
  }).catch(()=>null);
@@ -366,7 +366,7 @@ document.addEventListener('click',e=>{
 
 
 
-const PREPARING_MESSAGE="Estamos preparando seu pedido para envio, assim que for coletado pela transportadora você conseguirá acompanhar o rastreamento.";
+const PREPARING_MESSAGE="Your order is being prepared. Once it is collected by the carrier, tracking details will appear here.";
 const $=id=>document.getElementById(id);const login=$('loginScreen'),app=$('appShell'),form=$('accessForm'),input=$('customerEmail'),error=$('emailError'),signed=$('signedEmail'),result=$('orderResult'),loading=$('orderLoading');
 let email='',lastOrder=null,carrierUrl='',lookupSeq=0,currentView='home',installPrompt=null;
 const icon=(name)=>`<svg><use href="#ico-${name}"/></svg>`;
@@ -378,20 +378,20 @@ const storeEmail=v=>{try{localStorage.setItem(EMAIL_KEY,v)}catch{}};
 // Acompanhamento voluntário local: notas de hábitos, NÃO um indicador clínico.
 const CARE_INTERVAL=3*24*60*60*1000;
 const careFields=[
- {key:'food',title:'🥗 Alimentação',hint:'Nos últimos 3 dias, procurei fazer refeições equilibradas com frutas, verduras, proteínas e alimentos variados.'},
- {key:'movement',title:'🚶 Movimento seguro',hint:'Fiz movimentos adequados para minhas condições e para as orientações que recebi, sem ultrapassar meus limites.'},
- {key:'feet',title:'🦶 Care com os pés',hint:'Observei e protegi meus pés, especialmente se tenho dormência ou diabetes.'},
- {key:'sleep',title:'🌙 Sono e descanso',hint:'Procurei dormir e acordar em horários regulares e ter um descanso suficiente.'},
- {key:'water',title:'💧 Hidratação',hint:'Mantive a hidratação adequada às minhas necessidades e recomendações de saúde.'}
+ {key:'food',title:'🥗 Nutrition',hint:'Over the past three days, I aimed for balanced meals with fruit, vegetables, protein, and varied foods.'},
+ {key:'movement',title:'🚶 Safe Movement',hint:'I chose movement appropriate for my abilities and professional recommendations without exceeding my limits.'},
+ {key:'feet',title:'🦶 Foot Care',hint:'I inspected and protected my feet, especially if I have numbness or diabetes.'},
+ {key:'sleep',title:'🌙 Sleep & Rest',hint:'I tried to keep consistent sleep and wake times and get adequate rest.'},
+ {key:'water',title:'💧 Hydration',hint:'I stayed hydrated according to my individual needs and healthcare guidance.'}
 ];
 
-// Rotina diária independente do quiz de 3 dias, alinhada ao livro de Wellness.
+// Rotina diária independente do quiz de 3 days, alinhada ao livro de Wellness.
 const careDailyTasks=[
- {key:'food',title:'🥗 Alimentação',detail:'Fiz uma refeição equilibrada, adequada às minhas necessidades.',manual:'HOME10'},
- {key:'movement',title:'🚶 Movimento seguro',detail:'Pratiquei um movimento leve que é seguro para mim.',manual:'HOME02',allowSkip:true},
- {key:'feet',title:'🦶 Proteção dos pés',detail:'Observei meus pés e evitei calçados que machucam.',manual:'HOME07'},
- {key:'sleep',title:'🌙 Sono e descanso',detail:'Cuidei do descanso e da rotina para dormir melhor.',manual:'HOME13'},
- {key:'water',title:'💧 Hidratação',detail:'Bebi líquidos conforme minha necessidade e orientação.',manual:'HOME12',allowSkip:true}
+ {key:'food',title:'🥗 Nutrition',detail:'I ate a balanced meal suited to my needs.',manual:'HOME10'},
+ {key:'movement',title:'🚶 Safe Movement',detail:'I practiced gentle movement that is safe for me.',manual:'HOME02',allowSkip:true},
+ {key:'feet',title:'🦶 Foot Protection',detail:'I checked my feet and avoided uncomfortable footwear.',manual:'HOME07'},
+ {key:'sleep',title:'🌙 Sleep & Rest',detail:'I followed a calming routine to support sleep.',manual:'HOME13'},
+ {key:'water',title:'💧 Hydration',detail:'I drank fluids according to my needs and healthcare guidance.',manual:'HOME12',allowSkip:true}
 ];
 function careRoutineToday(data){
  const all=(data.checklist&&typeof data.checklist==='object')?data.checklist:{};
@@ -407,31 +407,31 @@ function saveCareRoutineTask(key,skip=false){
  const days=Object.keys(d.checklist).sort().reverse();
  days.slice(35).forEach(k=>delete d.checklist[k]);
  if(putCareData(d))renderCare();
- else{$('careRoutineFeedback').textContent='Não foi possível salvar. Verifique se o navegador permite armazenamento local.';}
+ else{$('careRoutineFeedback').textContent='Unable to save. Please check whether your browser allows local storage.';}
 }
 function renderCareRoutine(data){
  const today=careRoutineToday(data);
  const skipped=careDailyTasks.filter(x=>today[x.key]==='skip').length;
  const total=careDailyTasks.length-skipped;
  const done=careDailyTasks.filter(x=>today[x.key]==='done').length;
- $('careRoutineCount').textContent=done+' de '+total+(skipped?' · '+skipped+' não se aplica':'');
+ $('careRoutineCount').textContent=done+' of '+total+(skipped?' · '+skipped+' not applicable':'');
  const pct=total?Math.round(done/total*100):0;
  $('careRoutineProgressFill').style.width=pct+'%';
  $('careRoutineProgress').setAttribute('aria-valuemax',String(total));
  $('careRoutineProgress').setAttribute('aria-valuenow',String(done));
- $('careRoutineProgress').setAttribute('aria-valuetext',total?done+' de '+total+' cuidados realizados':'Todos os cuidados marcados como não aplicáveis');
+ $('careRoutineProgress').setAttribute('aria-valuetext',total?done+' of '+total+' care habits completed':'All care habits marked as not applicable');
  $('careRoutineItems').innerHTML=careDailyTasks.map(task=>{
   const state=today[task.key]||'',done=state==='done',skipped=state==='skip';
   return '<article class="care-routine-item '+(done?'is-done':'')+(skipped?' is-skipped':'')+'"><div class="care-routine-item-main">'+
-   '<button type="button" class="care-task-check" data-care-task="'+task.key+'" aria-pressed="'+done+'" aria-label="'+(done?'Desmarcar':'Marcar como realizado')+': '+task.title+'"><span aria-hidden="true">'+(done?'✓':'')+'</span></button>'+
-   '<div class="care-task-copy"><strong>'+task.title+'</strong><p>'+task.detail+'</p><div class="care-task-tools"><button type="button" data-care-manual="'+task.manual+'">Como fazer no Wellness <span aria-hidden="true">→</span></button>'+
-    (task.allowSkip?'<button type="button" data-care-skip="'+task.key+'" aria-pressed="'+skipped+'">'+(skipped?'✓ Não se aplica':'Não se aplica')+'</button>':'')+
+   '<button type="button" class="care-task-check" data-care-task="'+task.key+'" aria-pressed="'+done+'" aria-label="'+(done?'Uncheck':'Mark as completed')+': '+task.title+'"><span aria-hidden="true">'+(done?'✓':'')+'</span></button>'+
+   '<div class="care-task-copy"><strong>'+task.title+'</strong><p>'+task.detail+'</p><div class="care-task-tools"><button type="button" data-care-manual="'+task.manual+'">How to do it in Wellness <span aria-hidden="true">→</span></button>'+
+    (task.allowSkip?'<button type="button" data-care-skip="'+task.key+'" aria-pressed="'+skipped+'">'+(skipped?'✓ Not applicable':'Not applicable')+'</button>':'')+
    '</div></div></div></article>';
  }).join('');
- $('careRoutineFeedback').textContent=total===0?'Respeitar suas orientações de saúde também faz parte de cuidar bem de você.':
- done===total?'Parabéns! Você registrou seus cuidados de hoje. Continue no seu ritmo!':
- done>0?'Muito bem! Você já registrou '+done+' '+(done===1?'cuidado':'cuidados')+' hoje.':
- 'Select um cuidado simples para começar. Você consegue!';
+ $('careRoutineFeedback').textContent=total===0?'Following your healthcare guidance is part of taking good care of yourself.':
+ done===total?'Well done! You have completed your care checklist today. Keep going at your own pace.':
+ done>0?'Great progress! You completed '+done+' '+(done===1?'habit':'habits')+' today.':
+ 'Choose one small care habit to begin today.';
 }
 function openManualChapter(id){
  go('habits');
@@ -457,9 +457,9 @@ function getCareData(){
 }
 function putCareData(data){try{localStorage.setItem(careStoreKey(),JSON.stringify(data));return true}catch{return false}}
 function careDayKey(date=new Date()){return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-')}
-function careDateText(date){return new Date(date).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'})}
-function careTimeRemaining(ms){const days=Math.ceil(ms/(24*60*60*1000));return days===1?'amanhã': 'em '+days+' dias'}
-function careTone(n){return n>=75?{tone:'green',color:'#7ee7b3',message:'Parabéns! Sua rotina está firme'}:n>=50?{tone:'yellow',color:'#f1d18b',message:'Muito bem! Continue fortalecendo seus hábitos'}:{tone:'red',color:'#ff9e99',message:'Cada novo cuidado é uma conquista'}}
+function careDateText(date){return new Date(date).toLocaleDateString('en-US',{day:'2-digit',month:'short',year:'numeric'})}
+function careTimeRemaining(ms){const days=Math.ceil(ms/(24*60*60*1000));return days===1?'tomorrow': 'in '+days+' days'}
+function careTone(n){return n>=75?{tone:'green',color:'#7ee7b3',message:'Great job! You are building a steady routine'}:n>=50?{tone:'yellow',color:'#f1d18b',message:'Keep going! Every small habit matters'}:{tone:'red',color:'#ff9e99',message:'Every new care habit is an achievement'}}
 function carePercentValue(value){return value===null||value===undefined?null:Math.round(Number(value)*20)}
 function careLatest(){const d=getCareData();return d.records.length?d.records[0]:null}
 function pillDaysFromDaily(){
@@ -469,7 +469,7 @@ function pillDaysFromDaily(){
 }
 
 
-// Limpa SOMENTE os dados locais de autocuidado do e-mail que está aberto neste dispositivo.
+// Limpa SOMENTE os dados locais de autohabit do e-mail que está aberto neste dispositivo.
 function openCareReset(){
  if(!email)return;
  $('careResetEmail').textContent=email;
@@ -489,7 +489,7 @@ function confirmCareReset(){
   localStorage.removeItem(careStoreKey());
   localStorage.removeItem('mnc_care_later_'+hashCareEmail(email));
  }catch(e){
-  $('careResetError').textContent='Não foi possível apagar os registros neste aparelho. Verifique as configurações de armazenamento do navegador.';
+  $('careResetError').textContent='Unable to clear saved records on this device. Check your browser storage settings.';
   $('careResetError').hidden=false;
   return;
  }
@@ -521,15 +521,15 @@ $('careDismiss').addEventListener('click',()=>{
 });
 
 
-// Quiz guiado de autocuidado: seis perguntas, uma por vez, com avanço por toque.
+// Quiz guiado de autohabit: seis perguntas, uma por vez, com avanço por toque.
 let careQuizStep=0;
 let careQuizOpen=false;
 const careQuizChoices=[
- {value:1,label:'Quase não fiz',detail:'Em nenhum ou quase nenhum dia'},
- {value:2,label:'Poucas vezes',detail:'Ainda estou construindo esse hábito'},
- {value:3,label:'Algumas vezes',detail:'Consegui fazer parte dos dias'},
- {value:4,label:'Na maioria dos dias',detail:'Estou cada vez mais constante'},
- {value:5,label:'Todos os dias',detail:'Consegui manter esse cuidado'}
+ {value:1,label:'Rarely',detail:'On none or almost none of the days'},
+ {value:2,label:'Occasionally',detail:'I am still building this habit'},
+ {value:3,label:'Sometimes',detail:'I managed it on some days'},
+ {value:4,label:'Most days',detail:'I am becoming more consistent'},
+ {value:5,label:'Every day',detail:'I kept up this habit'}
 ];
 function careIsDue(){
  const last=careLatest();
@@ -554,21 +554,21 @@ function closeCareQuiz(){
 }
 function paintCareQuiz(){
  if(!careQuizOpen)return;
- const i=careQuizStep,final=i===careFields.length,q=final?{key:'capsules',title:'💊 Uso das 2 cápsulas',hint:'Em quantos dos últimos 3 dias você tomou as 2 cápsulas conforme o rótulo?'}:careFields[i];
- $('careQuizCount').textContent='Pergunta '+(i+1)+' de '+(careFields.length+1);
+ const i=careQuizStep,final=i===careFields.length,q=final?{key:'capsules',title:'💊 Taking Two Capsules',hint:'During the past three days, on how many days did you take two capsules as directed on the label?'}:careFields[i];
+ $('careQuizCount').textContent='Question '+(i+1)+' of '+(careFields.length+1);
  $('careQuizProgressBar').style.width=String((i+1)/(careFields.length+1)*100)+'%';
  $('careQuizHeading').textContent=q.title;
- $('careQuizDesc').textContent=final?q.hint:q.hint+' Pense nos últimos 3 dias e escolha a opção que mais combina com você.';
+ $('careQuizDesc').textContent=final?q.hint:q.hint+' Think about the past three days and select the answer that best fits your routine.';
  $('careQuizBack').hidden=i===0;
  const options=final?
-   [{value:'0',label:'Nenhum dia',detail:'Não tomei as 2 cápsulas nesses dias'},
-    {value:'1',label:'1 dia',detail:'Tomei as 2 cápsulas em um dia'},
-    {value:'2',label:'2 dias',detail:'Tomei as 2 cápsulas em dois dias'},
-    {value:'3',label:'3 dias',detail:'Tomei as 2 cápsulas nos três dias'}]:
+   [{value:'0',label:'No days',detail:'I did not take two capsules on those days'},
+    {value:'1',label:'1 day',detail:'I took two capsules on one day'},
+    {value:'2',label:'2 days',detail:'I took two capsules on two days'},
+    {value:'3',label:'3 days',detail:'I took two capsules on all three days'}]:
    careQuizChoices.map(x=>({...x,value:String(x.value)}));
  const selected=final?capsDraft:careDraft[q.key];
  const html=options.map(o=>'<button type="button" data-quiz-answer="'+o.value+'" aria-pressed="'+String(selected===Number(o.value))+'"><span>'+o.label+'<br><small>'+o.detail+'</small></span><span aria-hidden="true">›</span></button>').join('')+
- '<button type="button" data-quiz-na="true" aria-pressed="'+String(selected===null)+'"><span>'+(final?'Ainda não recebi / não se aplica':'Não se aplica para mim')+'<br><small>'+(final?'Não avaliarei o uso das cápsulas nesta rodada':'Este cuidado não é indicado para mim neste momento')+'</small></span><span aria-hidden="true">›</span></button>';
+ '<button type="button" data-quiz-na="true" aria-pressed="'+String(selected===null)+'"><span>'+(final?'Not received yet / Not applicable':'Not applicable to me')+'<br><small>'+(final?'Skip the capsule question for this check-in':'This habit is not recommended for me right now')+'</small></span><span aria-hidden="true">›</span></button>';
  $('careQuizOptions').innerHTML=html;
  $('careQuizError').hidden=true;
 }
@@ -584,7 +584,7 @@ function chooseCareQuizAnswer(value,na){
   $('careCheckinForm').dispatchEvent(evt);
   if(!$('careError').hidden){
    $('careQuizError').hidden=false;
-   $('careQuizError').textContent=$('careError').textContent||'Não foi possível salvar. Tente novamente.';
+   $('careQuizError').textContent=$('careError').textContent||'Unable to save. Please try again.';
   }
  }
 }
@@ -615,7 +615,7 @@ document.addEventListener('keydown',e=>{
 
 function buildCareQuestions(){
  const host=$('careQuestions');
- host.innerHTML=careFields.map(field=>'<div class="care-question"><h3>'+field.title+'</h3><p>'+field.hint+'</p><div class="care-rate" role="group" aria-label="Nota de '+field.title.slice(2)+' de 1 a 5">'+[1,2,3,4,5].map(n=>'<button type="button" data-care-rating="'+field.key+'" data-rating="'+n+'" aria-pressed="false" aria-label="Nota '+n+' de 5">'+n+'</button>').join('')+'</div><button type="button" class="care-not-applicable" data-care-na="'+field.key+'" aria-pressed="false">Não se aplica</button></div>').join('');
+ host.innerHTML=careFields.map(field=>'<div class="care-question"><h3>'+field.title+'</h3><p>'+field.hint+'</p><div class="care-rate" role="group" aria-label="Rating for '+field.title.slice(2)+' from 1 to 5">'+[1,2,3,4,5].map(n=>'<button type="button" data-care-rating="'+field.key+'" data-rating="'+n+'" aria-pressed="false" aria-label="Rating '+n+' out of 5">'+n+'</button>').join('')+'</div><button type="button" class="care-not-applicable" data-care-na="'+field.key+'" aria-pressed="false">Not applicable</button></div>').join('');
  host.addEventListener('click',e=>{
   const rate=e.target.closest('[data-care-rating]'),na=e.target.closest('[data-care-na]');
   if(rate){careDraft[rate.dataset.careRating]=Number(rate.dataset.rating);paintCareButtons()}
@@ -639,16 +639,16 @@ function buildCareQuestions(){
   const data=getCareData(),last=data.records[0];
   if(last&&Date.now()-Number(last.at)<CARE_INTERVAL){renderCare();return}
   const incomplete=careFields.some(field=>careDraft[field.key]===undefined)||capsDraft===undefined;
-  if(incomplete){$('careError').hidden=false;$('careError').textContent='Select uma nota ou “Não se aplica” para cada cuidado e informe os dias das cápsulas.';return}
+  if(incomplete){$('careError').hidden=false;$('careError').textContent='Select uma nota ou “Not applicable” para cada habit e informe os dias das cápsulas.';return}
   $('careError').hidden=true;
   const pillars={};let sum=0,count=0;
   careFields.forEach(field=>{const v=careDraft[field.key];const p=carePercentValue(v);pillars[field.key]=p;if(p!==null){sum+=p;count++}});
   pillars.capsules=capsDraft===null?null:Math.round(capsDraft/3*100);
   if(pillars.capsules!==null){sum+=pillars.capsules;count++}
-  if(!count){$('careError').hidden=false;$('careError').textContent='Select pelo menos um cuidado para avaliar.';return}
+  if(!count){$('careError').hidden=false;$('careError').textContent='Select pelo menos um habit para avaliar.';return}
   data.records.unshift({at:Date.now(),pillars,score:Math.round(sum/count)});
   data.records=data.records.slice(0,40);
-  if(!putCareData(data)){$('careError').hidden=false;$('careError').textContent='Não foi possível salvar neste aparelho. Verifique se o navegador permite armazenamento local.';return}
+  if(!putCareData(data)){$('careError').hidden=false;$('careError').textContent='Unable to save on this device. Make sure your browser allows local storage.';return}
   careDraft={};capsDraft=undefined;renderCare();showCareQuizDone(data.records[0].score);
  });
  buildEmptyCareQuestions();
@@ -672,59 +672,59 @@ function renderCare(){
  ring.style.setProperty('--ring',tone?tone.color:'#85b6b0');
  $('careTotal').textContent=score===null?'—':score;
  $('careStatusTitle').textContent=last?tone.message:'Start with a check-in';
- $('careStatusText').textContent=last?'Você já deu mais um passo! Última avaliação: '+careDateText(last.at)+'. Siga com seus bons hábitos e celebre seu progresso.':'Dê o primeiro passo: avalie seus hábitos e descubra como fortalecer sua rotina.';
- $('careDueText').textContent=due?'Que bom ter você aqui! Sua próxima avaliação de cuidados já está disponível.':'Nova avaliação '+careTimeRemaining(CARE_INTERVAL-(now-last.at))+'. Siga cultivando seus bons hábitos!';
+ $('careStatusText').textContent=last?'You have made another step forward. Last check-in: '+careDateText(last.at)+'. Keep building healthy routines and celebrate your progress.':'Take the first step. Review your habits and learn where to focus.';
+ $('careDueText').textContent=due?'Welcome back! Your next care check-in is ready.':'Next check-in '+careTimeRemaining(CARE_INTERVAL-(now-last.at))+'. Keep building your healthy habits.';
  $('careFormSection').hidden=!due;
  $('careWaitSection').hidden=due;
- $('careWaitMessage').textContent=due?'Você pode registrar uma nova avaliação.':'Sua próxima avaliação ficará disponível '+careTimeRemaining(CARE_INTERVAL-(now-last.at))+'. Enquanto isso, marque seus cuidados e as cápsulas diariamente.';
- const homeMessage= due?(last?'Uma nova oportunidade de celebrar seus cuidados! Que tal atualizar sua avaliação?':'Comece sua jornada de cuidados! Sua primeira avaliação já está disponível.'):'Seu próximo check-in será '+careTimeRemaining(CARE_INTERVAL-(now-last.at))+'. Continue investindo em você!';
+ $('careWaitMessage').textContent=due?'You can complete another care check-in now.':'Your next check-in will be available '+careTimeRemaining(CARE_INTERVAL-(now-last.at))+'. In the meantime, keep tracking your habits and capsules.';
+ const homeMessage= due?(last?'Your next check-in is ready. Take a moment to see your progress.':'Begin your care journey with your first check-in.'):'Your next check-in is '+careTimeRemaining(CARE_INTERVAL-(now-last.at))+'. Keep taking care of yourself.';
 
  $('careReminder').hidden=!due||getCareDismissedToday();
  $('careHomeMessage').textContent=homeMessage;
- $('careHomeScore').textContent=last?'Sua constância: '+score+'/100':'Vamos começar!';
+ $('careHomeScore').textContent=last?'Your consistency: '+score+'/100':'Get started!';
  $('careHomeScore').style.color=tone?tone.color:'#9cf1d3';
 
  $('careHomeScoreValue').textContent=score===null?'Not rated yet':score+'/100';
  $('careHomeBar').style.width=String(score===null?0:Math.max(0,Math.min(100,score)))+'%';
  $('careHomeBar').style.backgroundColor=tone?tone.color:'#85b6b0';
  $('careHomeProgress').setAttribute('aria-valuenow',String(score===null?0:score));
- $('careHomeProgress').setAttribute('aria-valuetext',score===null?'Ainda não avaliado':score+' out of 100 points');
- $('careHomeBarCaption').textContent=score===null?'Seu primeiro passo começa aqui! Faça sua avaliação e acompanhe suas conquistas.':'Seu score mostra sua dedicação aos cuidados diários. Continue: cada bom hábito conta!';
+ $('careHomeProgress').setAttribute('aria-valuetext',score===null?'Not rated yet':score+' out of 100 points');
+ $('careHomeBarCaption').textContent=score===null?'Start with your first check-in and follow your progress.':'Your score reflects your daily care habits. Keep going; every small step matters.';
  $('careHomeStart').hidden=!due;
 
  const careTips={
-  food:'Que tal incluir uma fruta ou verdura em uma refeição hoje? Cada escolha conta!',
-  movement:'Select um movimento leve e seguro para você, conforme sua orientação de saúde.',
-  feet:'Reserve um minuto para observar seus pés e escolher calçados confortáveis.',
-  sleep:'Experimente manter um horário tranquilo para descansar hoje.',
-  water:'Deixe água por perto e hidrate-se conforme suas necessidades e orientação de saúde.',
-  capsules:'Coloque o frasco em um lugar visível e siga a indicação de 2 capsules per day, sem dobrar doses.'
+  food:'Try adding fruit or vegetables to a meal today. Every choice matters.',
+  movement:'Choose gentle, safe movement that matches your care recommendations.',
+  feet:'Take a moment to check your feet and choose comfortable shoes.',
+  sleep:'Try setting aside a calming time to rest today.',
+  water:'Keep water nearby and drink according to your needs and healthcare guidance.',
+  capsules:'Keep the bottle where you can remember it and follow the two-capsule daily label instructions without doubling doses.'
  };
  const weakest=last?Object.entries(last.pillars||{}).filter(([k,v])=>v!==null&&v!==undefined&&careTips[k]).sort((a,b)=>a[1]-b[1])[0]:null;
  $('careHomeAction').textContent=!last?
-  'Sua jornada começa com um pequeno passo: faça sua primeira avaliação e descubra como fortalecer seus hábitos.':
-  (weakest&&weakest[1]<80?'Uma ideia simples para hoje: '+careTips[weakest[0]]:
-    'Sua dedicação merece reconhecimento! Continue cuidando de você com regularidade.');
+  'Your care journey begins with one small step: complete your first check-in.':
+  (weakest&&weakest[1]<80?'One simple idea for today: '+careTips[weakest[0]]:
+    'Your consistency deserves recognition. Keep caring for yourself.');
 
 
  const todayMarked=data.daily[careDayKey()]===true;
- $('careDailyLabel').textContent=todayMarked?'Hoje: 2 cápsulas registradas ✓':'Ready to log your care today';
- $('careDailyButton').textContent=todayMarked?'Desmarcar registro de hoje':'Marcar as 2 cápsulas de hoje';
+ $('careDailyLabel').textContent=todayMarked?'Today: 2 capsules recorded ✓':'Ready to log your care today';
+ $('careDailyButton').textContent=todayMarked?'Undo today':'Mark 2 Capsules Taken Today';
  $('careDailyButton').setAttribute('aria-pressed',String(todayMarked));
- const all=[...careFields.map(x=>({key:x.key,title:x.title})),{key:'capsules',title:'💊 Uso das cápsulas'}];
+ const all=[...careFields.map(x=>({key:x.key,title:x.title})),{key:'capsules',title:'💊 Capsule Routine'}];
  $('carePillarScores').innerHTML=all.map(p=>{
   const n=last?last.pillars[p.key]:null;
   const t=n===null||n===undefined?null:careTone(Number(n));
   const pct=n===null||n===undefined?0:Number(n);
   const label=t?pct+'/100':'—';
-  return '<div class="care-pillar"><div class="care-pillar-head"><strong>'+p.title+'</strong><span class="'+(t?'care-tone-'+t.tone:'')+'">'+label+'</span></div><div class="care-meter"><i style="width:'+pct+'%;background:'+(t?t.color:'#85b6b0')+'"></i></div><small>'+(t?t.message:'Ainda não avaliado / não se aplica')+'</small></div>';
+  return '<div class="care-pillar"><div class="care-pillar-head"><strong>'+p.title+'</strong><span class="'+(t?'care-tone-'+t.tone:'')+'">'+label+'</span></div><div class="care-meter"><i style="width:'+pct+'%;background:'+(t?t.color:'#85b6b0')+'"></i></div><small>'+(t?t.message:'Not rated yet / não se aplica')+'</small></div>';
  }).join('');
  $('careHistory').innerHTML=data.records.length?data.records.slice(0,8).map((r,i)=>{
   const t=careTone(r.score);
   const delta=i<data.records.length-1?Number(r.score)-Number(data.records[i+1].score):null;
-  const deltaText=delta===null?'': ' · '+(delta>0?'+':'')+delta+' pontos';
-  return '<div class="care-history-row"><span>'+careDateText(r.at)+(i===0?' · mais recente':'')+'</span><strong class="care-tone-'+t.tone+'">'+r.score+'/100'+deltaText+'</strong></div>';
- }).join(''):'<p class="care-intro">Suas conquistas e avaliações aparecerão aqui depois do primeiro registro.</p>';
+  const deltaText=delta===null?'': ' · '+(delta>0?'+':'')+delta+' points';
+  return '<div class="care-history-row"><span>'+careDateText(r.at)+(i===0?' · latest':'')+'</span><strong class="care-tone-'+t.tone+'">'+r.score+'/100'+deltaText+'</strong></div>';
+ }).join(''):'<p class="care-intro">Your progress and check-ins will appear here after the first entry.</p>';
  if(due){if(capsDraft===undefined&&pillDaysFromDaily()>0)capsDraft=pillDaysFromDaily();paintCareButtons()}
 }
 buildCareQuestions();
@@ -733,9 +733,9 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!app.hidd
 function showApp(value){email=value;signed.textContent=value;login.hidden=true;app.hidden=false;storeEmail(value);go('home');loadOrder();renderCare();}
 function signOut(){careDraft={};capsDraft=undefined;lookupSeq++;email='';lastOrder=null;carrierUrl='';result.innerHTML='';try{localStorage.removeItem(EMAIL_KEY)}catch{};$('accountMenu').hidden=true;app.hidden=true;login.hidden=false;input.value='';input.focus();window.scrollTo(0,0);}
 function go(view){if(!['home','tracking','guide','habits','care'].includes(view))return;currentView=view;$('homeView').hidden=view!=='home';$('contentViews').hidden=view==='home';['tracking','guide','habits','care'].forEach(x=>{$(x+'View').hidden=x!==view});document.querySelectorAll('.bottom-nav button').forEach(b=>{const active=b.dataset.goto===view;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});$('accountMenu').hidden=true;$('accountToggle').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'instant'});if(view==='tracking'&&!lastOrder)loadOrder();if(view==='care'||view==='home')renderCare();if(view==='habits')loadIllustratedGuide().then(ok=>{if(ok&&window.MNCGuide)window.MNCGuide.mount('habits')});}
-function renderState(title,message){carrierUrl='';result.innerHTML=`<div class="order-state"><h2 style="font-size:22px;margin:0 0 8px">${escapeHTML(title)}</h2><p style="color:var(--muted);margin:0 0 18px">${escapeHTML(message)}</p><button type="button" id="retryLookup" class="secondary-action">${icon('reload')} Tentar Novamente</button></div>`;$('retryLookup').addEventListener('click',loadOrder);}
-function renderOrder(data){lastOrder=data;const order=data?.order||data||{},t=order.tracking||{};const number=order.number||order.order_number||order.order_id||'',company=t.tracking_company||order.tracking_company||'Ainda não informada',trackingNumber=t.tracking_number||order.tracking_number||'Em breve';carrierUrl=safeURL(t.tracking_url||order.tracking_url);const statuses={preparing:'Preparando envio',shipped:'Enviado',partially_shipped:'Enviado parcialmente',delivered:'Entregue',pending:'Preparando envio'};const status=statuses[String(order.status||'').toLowerCase()]||'Pedido confirmado';result.innerHTML=`<div class="order-state"><div class="order-top"><div><div class="order-label">Último pedido</div><div class="order-number">${number?'#'+escapeHTML(number):'Seu pedido'}</div></div><span class="status-pill">${escapeHTML(status)}</span></div><div class="detail-grid"><div class="detail"><small>Transportadora</small><strong>${escapeHTML(company)}</strong></div><div class="detail"><small>Código de rastreamento</small><strong>${escapeHTML(trackingNumber)}</strong></div></div>${carrierUrl?`<a href="${escapeHTML(carrierUrl)}" class="big-action" target="_blank" rel="noopener noreferrer">Open Tracking da Transportadora ${icon('arrow')}</a><p style="font-size:13px;color:var(--muted);margin:12px 0 0">O site oficial da transportadora será aberto em uma nova aba.</p>`:`<div class="notice">${escapeHTML(PREPARING_MESSAGE)}</div>`}</div>`;}
-async function loadOrder(){if(!email)return;const seq=++lookupSeq;loading.hidden=false;try{const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),13000);let r;try{r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',body:JSON.stringify({email}),signal:controller.signal})}finally{clearTimeout(timer)}if(seq!==lookupSeq)return;if(r.status===404){lastOrder=null;renderState('Preparando seu pedido para envio 📦',PREPARING_MESSAGE);return;}if(!r.ok){lastOrder=null;renderState('O rastreamento está temporariamente indisponível.','Tente novamente mais tarde ou entre em contato com o suporte. Seus guias continuam disponíveis.');return;}const json=await r.json();if(seq!==lookupSeq)return;if(json.error){lastOrder=null;renderState('Preparando seu pedido para envio 📦',PREPARING_MESSAGE);return;}if(json.number||json.order||json.order_id||json.order_number)renderOrder(json);else renderState('Preparando seu pedido para envio 📦',PREPARING_MESSAGE);}catch{if(seq===lookupSeq)renderState('Não foi possível atualizar o rastreamento.','Verifique sua conexão e tente novamente.');}finally{if(seq===lookupSeq)loading.hidden=true;}}
+function renderState(title,message){carrierUrl='';result.innerHTML=`<div class="order-state"><h2 style="font-size:22px;margin:0 0 8px">${escapeHTML(title)}</h2><p style="color:var(--muted);margin:0 0 18px">${escapeHTML(message)}</p><button type="button" id="retryLookup" class="secondary-action">${icon('reload')} Try Again</button></div>`;$('retryLookup').addEventListener('click',loadOrder);}
+function renderOrder(data){lastOrder=data;const order=data?.order||data||{},t=order.tracking||{};const number=order.number||order.order_number||order.order_id||'',company=t.tracking_company||order.tracking_company||'Not available yet',trackingNumber=t.tracking_number||order.tracking_number||'Coming soon';carrierUrl=safeURL(t.tracking_url||order.tracking_url);const statuses={preparing:'Preparing for shipment',shipped:'Shipped',partially_shipped:'Partially shipped',delivered:'Delivered',pending:'Preparing for shipment'};const status=statuses[String(order.status||'').toLowerCase()]||'Order confirmed';result.innerHTML=`<div class="order-state"><div class="order-top"><div><div class="order-label">Latest order</div><div class="order-number">${number?'#'+escapeHTML(number):'Your order'}</div></div><span class="status-pill">${escapeHTML(status)}</span></div><div class="detail-grid"><div class="detail"><small>Shipping carrier</small><strong>${escapeHTML(company)}</strong></div><div class="detail"><small>Tracking number</small><strong>${escapeHTML(trackingNumber)}</strong></div></div>${carrierUrl?`<a href="${escapeHTML(carrierUrl)}" class="big-action" target="_blank" rel="noopener noreferrer">Open Tracking da Shipping carrier ${icon('arrow')}</a><p style="font-size:13px;color:var(--muted);margin:12px 0 0">The official carrier website will open in a new tab.</p>`:`<div class="notice">${escapeHTML(PREPARING_MESSAGE)}</div>`}</div>`;}
+async function loadOrder(){if(!email)return;const seq=++lookupSeq;loading.hidden=false;try{const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),13000);let r;try{r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',body:JSON.stringify({email}),signal:controller.signal})}finally{clearTimeout(timer)}if(seq!==lookupSeq)return;if(r.status===404){lastOrder=null;renderState('Preparing your order for shipment 📦',PREPARING_MESSAGE);return;}if(!r.ok){lastOrder=null;renderState('Tracking is temporarily unavailable.','Please try again later or email support. Your guides remain available.');return;}const json=await r.json();if(seq!==lookupSeq)return;if(json.error){lastOrder=null;renderState('Preparing your order for shipment 📦',PREPARING_MESSAGE);return;}if(json.number||json.order||json.order_id||json.order_number)renderOrder(json);else renderState('Preparing your order for shipment 📦',PREPARING_MESSAGE);}catch{if(seq===lookupSeq)renderState('Unable to refresh tracking.','Please check your connection and try again.');}finally{if(seq===lookupSeq)loading.hidden=true;}}
 form.addEventListener('submit',e=>{e.preventDefault();const value=input.value.trim().toLowerCase();if(!validEmail(value)){error.hidden=false;input.focus();return;}error.hidden=true;showApp(value);});
 try{const remembered=localStorage.getItem(EMAIL_KEY)||'';if(validEmail(remembered))showApp(remembered)}catch{}
 document.addEventListener('click',e=>{const route=e.target.closest('[data-goto]');if(route){go(route.dataset.goto);return;}if(e.target.closest('[data-open-care-quiz]')){openCareQuiz();return;}if(e.target.closest('[data-open-install]')){openInstall();return;}if(!e.target.closest('#accountToggle,#accountMenu')){$('accountMenu').hidden=true;$('accountToggle').setAttribute('aria-expanded','false')}});
