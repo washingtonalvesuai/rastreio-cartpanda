@@ -1,7 +1,7 @@
 /* My Natural Care — Livro ilustrado: leitura linear e progressiva para todas as idades. */
 (function () {
   'use strict';
-  const DATA_URL='/assets/neuropathy-guide-v1.json';
+  const DATA_URL='/assets/neuropathy-guide-v2.json';
   const BATCH=4;
   const care=document.getElementById('careGuidePreview');
   const wellness=document.getElementById('habitsGuideLibrary');
@@ -74,7 +74,7 @@
     root.id='mncReadingBook';
     root.className='mnc-book';
     root.innerHTML='<header class="book-cover">'+
-      '<div class="book-cover-top"><span class="book-edition">MY NATURAL CARE · LIVRO DE CUIDADOS</span><span class="book-total">28 capítulos</span></div>'+
+      '<div class="book-cover-top"><span class="book-edition">MY NATURAL CARE · LIVRO DE CUIDADOS</span><span class="book-total">'+guide.chapters.length+' capítulos</span></div>'+
       '<div class="book-cover-layout"><div><h2>Um cuidado de cada vez.<br><em>Um dia melhor de cada vez.</em></h2>'+
       '<p>Um guia ilustrado para consultar com calma, aprender atitudes práticas e cuidar de você todos os dias.</p>'+
       '<div class="book-cover-tip">Role a página para ler o livro. Os capítulos aparecem em sequência, sem precisar abrir cartões.</div></div>'+
@@ -123,7 +123,7 @@
         const response=await fetch(DATA_URL,{cache:'force-cache',credentials:'same-origin'});
         if(!response.ok)throw new Error('Não foi possível carregar o conteúdo');
         const data=await response.json();
-        if(!Array.isArray(data.chapters)||data.chapters.length!==28)throw new Error('Livro incompleto');
+        if(!Array.isArray(data.chapters)||data.chapters.length<15||data.chapters.some(x=>!x.title||!x.body))throw new Error('Livro incompleto');
         guide=data;
         mount(document.getElementById('habitsView')?.hidden===false?'habits':'care');
       }catch(e){reportError();throw e}
