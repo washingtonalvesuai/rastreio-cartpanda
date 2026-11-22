@@ -80,3 +80,12 @@ O serviço de Render não usa autodeploy; cada alteração exige implantação m
 - O banco de dados D1 foi ampliado somente com tabelas independentes: `recovery_carts`, `recovery_dispatches`, `recovery_optouts`. Os fluxos de compra, envio e e-mails educativos existentes não foram alterados.
 - **Não há disparos retroativos a carrinhos antigos**, pois a API de checkouts abandonados da Cartpanda não foi validada como fonte de importação. Sem um webhook configurado, a contagem de eventos é zero.
 - Para negócios voltados aos EUA, o endereço postal é necessário nos e-mails comerciais; seguir também requisitos locais de consentimento e descadastro.
+
+## Registro discreto de acesso ao aplicativo (sem painel)
+
+- A rota pública de consulta de pedido `POST /api/order-by-email`, no Render, após **confirmação de pedido pago na Cartpanda**, informa o e-mail para a rota privada `POST /_mail/app-access` da Cloudflare. A chamada entre servidores usa o token interno já existente, nunca exposto ao navegador.
+- A Cloudflare grava somente `email`, `first_access_at`, `last_access_at` e `successful_lookup_count` na tabela D1 `app_access`; sem IP, geolocalização, user-agent ou impressão digital do dispositivo.
+- Consultas administrativas feitas diretamente ao D1 não geram acessos. **Não deve ser usado um e-mail de cliente na API pública para testar a integração**, pois isso criaria um falso registro de acesso.
+- Quando o operador pedir quantos acessaram, consultar `SELECT COUNT(*) AS unique_clients, MIN(first_access_at) AS first_access_ms, MAX(last_access_at) AS last_access_ms FROM app_access`. Para listar: `SELECT email, first_access_at, last_access_at, successful_lookup_count FROM app_access ORDER BY last_access_at DESC`.
+- **Limite de precisão:** o acesso significa que houve uma consulta bem-sucedida de e-mail vinculado a um pedido pago, iniciada pelo aplicativo. Não prova a identidade da pessoa que digitou o e-mail: o app usa acesso sem senha. A contagem começa na publicação, sem recuperação retroativa; reconsultas e o botão de atualização podem elevar `successful_lookup_count`.
+- Falhas de telemetria não impedem os clientes de usar o app; avisos técnicos nos logs não contêm os e-mails consultados.
