@@ -164,6 +164,26 @@ function authorizedMailer(req){
  if(!MAIL_TOKEN||provided.length!==MAIL_TOKEN.length)return false;
  return crypto.timingSafeEqual(Buffer.from(provided),Buffer.from(MAIL_TOKEN));
 }
+
+// Count an app access only after Cartpanda confirms that the entered address
+// corresponds to a paid order. This event is server-to-server; no customer
+// browser sees the secret. Best-effort telemetry must not delay checkout
+// tracking or prevent a customer from using the app.
+async function noteVerifiedAppAccess(email){
+ if(!MAIL_TOKEN)return;
+ const controller=new AbortController();
+ const timeout=setTimeout(()=>controller.abort(),4500);
+ try{
+  const r=await fetch("https://mynaturalcare.app/_mail/app-access",{
+   method:"POST",
+   headers:{"Authorization":"Bearer "+MAIL_TOKEN,"Content-Type":"application/json"},
+   body:JSON.stringify({email}),
+   signal:controller.signal
+  });
+  if(!r.ok)console.warn("[access] telemetry temporarily unavailable: "+r.status);
+ }finally{clearTimeout(timeout)}
+}
+
 app.get("/api/mail-status",(_,res)=>res.json({mailer_ready:Boolean(MAIL_TOKEN),integration_version:"three-care-emails"}));
 app.get("/api/internal/email-orders",async(req,res)=>{
  if(!authorizedMailer(req))return res.status(401).json({error:"Unauthorized"});
@@ -208,6 +228,8 @@ app.post("/api/order-by-email",rateLimit,async(req,res)=>{
     if(!order)
       return res.status(404).json({error:"We could not find a paid order for this email."});
     const tracking=trackingFrom(order);
+    // This is the first authenticated-to-order lookup after the app opens.
+    void noteVerifiedAppAccess(email).catch(e=>console.warn("[access] event not recorded:",e.name||"network"));
     return res.json({
       number:String(order.number||order.order_number||"").slice(0,70),
       status:statusFor(order,tracking),tracking
