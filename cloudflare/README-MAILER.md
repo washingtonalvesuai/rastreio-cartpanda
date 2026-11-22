@@ -60,3 +60,23 @@ NÃO publicar tokens ou chaves em arquivos nem em relatórios.
 Mensagens de cuidados são relacionamento pós-venda, não notificações essenciais de transporte. Antes de habilitar envios a todos os compradores, certifique-se de que há base legal adequada e informação transparente no checkout/política de privacidade, respeitando oposição e descadastro conforme LGPD. O envio automático não substitui essa obrigação.
 
 O serviço de Render não usa autodeploy; cada alteração exige implantação manual. O Worker não é atualizado automaticamente pelo GitHub, portanto alterações no arquivo cloudflare/mnc-mailer-worker.js exigem publicação separada.
+
+
+## Recuperação de checkout abandonado — preparado, NÃO ATIVO
+
+**Status:** Os três modelos foram criados e publicados no Resend; a estrutura de recepção do webhook, banco e cron foi implantada na Cloudflare com o envio em modo desativado até a conexão e as exigências abaixo.
+
+- **Fluxo proposto:** 1h, 12h e 24h após o abandono. Assuntos:
+  1. `Your NervLief checkout is ready when you are`
+  2. `Still thinking about NervLief?`
+  3. `A final reminder about your NervLief checkout`
+- Os três e-mails usam imagem e nome NervLief, link individual do checkout (NUNCA usar o link genérico do app no botão de concluir compra), link de descadastro, suporte e endereço postal empresarial válido.
+- Templates publicados no Resend: `nervlief-cart-recovery-1`, `nervlief-cart-recovery-2`, `nervlief-cart-recovery-3`. **Os templates são referência visual no Resend; o Worker possui textos equivalentes e usa o `layout()` existente para os disparos. Alterar um template no Resend não modifica automaticamente o Worker.**
+- O evento da Cartpanda é `Carrinho abandonado`. Cadastrar em **Admin → Notificações → Configurar Webhooks** a URL HTTPS informada diretamente ao proprietário; não incluir a chave do webhook neste repositório.
+- Route da Cloudflare: `POST /_mail/abandoned-cart?key=<RECOVERY_WEBHOOK_KEY>`, autorizada com a Secret `RECOVERY_WEBHOOK_KEY` já configurada. Um payload válido deve conter e-mail do cliente e **link individual de recuperação**; o esquema do evento real precisa ser conferido com teste antes da ativação. URL fora dos domínios permitidos é rejeitada.
+- Para colocar em funcionamento, é NECESSÁRIO: (1) confirmar que a recuperação nativa da Cartpanda está desativada, para não duplicar e-mails; (2) fornecer endereço postal empresarial para preencher `RECOVERY_MAILING_ADDRESS`; (3) cadastrar e testar o webhook; (4) configurar a variável `RECOVERY_ENABLED=true` e implantar. **Sem essa variável, nenhum e-mail é enviado**, embora eventos válidos possam ser recebidos e guardados.
+- Cada disparo verifica a API interna da Render para identificar compras pagas feitas desde o abandono (com tolerância) e suspende a sequência. Na falha da verificação, não envia. O Resend recebe chave de idempotência única por checkout e passo. A cada 30 minutos, o agendamento existente verifica vencimentos.
+- Descadastro: `/_mail/recovery-unsubscribe`, vinculado a um token irreversível; bloqueio do endereço permanece mesmo com novo evento de carrinho.
+- O banco de dados D1 foi ampliado somente com tabelas independentes: `recovery_carts`, `recovery_dispatches`, `recovery_optouts`. Os fluxos de compra, envio e e-mails educativos existentes não foram alterados.
+- **Não há disparos retroativos a carrinhos antigos**, pois a API de checkouts abandonados da Cartpanda não foi validada como fonte de importação. Sem um webhook configurado, a contagem de eventos é zero.
+- Para negócios voltados aos EUA, o endereço postal é necessário nos e-mails comerciais; seguir também requisitos locais de consentimento e descadastro.
