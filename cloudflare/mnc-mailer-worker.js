@@ -1,7 +1,7 @@
 
 /* My Natural Care: instant order welcome, three 72-hour care emails and shipping notices. */
-/* Only orders created after this rollout may receive the new order welcome. */
-const WELCOME_START_MS=Date.parse("2026-11-21T21:17:35.526Z");
+/* Paid orders eligible for the care campaign also receive their welcome email.
+ * The per-order Resend/D1 idempotency key prevents resending prior confirmations. */
 const BASE="https://mynaturalcare.app",FROM="My Natural Care <support@mynaturalcare.app>";
 const PRODUCT_IMAGE="https://d2ol7oe51mr4n9.cloudfront.net/user_3KhyJDRjQ2czt2OYXQAA1zUvwjc/cbbe1d07-49c8-4491-8acb-dcb218af12b3.webp";
 const DAY=86400000,INTERVAL=3*DAY;
@@ -101,7 +101,7 @@ async function order(env,item,now){
  const campaignStart=Date.parse(String(env.CAMPAIGN_START||""));
  const eligibleForCare=Number.isFinite(purchasedAt)&&purchasedAt<=now&&((Number.isFinite(campaignStart)&&purchasedAt>=campaignStart)||backfillEligible);
  if(eligibleForCare)await autoEnroll(env,email,purchasedAt);
- const eligibleForWelcome=Number.isFinite(purchasedAt)&&purchasedAt<=now&&(purchasedAt>=WELCOME_START_MS||backfillEligible);
+ const eligibleForWelcome=eligibleForCare;
  const welcomeSent=eligibleForWelcome?await sendWelcome(env,id,email,number,now,productName):0;
  const prev=await env.DB.prepare("SELECT status,eligible_for_shipping,shipping_sent_at FROM orders WHERE order_id=?").bind(id).first();
  if(!prev){await env.DB.prepare("INSERT OR IGNORE INTO orders(order_id,email,order_number,status,first_seen_at,last_seen_at) VALUES(?,?,?,?,?,?)").bind(id,email,number,status,now,now).run();return welcomeSent}
