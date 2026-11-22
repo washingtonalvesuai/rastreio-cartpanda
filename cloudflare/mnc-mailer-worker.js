@@ -347,6 +347,28 @@ async function scanAbandonedRecovery(env,now){
  return {active:true,sent};
 }
 
+
+/* Anonymous operational metric: a successful paid-order lookup on the app.
+ * Only the trusted Render backend may emit these events.
+ * Avoid IP address, location, user agent and device fingerprint collection.
+ */
+async function captureCustomerAppAccess(req,env){
+ const token=String(req.headers.get("Authorization")||"").replace(/^Bearer\s+/i,"");
+ const secret=String(env.INTERNAL_TOKEN||"");
+ if(!secret||token.length!==secret.length||(await hash(token))!==(await hash(secret)))return j({error:"Unauthorized"},401);
+ if(Number(req.headers.get("content-length")||0)>2048)return j({error:"Request too large"},413);
+ let details;
+ try{const raw=await req.text();if(raw.length>2048)return j({error:"Request too large"},413);details=JSON.parse(raw)}
+ catch{return j({error:"Invalid JSON"},400)}
+ const email=clean(details?.email);
+ if(!valid(email))return j({error:"Invalid email"},422);
+ const now=Date.now();
+ await env.DB.prepare(
+  "INSERT INTO app_access(email,first_access_at,last_access_at,successful_lookup_count) VALUES(?,?,?,1) ON CONFLICT(email) DO UPDATE SET last_access_at=excluded.last_access_at,successful_lookup_count=app_access.successful_lookup_count+1"
+ ).bind(email,now,now).run();
+ return j({ok:true});
+}
+
 async function cron(env){
  const now=Date.now(),started=await env.DB.prepare("INSERT INTO job_runs(started_at) VALUES (?)").bind(now).run(),id=started.meta.last_row_id;
  try{
@@ -370,6 +392,7 @@ export default {
  async fetch(req,env){
   const p=new URL(req.url).pathname;
   if(p==="/_mail/health"&&req.method==="GET")return j({ok:true,ready:Boolean(env.DB&&env.INTERNAL_TOKEN&&env.RESEND_API_KEY&&env.CAMPAIGN_START),welcome_ready:Boolean(env.WEBHOOK_TOKEN)});
+  if(p==="/_mail/app-access"&&req.method==="POST")return captureCustomerAppAccess(req,env);
   if(p==="/_mail/cartpanda-paid"&&req.method==="POST"){
    const given=new URL(req.url).searchParams.get("key")||"";
    if(!env.WEBHOOK_TOKEN||given.length!==env.WEBHOOK_TOKEN.length||(await hash(given))!==(await hash(env.WEBHOOK_TOKEN)))return j({error:"Unauthorized"},401);
