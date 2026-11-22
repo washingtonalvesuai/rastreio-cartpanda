@@ -192,12 +192,167 @@ async function scanReminders(env,now){
  }
  return sent;
 }
+
+/* Abandoned-cart recovery (Cartpanda -> protected webhook -> D1 -> Resend).
+ * FAIL CLOSED: never send until RECOVERY_ENABLED=true, RECOVERY_MAILING_ADDRESS
+ * is set, and the store's native recovery messages are disabled.
+ */
+const RECOVERY_DELAYS_MS=[3600000,12*3600000,24*3600000];
+const RECOVERY_SUBJECTS=[
+ "Your NervLief checkout is ready when you are",
+ "Still thinking about NervLief?",
+ "A final reminder about your NervLief checkout"
+];
+const RECOVERY_BODIES=[
+ '<p>You were looking at <strong>NervLief</strong> and did not finish checking out. No rush — you can return to your checkout with the link below.</p><p>If you have any questions before placing your order, our support team is happy to help.</p>',
+ '<p>We know it is important to feel comfortable before making a purchase. If you are still considering <strong>NervLief</strong>, you can return to your checkout and review your choices.</p><p>Need help with ordering, shipping or product information? Our support team is here for you.</p>',
+ '<p>This is our last reminder about your unfinished <strong>NervLief</strong> checkout. If you would still like to proceed, use the link below to review the order details and finish when ready.</p><p>If you have already placed an order, you can disregard this email. We will not send further reminders for this checkout.</p>'
+];
+function recoveryUrl(link,env){
+ try{
+  const u=new URL(String(link||""));
+  if(u.protocol!=="https:"||u.username||u.password||u.hash||u.href.length>2000)return null;
+  const host=u.hostname.toLowerCase();
+  const allowed=["cartpanda.com","cartpanda.com.br","mycartpanda.com","nervlief.com","mynaturalcare.app"]
+   .concat(String(env.RECOVERY_ALLOWED_HOSTS||"").split(",").map(s=>s.trim().toLowerCase()).filter(Boolean));
+  return allowed.some(d=>host===d||host.endsWith("."+d))?u.href:null;
+ }catch{return null}
+}
+function getRecoveryInfo(payload){
+ const p=payload&&typeof payload==="object"?payload:{};
+ const candidates=[p.checkout,p.abandoned_checkout,p.abandoned_cart,p.cart,p.data?.checkout,p.data?.abandoned_checkout,p.data?.cart,p.data,p];
+ const x=candidates.find(o=>o&&typeof o==="object"&&!Array.isArray(o)&&
+   (o.email||o.email_address||o.customer?.email||o.customer_email||o.billing_address?.email))||p;
+ const email=clean(x.email||x.email_address||x.customer?.email||x.customer_email||x.billing_address?.email||p.email||p.customer?.email);
+ const id=String(x.id||x.checkout_id||x.abandoned_checkout_id||x.cart_id||x.token||p.id||"").replace(/[^a-zA-Z0-9_-]/g,"").slice(0,100);
+ const link=x.recovery_url||x.abandoned_checkout_url||x.checkout_recovery_url||x.recovery_link||
+ x.checkout_url||x.cart_url||x.url||x.checkout?.recovery_url||p.recovery_url||p.checkout_url||"";
+ const rawDate=x.created_at||x.abandoned_at||x.updated_at||p.created_at||"";
+ const opted=x.buyer_accepts_marketing??x.customer?.accepts_marketing??x.accepts_marketing;
+ return {email,id,link,rawDate,marketingDenied:opted===false||opted===0||opted==="false"};
+}
+async function receiveAbandonedCheckout(req,env){
+ const token=new URL(req.url).searchParams.get("key")||"";
+ const secret=String(env.RECOVERY_WEBHOOK_KEY||"");
+ if(!secret||token.length!==secret.length||(await hash(token))!==(await hash(secret)))return j({error:"Unauthorized"},401);
+ if(Number(req.headers.get("content-length")||0)>32768)return j({error:"Payload too large"},413);
+ let payload;
+ try{
+  const raw=await req.text();
+  if(raw.length>32768)return j({error:"Payload too large"},413);
+  payload=JSON.parse(raw);
+ }catch{return j({error:"Invalid JSON"},400)}
+ const info=getRecoveryInfo(payload);
+ if(!valid(info.email)||info.marketingDenied)return j({ok:true,ignored:"no valid or eligible contact"});
+ const checkout=recoveryUrl(info.link,env);
+ if(!checkout)return j({ok:false,error:"A valid Cartpanda recovery checkout URL is required"},422);
+ const cartId=info.id||"u"+(await hash(info.email+"|"+checkout)).slice(0,50);
+ const now=Date.now();
+ let abandoned=Date.parse(String(info.rawDate||""));
+ if(!Number.isFinite(abandoned)||abandoned>now+60000||abandoned<now-7*DAY)abandoned=now;
+ const optoutHash=await hash("recovery:optout:v1:"+info.email+":"+env.INTERNAL_TOKEN);
+ const isOpted=await env.DB.prepare("SELECT 1 AS yes FROM recovery_optouts WHERE email=?").bind(info.email).first();
+ const state=isOpted?"opted_out":"pending";
+ await env.DB.prepare("INSERT INTO recovery_carts(cart_id,email,checkout_url,abandoned_at,received_at,updated_at,step,status,unsubscribe_hash) VALUES(?,?,?,?,?,?,0,?,?) ON CONFLICT(cart_id) DO UPDATE SET updated_at=excluded.updated_at,checkout_url=excluded.checkout_url,status=CASE WHEN recovery_carts.status IN ('opted_out','paid','completed') THEN recovery_carts.status ELSE excluded.status END")
+  .bind(cartId,info.email,checkout,abandoned,now,now,state,optoutHash).run();
+ return j({ok:true,received:true,recovery_active:env.RECOVERY_ENABLED==="true"});
+}
+async function paidEmailsForRecovery(env){
+ const origin=String(env.RENDER_ORIGIN||"https://rastreio-cartpanda.onrender.com").replace(/\/$/,"");
+ const list=[];
+ for(let page=1;page<=20;page++){
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),12000);
+  let d;
+  try{
+   const r=await fetch(origin+"/api/internal/email-orders?page="+page,{headers:{"Authorization":"Bearer "+env.INTERNAL_TOKEN},signal:controller.signal});
+   if(!r.ok)throw Error("Paid order check HTTP "+r.status);
+   d=await r.json();
+  }finally{clearTimeout(timeout)}
+  if(!Array.isArray(d.orders))throw Error("Paid order check unavailable");
+  for(const x of d.orders){const at=Date.parse(String(x.created_at||""));if(valid(clean(x.email))&&Number.isFinite(at))list.push({email:clean(x.email),time:at})}
+  if(!d.hasMore)break;
+  if(page===20)throw Error("Paid order history incomplete");
+ }
+ return list;
+}
+function recoveryUnsubscribePage(token,finished=false){
+ const href=BASE+"/_mail/recovery-unsubscribe?token="+encodeURIComponent(token);
+ return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NervLief Cart Reminder Preferences</title></head>'+
+ '<body style="background:#10212b;color:#eef8f0;font:17px/1.6 Arial,sans-serif"><main style="max-width:530px;margin:10vh auto;padding:28px;background:#1a3431;border-radius:17px">'+
+ '<h1>NervLief Cart Reminders</h1>'+(finished?'<p>You will no longer receive NervLief abandoned checkout reminders.</p>':
+ '<p>Would you like to stop receiving checkout reminder emails from My Natural Care?</p><form action="'+esc(href)+'" method="POST"><button type="submit" style="background:#83eac0;border:0;border-radius:11px;padding:15px 22px;font-size:17px">Unsubscribe</button></form>')+
+ '</main></body></html>';
+}
+async function recoveryUnsubscribe(req,env){
+ const token=new URL(req.url).searchParams.get("token")||"";
+ if(!/^[0-9a-f]{64}$/.test(token))return j({error:"Invalid link"},400);
+ const tokenHash=await hash(token);
+ const row=await env.DB.prepare("SELECT email FROM recovery_carts WHERE unsubscribe_hash=? LIMIT 1").bind(tokenHash).first();
+ if(!row)return j({error:"Invalid or expired link"},404);
+ if(req.method==="POST"){
+  const now=Date.now();
+  await env.DB.prepare("INSERT OR IGNORE INTO recovery_optouts(email,created_at) VALUES(?,?)").bind(row.email,now).run();
+  await env.DB.prepare("UPDATE recovery_carts SET status='opted_out',updated_at=? WHERE email=? AND status='pending'").bind(now,row.email).run();
+ }
+ return new Response(recoveryUnsubscribePage(token,req.method==="POST"),{status:200,headers:{"Content-Type":"text/html; charset=utf-8","Cache-Control":"no-store","X-Robots-Tag":"noindex, nofollow"}});
+}
+async function scanAbandonedRecovery(env,now){
+ // Avoid duplicate flows while Cartpanda native notifications are enabled.
+ if(env.RECOVERY_ENABLED!=="true")return {active:false,sent:0};
+ if(!env.RECOVERY_MAILING_ADDRESS||!env.RECOVERY_WEBHOOK_KEY)throw Error("Recovery not configured; mailing address or webhook secret missing");
+ const due=await env.DB.prepare("SELECT cart_id,email,checkout_url,abandoned_at,step,unsubscribe_hash FROM recovery_carts WHERE status='pending' AND step<3 AND abandoned_at<=? ORDER BY abandoned_at ASC LIMIT 40").bind(now-RECOVERY_DELAYS_MS[0]).all();
+ const rows=due.results||[];
+ if(!rows.length)return {active:true,sent:0};
+ // Fail closed: only send while the verified paid-order API is accessible.
+ const buyers=await paidEmailsForRecovery(env);
+ let sent=0;
+ for(const row of rows){
+  const next=Number(row.step)+1;
+  if(next<1||next>3||row.abandoned_at+RECOVERY_DELAYS_MS[next-1]>now)continue;
+  const opted=await env.DB.prepare("SELECT 1 AS yes FROM recovery_optouts WHERE email=?").bind(row.email).first();
+  if(opted){await env.DB.prepare("UPDATE recovery_carts SET status='opted_out' WHERE cart_id=?").bind(row.cart_id).run();continue}
+  // A paid purchase within two days before the abandoned checkout or after it
+  // is safer to treat as converted than to send another sales reminder.
+  if(buyers.some(p=>p.email===row.email&&p.time>=row.abandoned_at-2*DAY)){
+   await env.DB.prepare("UPDATE recovery_carts SET status='paid',updated_at=? WHERE cart_id=?").bind(now,row.cart_id).run();
+   continue;
+  }
+  const key="recovery-v1-"+(await hash(row.cart_id)).slice(0,36)+"-"+next;
+  const existing=await env.DB.prepare("SELECT state FROM recovery_dispatches WHERE delivery_key=?").bind(key).first();
+  if(existing?.state==="sent"){
+   await env.DB.prepare("UPDATE recovery_carts SET step=?,last_sent_at=?,status=? WHERE cart_id=? AND step<?")
+    .bind(next,now,next===3?"completed":"pending",row.cart_id,next).run();
+   continue;
+  }
+  await env.DB.prepare("INSERT OR IGNORE INTO recovery_dispatches(delivery_key,cart_id,step,state,created_at) VALUES(?,?,?,'pending',?)").bind(key,row.cart_id,next,now).run();
+  const token=await hash("recovery:optout:v1:"+row.email+":"+env.INTERNAL_TOKEN);
+  const unsub=BASE+"/_mail/recovery-unsubscribe?token="+token;
+  const footer='<p style="margin:0 0 8px">You received this email because you started a NervLief checkout. <a href="'+esc(unsub)+'" style="color:#176b50;text-decoration:underline">Unsubscribe from cart reminders</a>.</p>'+
+   '<p style="margin:0">My Natural Care · '+esc(env.RECOVERY_MAILING_ADDRESS)+'</p>';
+  const plain=RECOVERY_SUBJECTS[next-1]+"\n\n"+RECOVERY_BODIES[next-1].replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim()+
+   "\n\nComplete your NervLief checkout: "+row.checkout_url+"\n\nQuestions: support@mynaturalcare.app\nMy Natural Care · "+env.RECOVERY_MAILING_ADDRESS+
+   "\n\nUnsubscribe from cart reminders: "+unsub;
+  try{
+   await send(env,row.email,RECOVERY_SUBJECTS[next-1],RECOVERY_BODIES[next-1],plain,"cart_recovery",key,"Complete My Order",row.checkout_url,footer,
+    {"List-Unsubscribe":"<"+unsub+">","List-Unsubscribe-Post":"List-Unsubscribe=One-Click"});
+   await env.DB.prepare("UPDATE recovery_dispatches SET state='sent',sent_at=?,last_error=NULL WHERE delivery_key=?").bind(now,key).run();
+   await env.DB.prepare("UPDATE recovery_carts SET step=?,last_sent_at=?,updated_at=?,status=?,last_error=NULL WHERE cart_id=?").bind(next,now,now,next===3?"completed":"pending",row.cart_id).run();
+   sent++;
+  }catch(e){
+   await env.DB.prepare("UPDATE recovery_dispatches SET last_error=? WHERE delivery_key=?").bind(String(e).slice(0,140),key).run();
+   await env.DB.prepare("UPDATE recovery_carts SET last_error=? WHERE cart_id=?").bind(String(e).slice(0,140),row.cart_id).run();
+   console.error("Recovery email failure",String(e).slice(0,80));
+  }
+ }
+ return {active:true,sent};
+}
+
 async function cron(env){
  const now=Date.now(),started=await env.DB.prepare("INSERT INTO job_runs(started_at) VALUES (?)").bind(now).run(),id=started.meta.last_row_id;
  try{
-  const ship=await scanShipping(env,now),care=await scanReminders(env,Date.now());
-  await env.DB.prepare("UPDATE job_runs SET finished_at=?,processed=?,sent=?,result='ok' WHERE id=?").bind(Date.now(),ship.count,ship.sent+care,id).run();
-  console.log("Scan completed: "+ship.count+" orders, "+ship.sent+" transactional emails, "+care+" reminders");
+  const ship=await scanShipping(env,now),care=await scanReminders(env,Date.now()),recovery=await scanAbandonedRecovery(env,Date.now());
+  await env.DB.prepare("UPDATE job_runs SET finished_at=?,processed=?,sent=?,result='ok' WHERE id=?").bind(Date.now(),ship.count,ship.sent+care+recovery.sent,id).run();
+  console.log("Scan completed: "+ship.count+" orders, "+ship.sent+" transactional emails, "+care+" reminders, "+recovery.sent+" recoveries");
  }catch(e){
   await env.DB.prepare("UPDATE job_runs SET finished_at=?,result=? WHERE id=?").bind(Date.now(),String(e).slice(0,140),id).run();
   console.error("Scan failed",String(e).slice(0,150));
@@ -226,6 +381,9 @@ export default {
    try{const result=await scanShipping(env,Date.now(),id);return j({ok:true,verified:result.count>0});}
    catch(e){console.error("Paid webhook verification failed",String(e).slice(0,130));return j({error:"Verification temporarily unavailable"},503)}
   }
+  if(p==="/_mail/abandoned-cart"&&req.method==="POST")return receiveAbandonedCheckout(req,env);
+  if(p==="/_mail/recovery-unsubscribe"&&["GET","POST"].includes(req.method))return recoveryUnsubscribe(req,env);
+  if(p==="/_mail/recovery-health"&&req.method==="GET")return j({ready:Boolean(env.DB&&env.RECOVERY_WEBHOOK_KEY&&env.RECOVERY_MAILING_ADDRESS),enabled:env.RECOVERY_ENABLED==="true"});
   if(p==="/_mail/unsubscribe"&&["GET","POST"].includes(req.method))return unsubscribe(req,env);
   return j({error:"Not found"},404);
  },
