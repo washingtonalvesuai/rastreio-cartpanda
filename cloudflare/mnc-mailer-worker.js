@@ -211,7 +211,7 @@ const RECOVERY_BODIES=[
 function recoveryUrl(link,env){
  try{
   const u=new URL(String(link||""));
-  if(u.protocol!=="https:"||u.username||u.password||u.hash||u.href.length>2000)return null;
+  if(u.protocol!=="https:"||u.username||u.password||u.href.length>2000)return null;
   const host=u.hostname.toLowerCase();
   const allowed=["cartpanda.com","cartpanda.com.br","mycartpanda.com","nervlief.com","mynaturalcare.app"]
    .concat(String(env.RECOVERY_ALLOWED_HOSTS||"").split(",").map(s=>s.trim().toLowerCase()).filter(Boolean));
@@ -229,7 +229,7 @@ function getRecoveryInfo(payload){
  x.checkout_url||x.cart_url||x.url||x.checkout?.recovery_url||p.recovery_url||p.checkout_url||"";
  const rawDate=x.created_at||x.abandoned_at||x.updated_at||p.created_at||"";
  const opted=x.buyer_accepts_marketing??x.customer?.accepts_marketing??x.accepts_marketing;
- return {email,id,link,rawDate,marketingDenied:opted===false||opted===0||opted==="false"};
+ return {email,id,link,rawDate,marketingDenied:opted===false||opted===0||opted==="false"||opted==="0"};
 }
 async function receiveAbandonedCheckout(req,env){
  const token=new URL(req.url).searchParams.get("key")||"";
